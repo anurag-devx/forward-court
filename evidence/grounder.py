@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from config import agent_model
 
-from .dates import extract_date
+from dates import extract_date
 from .models import EvidenceItem
 from .pages import enrich_from_page
 from .urls import normalize_url

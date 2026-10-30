@@ -1,0 +1,16 @@
+[
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
+    "og_image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Untitled-design-88.png",
+    "skipped": true,
+    "skip_reason": "fact-check markings detected"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.boomlive.in/fact-check/bjp-did-not-post-old-kumbh-mela-photo-as-crowd-gathered-for-modi-in-up-32401",
+    "og_image_url": "https://www.boomlive.in/h-upload/2026/10/26/1058797-modis-pr-has-to-recycle-mahakumbh-photos.jpg",
+    "skipped": true,
+    "skip_reason": "fact-check markings detected"
+  }
+]

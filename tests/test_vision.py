@@ -15,6 +15,7 @@ def _vision():
         people_places_objects=["flooded street", "rescue boat"],
         claims_from_image=["The photo shows a flooded street."],
         language="en",
+        fact_check_marked=False,
     )
 
 

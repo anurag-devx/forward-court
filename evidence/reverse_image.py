@@ -15,7 +15,7 @@ import httpx
 from PIL import Image
 from pydantic import BaseModel
 
-from .dates import extract_date
+from dates import extract_date
 from .models import EvidenceItem
 from .pages import enrich_from_page
 from .urls import normalize_url

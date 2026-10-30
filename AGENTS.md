@@ -33,7 +33,8 @@ in the user's language.
 - evidence/  search grounding, reverse image search, page fetching
 - court/     prosecutor, defender, judge agents
 - card/      verdict card formatting
-- scripts/   sample-fetch tooling (fetch_samples.py + manifest.json)
+- scripts/   sample tooling (collect_factchecks.py, fetch_samples.py + manifest.json)
+- dates.py   shared date extraction (evidence + intake recency cues)
 - tests/     pytest per module + sample forwards
 
 ## API notes

@@ -12,7 +12,7 @@ from html.parser import HTMLParser
 import httpx
 import trafilatura
 
-from .dates import extract_date
+from dates import extract_date
 
 FETCH_TIMEOUT = 8.0
 MAX_BYTES = 2 * 1024 * 1024

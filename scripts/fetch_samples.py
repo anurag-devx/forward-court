@@ -18,7 +18,9 @@ from urllib.parse import urljoin, urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from config import get_client
 from evidence.pages import download_bytes, fetch_html
+from media.vision import describe_image
 
 DEFAULT_OUT = Path("tests/samples/images")
 
@@ -57,21 +59,55 @@ def _slug(article_url: str, og_image_url: str, index: int) -> str:
     return f"{index:02d}-{host or 'image'}{suffix}"
 
 
-def fetch_samples(urls: list[str], out_dir: Path, *, client=None) -> list[dict]:
-    """Download og:images; return manifest entries for successes."""
+def _mime_from_url(url: str) -> str:
+    suffix = Path(urlparse(url).path).suffix.lower()
+    return {
+        ".png": "image/png",
+        ".webp": "image/webp",
+        ".gif": "image/gif",
+    }.get(suffix, "image/jpeg")
+
+
+def _skip(manifest: list[dict], article_url: str, og_image_url: str | None,
+          reason: str) -> None:
+    print(f"warning: skipping {article_url}: {reason}", file=sys.stderr)
+    manifest.append(
+        {"file": None, "article_url": article_url,
+         "og_image_url": og_image_url, "skipped": True, "skip_reason": reason}
+    )
+
+
+def fetch_samples(
+    urls: list[str], out_dir: Path, *, client=None, vision_client=None
+) -> list[dict]:
+    """Download og:images, screen out fact-check-marked ones, return manifest."""
     out_dir.mkdir(parents=True, exist_ok=True)
+    if vision_client is None:
+        vision_client = get_client()
     manifest: list[dict] = []
     for index, article_url in enumerate(urls):
         html = fetch_html(article_url, client=client)
         og_image_url = extract_og_image(html or "", article_url) if html else None
         if not og_image_url:
-            print(f"warning: no og:image for {article_url}", file=sys.stderr)
+            _skip(manifest, article_url, None, "no og:image found")
             continue
         data = download_bytes(
             og_image_url, client=client, content_must_contain=("image/",)
         )
         if not data:
-            print(f"warning: download failed for {og_image_url}", file=sys.stderr)
+            _skip(manifest, article_url, og_image_url, "image download failed")
+            continue
+        try:
+            vision = describe_image(
+                data, mime=_mime_from_url(og_image_url), client=vision_client
+            )
+        except Exception as exc:
+            _skip(manifest, article_url, og_image_url,
+                   f"vision screening failed: {exc}")
+            continue
+        if vision.fact_check_marked:
+            _skip(manifest, article_url, og_image_url,
+                   "fact-check markings detected")
             continue
         filename = _slug(article_url, og_image_url, index)
         (out_dir / filename).write_bytes(data)
@@ -98,7 +134,8 @@ def main(argv: list[str] | None = None) -> int:
     ]
     out_dir = Path(args[1]) if len(args) > 1 else DEFAULT_OUT
     manifest = fetch_samples(urls, out_dir)
-    print(f"downloaded {len(manifest)} of {len(urls)} images to {out_dir}")
+    kept = sum(1 for entry in manifest if not entry.get("skipped"))
+    print(f"kept {kept} of {len(urls)} images to {out_dir}")
     return 0
 
 

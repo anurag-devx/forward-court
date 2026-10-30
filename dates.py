@@ -60,10 +60,10 @@ def _valid(year: int, month: int, day: int) -> str | None:
         return None
 
 
-def extract_date(text: str) -> str | None:
-    """Return the first valid calendar date in text as ISO, else None."""
+def extract_all_dates(text: str) -> list[str]:
+    """Return every valid calendar date in text as ISO, in position order."""
     if not text:
-        return None
+        return []
     candidates: list[tuple[int, str | None]] = []
     for match in _PATTERNS[0].finditer(text):
         year, month, day = (int(g) for g in match.groups())
@@ -78,7 +78,10 @@ def extract_date(text: str) -> str | None:
         candidates.append(
             (match.start(), _valid(int(year), _MONTHS[month_name.lower()], int(day)))
         )
-    for _, iso in sorted(candidates):
-        if iso is not None:
-            return iso
-    return None
+    return [iso for _, iso in sorted(candidates) if iso is not None]
+
+
+def extract_date(text: str) -> str | None:
+    """Return the first valid calendar date in text as ISO, else None."""
+    dates = extract_all_dates(text)
+    return dates[0] if dates else None

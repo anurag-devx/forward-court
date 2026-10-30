@@ -22,6 +22,7 @@ from evidence.reverse_image import (
     search_images,
 )
 from intake.extractor import extract_intake
+from intake.recency import is_presented_as_recent
 from media.segment import segment_subjects
 from media.vision import describe_image, read_image
 
@@ -64,12 +65,13 @@ def run_image_forward(
     vision = describe_image(image_bytes, mime=mime, client=client, tracker=tracker)
     caption_claims: list[str] = []
     language = vision.language
-    presented_as_recent = False
     if caption:
         intake = extract_intake(caption, client=client, tracker=tracker)
         caption_claims = intake.claims
         language = intake.language
-        presented_as_recent = intake.presented_as_recent
+    presented_as_recent = is_presented_as_recent(
+        [vision.visible_text, caption or ""]
+    )
     claims = (vision.claims_from_image + caption_claims)[:MAX_CLAIMS]
     if not claims:
         return "No checkable claims found in this forward.", tracker

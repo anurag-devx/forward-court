@@ -24,6 +24,9 @@ INSTRUCTIONS = (
     "places, and objects as short noun phrases. List the checkable claims the "
     "image itself makes about what, where, or when it shows. "
     "Report the ISO 639-1 language of visible text, or 'en' when there is none. "
+    "Set fact_check_marked true when the image carries fact-check markings "
+    "(FAKE/FALSE/MISLEADING stamps or labels, side-by-side comparisons, "
+    "fact-check outlet logos, watermarks, or tickers); false for plain photos. "
     "Never guess the image's origin, date, or photographer."
 )
 

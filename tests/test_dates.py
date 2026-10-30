@@ -1,4 +1,4 @@
-from evidence.dates import extract_date
+from dates import extract_date
 
 
 def test_iso_and_slash_dates():
