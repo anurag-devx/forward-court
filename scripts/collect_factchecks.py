@@ -18,8 +18,19 @@ from evidence.pages import download_bytes
 FEEDS = (
     "https://www.altnews.in/feed/",
     "https://www.boomlive.in/feed",
+    "https://newschecker.in/feed/",
+    "https://www.vishvasnews.com/feed/",
 )
-KEYWORDS = ("photo", "image", "picture", "viral image", "old photo")
+KEYWORDS = (
+    "photo",
+    "image",
+    "picture",
+    "viral image",
+    "old photo",
+    "तस्वीर",
+    "फोटो",
+    "वायरल",
+)
 MAX_URLS = 20
 DEFAULT_OUT = Path("tests/samples/image_urls.txt")
 

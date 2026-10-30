@@ -2,15 +2,428 @@
   {
     "file": null,
     "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
-    "og_image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Untitled-design-88.png",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Untitled-design-88-1024x536.png",
     "skipped": true,
-    "skip_reason": "fact-check markings detected"
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "00-1-www.altnews.in.jpg",
+    "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Radhika-Khera-on-X-Liar-Liar-https-t-co-jLYHewdEo6-X-10-12-2026_06_40_PM.jpg",
+    "role": "viral_claim",
+    "expected": "AI-generated"
+  },
+  {
+    "file": "00-2-www.altnews.in.jpeg",
+    "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-12-at-1.48.36-AM.jpeg",
+    "role": "viral_claim",
+    "expected": "AI-generated"
+  },
+  {
+    "file": "00-3-www.altnews.in.jpg",
+    "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/HUWXOTgaEAAUmss1.jpg",
+    "role": "viral_claim",
+    "expected": "AI-generated"
+  },
+  {
+    "file": "00-4-www.altnews.in.jpg",
+    "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Verify-OpenAI-generated-content-OpenAI-10-12-2026_06_24_PM.jpg",
+    "role": "viral_claim",
+    "expected": "AI-generated"
+  },
+  {
+    "file": "00-5-www.altnews.in.jpeg",
+    "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-11-at-9.40.08-PM.jpeg",
+    "role": "viral_claim",
+    "expected": "AI-generated"
   },
   {
     "file": null,
     "article_url": "https://www.boomlive.in/fact-check/bjp-did-not-post-old-kumbh-mela-photo-as-crowd-gathered-for-modi-in-up-32401",
-    "og_image_url": "https://www.boomlive.in/h-upload/2026/10/26/1058797-modis-pr-has-to-recycle-mahakumbh-photos.jpg",
+    "image_url": "https://www.boomlive.in/h-upload/2026/10/08/1058459-google.webp",
     "skipped": true,
-    "skip_reason": "fact-check markings detected"
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-arunachal-pradesh-chinese-soldiers-captured-infiltration-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-arunachal-pradesh-chinese-soldiers-captured-infiltration-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-arunachal-pradesh-chinese-soldiers-captured-infiltration-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-arunachal-pradesh-chinese-soldiers-captured-infiltration-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-27-at-1.38.39-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-arunachal-pradesh-chinese-soldiers-captured-infiltration-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-arunachal-pradesh-chinese-soldiers-captured-infiltration-viral-video/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "image download failed"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-captain-smit-machhar-israel-hanuman-chalisa-viral-video-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-captain-smit-machhar-israel-hanuman-chalisa-viral-video-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-captain-smit-machhar-israel-hanuman-chalisa-viral-video-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-captain-smit-machhar-israel-hanuman-chalisa-viral-video-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-27-at-3.34.03-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-captain-smit-machhar-israel-hanuman-chalisa-viral-video-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-captain-smit-machhar-israel-hanuman-chalisa-viral-video-ai-generated/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "image download failed"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-france-protest-news-viral-france-police-with-pigs-video-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-france-protest-news-viral-france-police-with-pigs-video-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-france-protest-news-viral-france-police-with-pigs-video-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-france-protest-news-viral-france-police-with-pigs-video-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-26-at-5.43.11-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-france-protest-news-viral-france-police-with-pigs-video-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-france-protest-news-viral-france-police-with-pigs-video-is-ai-generated/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-a-fake-image-of-sonia-gandhi-shaking-hands-with-jeffrey-epstein-is-going-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-a-fake-image-of-sonia-gandhi-shaking-hands-with-jeffrey-epstein-is-going-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-a-fake-image-of-sonia-gandhi-shaking-hands-with-jeffrey-epstein-is-going-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-a-fake-image-of-sonia-gandhi-shaking-hands-with-jeffrey-epstein-is-going-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-24-at-13.48.48.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-a-fake-image-of-sonia-gandhi-shaking-hands-with-jeffrey-epstein-is-going-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-a-fake-image-of-sonia-gandhi-shaking-hands-with-jeffrey-epstein-is-going-viral/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/ai-generated-image-of-an-rss-march-in-kannur-goes-viral-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/ai-generated-image-of-an-rss-march-in-kannur-goes-viral-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/ai-generated-image-of-an-rss-march-in-kannur-goes-viral-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/ai-generated-image-of-an-rss-march-in-kannur-goes-viral-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-23-at-16.58.05.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/ai-generated-image-of-an-rss-march-in-kannur-goes-viral-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/ai-generated-image-of-an-rss-march-in-kannur-goes-viral-here-is-truth/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "image download failed"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-nitish-kumar-old-video-2023-viral-as-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-nitish-kumar-old-video-2023-viral-as-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-nitish-kumar-old-video-2023-viral-as-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-nitish-kumar-old-video-2023-viral-as-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-23-at-1.17.25-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-nitish-kumar-old-video-2023-viral-as-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-nitish-kumar-old-video-2023-viral-as-recent/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-begusarai-padyatra-is-old-video-not-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-begusarai-padyatra-is-old-video-not-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-begusarai-padyatra-is-old-video-not-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-begusarai-padyatra-is-old-video-not-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-23-at-1.09.40-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-begusarai-padyatra-is-old-video-not-recent/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-rahul-gandhi-begusarai-padyatra-is-old-video-not-recent/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/uttarakhand-pithoragarh-bridge-collapse-old-video-viral-false-claim/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/uttarakhand-pithoragarh-bridge-collapse-old-video-viral-false-claim/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/uttarakhand-pithoragarh-bridge-collapse-old-video-viral-false-claim/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/uttarakhand-pithoragarh-bridge-collapse-old-video-viral-false-claim/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-23-at-12.12.07.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/uttarakhand-pithoragarh-bridge-collapse-old-video-viral-false-claim/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/uttarakhand-pithoragarh-bridge-collapse-old-video-viral-false-claim/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-video-of-ugc-protest-goes-viral-falsely-linked-to-a-bjp-leader-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-video-of-ugc-protest-goes-viral-falsely-linked-to-a-bjp-leader-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-video-of-ugc-protest-goes-viral-falsely-linked-to-a-bjp-leader-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-video-of-ugc-protest-goes-viral-falsely-linked-to-a-bjp-leader-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-22-at-1.46.21-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-video-of-ugc-protest-goes-viral-falsely-linked-to-a-bjp-leader-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-video-of-ugc-protest-goes-viral-falsely-linked-to-a-bjp-leader-here-is-truth/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
   }
 ]

@@ -245,6 +245,20 @@ def test_origin_cap_without_reverse_evidence(
     assert verdict.confidence == confidence
 
 
+def test_unverified_confidence_capped_at_medium():
+    fake = FakeClient(
+        parsed_by_model={
+            Verdict: _verdict(verdict="Unverified", confidence="high")
+        }
+    )
+    verdict = judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
+    )
+    assert verdict.verdict == "Unverified"
+    assert verdict.confidence == "medium"
+
+
 def test_judge_keeps_verdict_without_source_dates():
     fake = FakeClient(
         parsed_by_model={Verdict: _verdict(verdict="True", claim_timeframe=None)}

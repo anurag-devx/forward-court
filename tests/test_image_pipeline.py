@@ -38,7 +38,7 @@ def _vision():
         people_places_objects=["flooded street"],
         claims_from_image=["vision claim one", "vision claim two"],
         language="en",
-        fact_check_marked=False,
+        image_role="viral_claim",
     )
 
 
@@ -137,7 +137,7 @@ def test_no_provider_skips_reverse_and_caps_verdict(tmp_path, monkeypatch):
                 people_places_objects=[],
                 claims_from_image=["photo shows X"],
                 language="en",
-                fact_check_marked=False,
+                image_role="viral_claim",
             ),
             Argument: Argument(
                 points=[ArgPoint(text="p", source_url="https://g.com/x")]

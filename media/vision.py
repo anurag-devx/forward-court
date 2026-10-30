@@ -24,9 +24,12 @@ INSTRUCTIONS = (
     "places, and objects as short noun phrases. List the checkable claims the "
     "image itself makes about what, where, or when it shows. "
     "Report the ISO 639-1 language of visible text, or 'en' when there is none. "
-    "Set fact_check_marked true when the image carries fact-check markings "
-    "(FAKE/FALSE/MISLEADING stamps or labels, side-by-side comparisons, "
-    "fact-check outlet logos, watermarks, or tickers); false for plain photos. "
+    "Classify image_role: 'viral_claim' for the image as shared in a viral "
+    "forward (plain photo, screenshot, or meme making a claim); "
+    "'original_source' for an undoctored original photo a claim misuses; "
+    "'fact_check_marked' when it carries fact-check markings (FAKE/FALSE/ "
+    "MISLEADING stamps or labels, side-by-side comparisons, outlet logos, "
+    "watermarks, or tickers); 'other' otherwise. "
     "Never guess the image's origin, date, or photographer."
 )
 

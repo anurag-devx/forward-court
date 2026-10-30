@@ -27,17 +27,19 @@ def search_call(urls, status="completed"):
 class FakeResponses:
     """Mimics client.responses with canned parse/create results."""
 
-    def __init__(self, parsed_by_model=None, outputs=None):
+    def __init__(self, parsed_by_model=None, outputs=None, parse_queue=None):
         self.parsed_by_model = dict(parsed_by_model or {})
         self.outputs = list(outputs or [])
+        self.parse_queue = list(parse_queue or [])
         self.calls = []
 
     def parse(self, **kwargs):
         self.calls.append(("parse", kwargs))
-        fmt = kwargs["text_format"]
-        return SimpleNamespace(
-            output_parsed=self.parsed_by_model[fmt], usage=FakeUsage()
-        )
+        if self.parse_queue:
+            parsed = self.parse_queue.pop(0)
+        else:
+            parsed = self.parsed_by_model[kwargs["text_format"]]
+        return SimpleNamespace(output_parsed=parsed, usage=FakeUsage())
 
     def create(self, **kwargs):
         self.calls.append(("create", kwargs))
@@ -45,8 +47,8 @@ class FakeResponses:
 
 
 class FakeClient:
-    def __init__(self, parsed_by_model=None, outputs=None):
-        self.responses = FakeResponses(parsed_by_model, outputs)
+    def __init__(self, parsed_by_model=None, outputs=None, parse_queue=None):
+        self.responses = FakeResponses(parsed_by_model, outputs, parse_queue)
 
 
 def dead_http_client():

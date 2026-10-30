@@ -1,4 +1,6 @@
 """Image-forward data shapes."""
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -16,8 +18,11 @@ class VisionResult(BaseModel):
     language: str = Field(
         description="ISO 639-1 language of visible text, or 'en' if none."
     )
-    fact_check_marked: bool = Field(
-        description="True when the image carries fact-check markings: "
-        "FAKE/FALSE/MISLEADING stamps, side-by-side comparison layouts, "
-        "or fact-check outlet logos, watermarks, or tickers."
+    image_role: Literal[
+        "viral_claim", "original_source", "fact_check_marked", "other"
+    ] = Field(
+        description="viral_claim: the image as shared in the viral forward. "
+        "original_source: the undoctored original the claim misuses. "
+        "fact_check_marked: carries fact-check stamps, comparisons, or "
+        "outlet logos/watermarks. other: anything else."
     )

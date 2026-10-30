@@ -27,6 +27,12 @@ def test_keyword_filter_matches_spec_words():
     assert is_image_related("taxes explained", "no media") is False
 
 
+def test_keyword_filter_matches_hindi():
+    assert is_image_related("वायरल तस्वीर की सच्चाई", "") is True
+    assert is_image_related("", "फोटो पुरानी है") is True
+    assert is_image_related("मौसम का हाल", "बारिश होगी") is False
+
+
 def _client(routes):
     def handler(request):
         body, status = routes.get(str(request.url), ("", 404))

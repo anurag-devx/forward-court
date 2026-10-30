@@ -1,3 +1,8 @@
 .venv/
 .env
 __pycache__/
+tests/samples/images/*.jpg
+tests/samples/images/*.jpeg
+tests/samples/images/*.png
+tests/samples/images/*.webp
+tests/samples/images/*.gif

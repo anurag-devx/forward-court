@@ -164,4 +164,6 @@ def judge_verdict(
             verdict = verdict.model_copy(
                 update={"verdict": "Unverified", "confidence": "low"}
             )
+    if verdict.verdict == "Unverified" and verdict.confidence == "high":
+        verdict = verdict.model_copy(update={"confidence": "medium"})
     return verdict
