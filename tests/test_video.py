@@ -71,6 +71,24 @@ def test_describe_video_includes_claim_context():
     assert "Claim context: bridge collapsed today" in text
 
 
+def test_describe_video_votes_once_uploaded():
+    client = FakeClient(
+        parse_queue=[
+            _video_result().model_copy(
+                update={"shows_claimed_event": "no", "mismatch_reason": "r"}
+            ),
+            _video_result().model_copy(update={"shows_claimed_event": "no"}),
+            _video_result().model_copy(update={"shows_claimed_event": "yes"}),
+        ]
+    )
+    result = describe_video(b"bytes", client=client, context="floods")
+    assert result.shows_claimed_event == "no"
+    assert result.consistency_agreement == 2
+    assert len(client.responses.calls) == 3
+    assert len(client.files.calls) == 1  # uploaded once
+    assert client.files.deleted == ["file-test-123"]
+
+
 @ffmpeg
 def test_key_frames_from_changing_clip_capped(tmp_path):
     clip = tmp_path / "clip.mp4"

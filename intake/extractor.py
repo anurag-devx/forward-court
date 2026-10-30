@@ -24,6 +24,8 @@ INSTRUCTIONS = (
 
 def extract_intake(text: str, *, client, tracker=None) -> IntakeResult:
     """Run intake on forward text. Never raises for empty claims (returns [])."""
+    if tracker is not None:
+        tracker.mark("intake")
     response = client.responses.parse(
         model=agent_model(),
         instructions=INSTRUCTIONS,

@@ -61,6 +61,8 @@ def transcribe_audio(
     audio_bytes: bytes, *, http_client=None, tracker=None
 ) -> str:
     """Transcribe WAV bytes via /asr/transcribe. Returns the transcript."""
+    if tracker is not None:
+        tracker.mark("transcribe")
     api_key = os.environ.get(API_KEY_ENV)
     if not api_key:
         raise TranscribeError(

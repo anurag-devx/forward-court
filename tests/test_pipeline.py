@@ -159,6 +159,54 @@ def test_all_filtered_evidence_yields_unverified_without_debate():
     assert len(parses) == 2  # intake + relevance only
 
 
+def test_deadline_returns_timeout_card_naming_stalled_stage():
+    import threading
+
+    class HangingResponses:
+        def parse(self, **kwargs):
+            threading.Event().wait(30)
+
+        def create(self, **kwargs):
+            threading.Event().wait(30)
+
+    class HangingClient:
+        responses = HangingResponses()
+
+    card, tracker = main.run_forward(
+        "something", client=HangingClient(), deadline_s=0.2
+    )
+    assert "UNVERIFIED" in card.splitlines()[0]
+    assert "Couldn't verify right now" in card
+    assert "run timed out during stage: intake." in tracker.notes
+
+
+def test_deadline_card_uses_detected_language():
+    import threading
+    from types import SimpleNamespace
+
+    from tests.fakes import FakeUsage
+
+    intake = IntakeResult(
+        language="hi", claims=["c"], presented_as_recent=False
+    )
+
+    class HangingGrounding:
+        def parse(self, **kwargs):
+            return SimpleNamespace(output_parsed=intake, usage=FakeUsage())
+
+        def create(self, **kwargs):
+            threading.Event().wait(30)
+
+    class HangingClient:
+        responses = HangingGrounding()
+
+    card, tracker = main.run_forward(
+        "something", client=HangingClient(), deadline_s=0.5
+    )
+    assert "अभी सत्यापित नहीं हो सका" in card
+    assert "run timed out during stage: grounding." in tracker.notes
+
+
 def test_no_claims_short_circuits():
     client = _pipeline_client(
         parsed={

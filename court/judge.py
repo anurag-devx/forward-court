@@ -47,6 +47,11 @@ CLAIM_REVIEW_REASONS = {
     "hi": "{outlet} द्वारा पहले से तथ्य-जांचित: रेटिंग {rating}।",
 }
 
+MISMATCH_REASONS = {
+    "en": "Media does not show the claimed event: {reason}",
+    "hi": "मीडिया दावा की गई घटना नहीं दिखाता: {reason}",
+}
+
 INSTRUCTIONS = (
     "You are the judge in a fact-check court. Both sides argued using only the "
     "evidence list; every point below already cites a URL from it. "
@@ -209,17 +214,24 @@ def outlet_host(url: str) -> str:
     return host or url
 
 
-def find_claim_review_verdict(claims, evidence, language: str) -> Verdict | None:
+def find_claim_review_verdict(
+    claims, evidence, language: str, *, media: bool = False,
+    exact_urls: set[str] | None = None,
+) -> Verdict | None:
     """Deterministic verdict from tier-1 ClaimReview ratings, else None.
 
     Collects mapped ratings from tier-1 items whose ClaimReview matches a
-    claim. One distinct verdict wins (citing that URL, confidence high);
-    two distinct verdicts contradict and fall through to the normal path.
-    Makes no model calls.
+    claim. Unverified mappings never short-circuit. On media forwards the
+    winner must be media-tied (an exact reverse hit on its page); untied
+    reviews stay as normal debate evidence. One distinct verdict wins
+    (citing that URL, high confidence); two distinct verdicts contradict
+    and fall through to the normal path. Makes no model calls.
     """
     hits = []
     for item in evidence:
         if tier_of(item.source_url) != 1 or item.claim_review is None:
+            continue
+        if item.claim_review.verdict == "Unverified":
             continue
         if any(_review_matches_claim(item, claim) for claim in claims):
             hits.append(item)
@@ -227,20 +239,43 @@ def find_claim_review_verdict(claims, evidence, language: str) -> Verdict | None
     if len(verdicts) != 1:
         return None
     winner = hits[0]
+    if media and normalize_url(winner.source_url) not in (exact_urls or set()):
+        return None
     outlet = outlet_host(winner.source_url)
     template = CLAIM_REVIEW_REASONS.get(
         language, CLAIM_REVIEW_REASONS["en"]
     )
-    mapped = winner.claim_review.verdict
     return Verdict(
-        verdict=mapped,
+        verdict=winner.claim_review.verdict,
         reason=template.format(
             outlet=outlet, rating=winner.claim_review.rating_raw
         ),
         key_source=winner.source_url,
         language=language,
-        confidence="medium" if mapped == "Unverified" else "high",
+        confidence="high",
         fact_checked_by=outlet,
+    )
+
+
+def has_media_tied_evidence(evidence, exact_urls, media_claims) -> bool:
+    """True when any item is media-provenance evidence for the override."""
+    return any(
+        _override_eligible(item, True, exact_urls, media_claims)
+        for item in evidence
+    )
+
+
+def mismatch_verdict(reason: str, language: str, agreement: int) -> Verdict:
+    """Misleading verdict from a voted media mismatch. No key source:
+    the verdict rests on the media itself, not on a cited URL."""
+    template = MISMATCH_REASONS.get(language, MISMATCH_REASONS["en"])
+    return Verdict(
+        verdict="Misleading",
+        reason=template.format(reason=reason),
+        key_source="",
+        language=language,
+        confidence="high" if agreement >= 3 else "medium",
+        claim_timeframe=None,
     )
 
 
@@ -274,6 +309,8 @@ def judge_verdict(
     exact_urls: set[str] | None = None,
     media_mismatch: str | None = None,
 ) -> Verdict:
+    if tracker is not None:
+        tracker.mark("judge")
     evidence_urls = {normalize_url(item.source_url) for item in evidence}
     kept_prosecution = _keep_cited(prosecution, evidence_urls)
     kept_defense = _keep_cited(defense, evidence_urls)

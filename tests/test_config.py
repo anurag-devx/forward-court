@@ -65,3 +65,17 @@ def test_contributor_mode_explicit_off(monkeypatch, value):
 def test_contributor_mode_explicit_on(monkeypatch):
     monkeypatch.setenv("FC_CONTRIBUTOR", "1")
     assert agent_model() == CONTRIBUTOR_MODEL
+
+
+def test_client_has_timeout_and_retries(monkeypatch):
+    monkeypatch.setenv("MODEL_API_KEY", "test-key")
+    client = get_client()
+    assert client.timeout == 60.0
+    assert client.max_retries == 2
+
+
+def test_tracker_marks_current_stage():
+    tracker = UsageTracker()
+    assert tracker.current is None
+    tracker.mark("grounding")
+    assert tracker.current == "grounding"

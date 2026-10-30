@@ -61,6 +61,10 @@ in the user's language.
 - Media forwards: recycled override uses exact matches + media-tied
   fact-checks only; media/caption mismatch note weighs toward Misleading;
   judge rates media claims first, event claims in the reason.
+- Hardening: 60s per-call timeout + 2 retries; 4-min run deadline with a
+  localized timeout card naming the stalled stage; ClaimReview short-circuit
+  needs a media tie on media forwards and never fires on Unverified;
+  mismatch is voted 3x and short-circuits Misleading over untied evidence.
 
 ## Rules
 - Evidence first: both debating agents get the same evidence list and may cite only from it.

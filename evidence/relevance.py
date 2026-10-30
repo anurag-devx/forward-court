@@ -36,6 +36,8 @@ def filter_evidence(
     claims: list[str], evidence, *, client, tracker=None
 ) -> tuple[list, list[str]]:
     """Score items and drop 0s. Returns (kept, claims_with_no_evidence)."""
+    if tracker is not None:
+        tracker.mark("relevance")
     if not evidence:
         return [], list(claims)
     payload = [

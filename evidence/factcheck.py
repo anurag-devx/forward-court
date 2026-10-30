@@ -85,6 +85,8 @@ def lookup_factchecks(
     language: str = "en",
 ) -> list[EvidenceItem]:
     """Find existing fact-checks per claim. Never raises for empty results."""
+    if tracker is not None:
+        tracker.mark("lookup")
     tool = dict(SEARCH_TOOL)
     items: list[EvidenceItem] = []
     seen: set[str] = set()

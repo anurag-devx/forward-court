@@ -6,7 +6,9 @@ from config import UsageTracker
 from court.defender import argue_true
 from court.judge import (
     find_claim_review_verdict,
+    has_media_tied_evidence,
     judge_verdict,
+    mismatch_verdict,
     no_evidence_verdict,
     outlet_host,
 )
@@ -469,16 +471,35 @@ def test_claim_review_hit_sets_verdict_without_model_calls():
     assert "altnews.in" in verdict.reason
 
 
-def test_claim_review_unverified_caps_confidence_at_medium():
+def test_claim_review_unverified_never_short_circuits():
     item = _review_item(
         "https://www.altnews.in/check", "Vaccines contain microchips",
         "Unverified", "Vaccines contain microchips, the viral claim says",
     )
-    verdict = find_claim_review_verdict(
-        ["Vaccines contain microchips"], [item], "en"
+    assert (
+        find_claim_review_verdict(["Vaccines contain microchips"], [item], "en")
+        is None
     )
-    assert verdict.verdict == "Unverified"
-    assert verdict.confidence == "medium"
+
+
+def test_claim_review_media_requires_exact_tie():
+    item = _review_item(
+        "https://www.altnews.in/check", "Vaccines contain microchips",
+        "False", "Vaccines contain microchips, the viral claim says",
+    )
+    claims = ["Vaccines contain microchips"]
+    assert (
+        find_claim_review_verdict(claims, [item], "en", media=True) is None
+    )
+    verdict = find_claim_review_verdict(
+        claims, [item], "en", media=True,
+        exact_urls={"https://www.altnews.in/check"},
+    )
+    assert verdict is not None
+    assert verdict.verdict == "False"
+    text_verdict = find_claim_review_verdict(claims, [item], "en")
+    assert text_verdict is not None
+    assert text_verdict.verdict == "False"
 
 
 def test_claim_review_matches_on_shared_tokens():
@@ -694,3 +715,27 @@ def test_judge_brief_omits_mismatch_line_when_none():
         client=fake,
     )
     assert "Media mismatch" not in fake.responses.calls[0][1]["input"]
+
+
+def test_mismatch_verdict_confidence_follows_agreement():
+    full = mismatch_verdict("test pattern", "en", 3)
+    assert full.verdict == "Misleading"
+    assert full.confidence == "high"
+    assert full.key_source == ""
+    assert "media does not show the claimed event" in full.reason.lower()
+    split = mismatch_verdict("test pattern", "hi", 2)
+    assert split.confidence == "medium"
+    assert split.language == "hi"
+
+
+def test_has_media_tied_evidence():
+    exact = EvidenceItem(
+        claim="c", source_url="https://a.com/x", snippet="s",
+        exact_match=True,
+    )
+    topic = EvidenceItem(
+        claim="c", source_url="https://b.com/y", snippet="s"
+    )
+    assert has_media_tied_evidence([exact], set(), []) is True
+    assert has_media_tied_evidence([topic], set(), []) is False
+    assert has_media_tied_evidence([], set(), []) is False

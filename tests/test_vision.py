@@ -72,3 +72,45 @@ def test_describe_image_defaults_to_unclear_without_context():
     text = next(b for b in sent if b["type"] == "input_text")["text"]
     assert "Claim context" not in text
     assert _vision().shows_claimed_event == "unclear"
+
+
+def _vote(showing, reason="r"):
+    return _vision().model_copy(
+        update={"shows_claimed_event": showing, "mismatch_reason": reason}
+    )
+
+
+def test_describe_image_votes_showing_with_context():
+    from config import UsageTracker
+
+    fake = FakeClient(
+        parse_queue=[
+            _vote("no", "first reason"),
+            _vote("yes"),
+            _vote("no", "second reason"),
+        ]
+    )
+    tracker = UsageTracker()
+    result = describe_image(b"x", client=fake, context="floods", tracker=tracker)
+    assert result.shows_claimed_event == "no"
+    assert result.mismatch_reason == "first reason"
+    assert result.consistency_agreement == 2
+    assert "consistency votes: 2/3 no." in tracker.notes
+    assert len(fake.responses.calls) == 3
+
+
+def test_describe_image_tie_is_unclear():
+    fake = FakeClient(
+        parse_queue=[_vote("no", "r"), _vote("yes"), _vote("unclear")]
+    )
+    result = describe_image(b"x", client=fake, context="floods")
+    assert result.shows_claimed_event == "unclear"
+    assert result.mismatch_reason == ""
+    assert result.consistency_agreement == 1
+
+
+def test_describe_image_single_call_without_context():
+    fake = FakeClient(parsed_by_model={VisionResult: _vision()})
+    result = describe_image(b"x", client=fake)
+    assert len(fake.responses.calls) == 1
+    assert result.consistency_agreement == 0

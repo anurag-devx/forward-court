@@ -17,6 +17,8 @@ INSTRUCTIONS = (
 
 
 def argue_false(claims: list[str], evidence, *, client, tracker=None) -> Argument:
+    if tracker is not None:
+        tracker.mark("prosecutor")
     response = client.responses.parse(
         model=agent_model(),
         instructions=INSTRUCTIONS,

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import base64
+from collections import Counter
 from pathlib import Path
 
 from config import agent_model
@@ -9,6 +10,7 @@ from config import agent_model
 from .models import VisionResult
 
 MAX_IMAGE_BYTES = 10 * 1024 * 1024
+CONSISTENCY_VOTES = 3
 
 _MIME_BY_SUFFIX = {
     ".jpg": "image/jpeg",
@@ -51,17 +53,26 @@ def read_image(path: str | Path) -> tuple[bytes, str]:
     return data, mime
 
 
-def describe_image(
-    image_bytes: bytes, *, mime: str = "image/jpeg", client, tracker=None,
-    context: str | None = None,
-) -> VisionResult:
-    """Run image understanding. Local bytes are sent as a base64 data URL."""
-    data_url = (
-        f"data:{mime};base64,{base64.b64encode(image_bytes).decode()}"
+def majority_showing(
+    votes: list[VisionResult],
+) -> tuple[str, int, str]:
+    """Majority shows_claimed_event; tie (1-1-1) is unclear.
+
+    Returns (value, agreement, reason from the first agreeing vote).
+    """
+    counts = Counter(vote.shows_claimed_event for vote in votes)
+    top, agreement = counts.most_common(1)[0]
+    if agreement == 1:
+        return "unclear", 1, ""
+    reason = next(
+        vote.mismatch_reason
+        for vote in votes
+        if vote.shows_claimed_event == top
     )
-    prompt = "Describe this forwarded image."
-    if context and context.strip():
-        prompt += f" Claim context: {context.strip()}"
+    return top, agreement, reason
+
+
+def _parse_image(client, tracker, prompt: str, data_url: str) -> VisionResult:
     response = client.responses.parse(
         model=agent_model(),
         instructions=INSTRUCTIONS,
@@ -82,3 +93,39 @@ def describe_image(
     if tracker is not None:
         tracker.add(response.usage, stage="vision")
     return response.output_parsed
+
+
+def describe_image(
+    image_bytes: bytes, *, mime: str = "image/jpeg", client, tracker=None,
+    context: str | None = None,
+) -> VisionResult:
+    """Run image understanding. Local bytes are sent as a base64 data URL.
+
+    With claim context, the showing judgment is voted 3x (tie: unclear);
+    other fields come from the first vote. Without context, one call.
+    """
+    if tracker is not None:
+        tracker.mark("vision")
+    data_url = (
+        f"data:{mime};base64,{base64.b64encode(image_bytes).decode()}"
+    )
+    prompt = "Describe this forwarded image."
+    if context and context.strip():
+        prompt += f" Claim context: {context.strip()}"
+    first = _parse_image(client, tracker, prompt, data_url)
+    if not (context and context.strip()):
+        return first
+    votes = [first] + [
+        _parse_image(client, tracker, prompt, data_url)
+        for _ in range(CONSISTENCY_VOTES - 1)
+    ]
+    value, agreement, reason = majority_showing(votes)
+    if tracker is not None:
+        tracker.note(f"consistency votes: {agreement}/3 {value}.")
+    return first.model_copy(
+        update={
+            "shows_claimed_event": value,
+            "mismatch_reason": reason,
+            "consistency_agreement": agreement,
+        }
+    )

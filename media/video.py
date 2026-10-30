@@ -15,6 +15,7 @@ from pathlib import Path
 from config import agent_model
 
 from .models import VideoResult
+from .vision import CONSISTENCY_VOTES, majority_showing
 
 MAX_VIDEO_BYTES = 16 * 1024 * 1024
 MAX_FRAMES = 3
@@ -65,41 +66,67 @@ def _upload(client, video_bytes: bytes) -> str:
     return file_id
 
 
+def _parse_video(client, tracker, prompt: str, file_id: str) -> VideoResult:
+    response = client.responses.parse(
+        model=agent_model(),
+        instructions=INSTRUCTIONS,
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": prompt,
+                    },
+                    {"type": "input_file", "file_id": file_id},
+                ],
+            }
+        ],
+        text_format=VideoResult,
+    )
+    if tracker is not None:
+        tracker.add(response.usage, stage="video")
+    return response.output_parsed
+
+
 def describe_video(
     video_bytes: bytes, *, client, tracker=None, context: str | None = None
 ) -> VideoResult:
-    """Run video understanding on uploaded bytes. Deletes the upload after."""
+    """Run video understanding on uploaded bytes. Deletes the upload after.
+
+    Uploads once; with claim context, the showing judgment is voted 3x
+    (tie: unclear) and other fields come from the first vote.
+    """
+    if tracker is not None:
+        tracker.mark("video")
     file_id = _upload(client, video_bytes)
     prompt = "Describe this forwarded video."
     if context and context.strip():
         prompt += f" Claim context: {context.strip()}"
     try:
-        response = client.responses.parse(
-            model=agent_model(),
-            instructions=INSTRUCTIONS,
-            input=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": prompt,
-                        },
-                        {"type": "input_file", "file_id": file_id},
-                    ],
-                }
-            ],
-            text_format=VideoResult,
-        )
+        first = _parse_video(client, tracker, prompt, file_id)
+        if not (context and context.strip()):
+            return first
+        votes = [first] + [
+            _parse_video(client, tracker, prompt, file_id)
+            for _ in range(CONSISTENCY_VOTES - 1)
+        ]
     finally:
         try:
             client.files.delete(file_id)
         except Exception:
             if tracker is not None:
                 tracker.note(f"uploaded video file not deleted: {file_id}.")
+    value, agreement, reason = majority_showing(votes)
     if tracker is not None:
-        tracker.add(response.usage, stage="video")
-    return response.output_parsed
+        tracker.note(f"consistency votes: {agreement}/3 {value}.")
+    return first.model_copy(
+        update={
+            "shows_claimed_event": value,
+            "mismatch_reason": reason,
+            "consistency_agreement": agreement,
+        }
+    )
 
 
 def extract_key_frames(path: str | Path, max_frames: int = MAX_FRAMES) -> list[bytes]:

@@ -79,6 +79,10 @@ def serpapi_key() -> str | None:
     return os.environ.get(SERPAPI_KEY_ENV) or None
 
 
+CALL_TIMEOUT = 60.0
+CALL_MAX_RETRIES = 2
+
+
 def get_client() -> OpenAI:
     """Build an OpenAI SDK client pointed at the Meta Model API."""
     api_key = os.environ.get(API_KEY_ENV)
@@ -87,7 +91,12 @@ def get_client() -> OpenAI:
             f"{API_KEY_ENV} is not set. Put it in .env and retry. "
             "(Never print or commit the key itself.)"
         )
-    return OpenAI(base_url=BASE_URL, api_key=api_key)
+    return OpenAI(
+        base_url=BASE_URL,
+        api_key=api_key,
+        timeout=CALL_TIMEOUT,
+        max_retries=CALL_MAX_RETRIES,
+    )
 
 
 @dataclass
@@ -98,9 +107,15 @@ class UsageTracker:
     output_tokens: int = 0
     stages: dict = field(default_factory=dict)
     notes: list = field(default_factory=list)
+    current: str | None = None
+    language: str = "en"
 
     def note(self, message: str) -> None:
         self.notes.append(message)
+
+    def mark(self, stage: str) -> None:
+        """Record the currently executing stage (for timeout reports)."""
+        self.current = stage
 
     def add(self, usage, stage: str | None = None) -> None:
         if usage is None:

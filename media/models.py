@@ -36,6 +36,10 @@ class VisionResult(BaseModel):
         description="Why the media does not show the claimed event; "
         "empty unless shows_claimed_event is 'no'.",
     )
+    consistency_agreement: int = Field(
+        default=0,
+        description="Votes agreeing on shows_claimed_event; 0 when unvoted.",
+    )
 
 
 class VideoResult(BaseModel):
@@ -64,4 +68,8 @@ class VideoResult(BaseModel):
         default="",
         description="Why the media does not show the claimed event; "
         "empty unless shows_claimed_event is 'no'.",
+    )
+    consistency_agreement: int = Field(
+        default=0,
+        description="Votes agreeing on shows_claimed_event; 0 when unvoted.",
     )

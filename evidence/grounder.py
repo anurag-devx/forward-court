@@ -52,6 +52,8 @@ def gather_evidence(
     performs no grounded search, when the API call fails, or when a claim
     ends up with zero grounded items.
     """
+    if tracker is not None:
+        tracker.mark("grounding")
     items: list[EvidenceItem] = []
     seen: set[str] = set()
     for number, claim in enumerate(claims, start=1):

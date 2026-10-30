@@ -70,6 +70,8 @@ def segment_subjects(
     tracker=None,
 ) -> list[Crop]:
     """Crop the top-2 confident subject regions. Returns [] on any failure."""
+    if tracker is not None:
+        tracker.mark("segment")
     try:
         img = ImageOps.exif_transpose(Image.open(io.BytesIO(image_bytes)))
     except Exception:

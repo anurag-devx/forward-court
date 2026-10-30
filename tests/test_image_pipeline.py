@@ -198,20 +198,52 @@ def test_cli_rejects_caption_without_image(capsys):
     assert "--caption needs --image" in capsys.readouterr().err
 
 
-def test_vision_mismatch_reaches_judge_brief(tmp_path):
+def _mismatch_client():
     client = _client()
     client.responses.parsed_by_model[VisionResult] = _vision().model_copy(
         update={
             "shows_claimed_event": "no",
             "mismatch_reason": "shows a test pattern",
+            "consistency_agreement": 3,
         }
     )
-    _, tracker = main.run_image_forward(
+    return client
+
+
+def test_vision_mismatch_short_circuits_without_tied_evidence(tmp_path):
+    client = _mismatch_client()
+    card, tracker = main.run_image_forward(
         _image_file(tmp_path),
         "floods hit Patna today",
         client=client,
         http_client=dead_http_client(),
         provider=_FakeProvider([]),
+    )
+    assert "MISLEADING" in card.splitlines()[0]
+    assert "media does not show the claimed event" in card.lower()
+    assert "media mismatch verdict (agreement 3/3)." in tracker.notes
+    assert not [
+        kwargs
+        for _, kwargs in client.responses.calls
+        if kwargs.get("text_format") is Verdict
+    ]
+
+
+def test_vision_mismatch_reaches_judge_brief_when_tied(tmp_path):
+    client = _mismatch_client()
+    _, tracker = main.run_image_forward(
+        _image_file(tmp_path),
+        "floods hit Patna today",
+        client=client,
+        http_client=dead_http_client(),
+        provider=_FakeProvider(
+            [
+                ReverseMatch(
+                    source_url="https://old.com/pic", page_title="old",
+                    exact=True,
+                )
+            ]
+        ),
     )
     assert "media_mismatch: shows a test pattern" in tracker.notes
     judge_inputs = [
