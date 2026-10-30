@@ -6,9 +6,13 @@ Deterministic rules enforced here (never left to the model alone):
 - with zero cited points remaining, the verdict is Unverified/low;
 - key_source must come from the evidence list, else it falls back to the
   most-cited kept URL (then the first evidence URL);
-- when intake marks the forward presented-as-recent and the earliest source
-  is more than RECYCLED_DAYS older than the forward's implied date, old
-  content presented as new is Misleading.
+- when intake marks the forward presented-as-recent and the earliest
+  non-visual source is more than RECYCLED_DAYS older than the forward's
+  implied date, old content presented as new is Misleading, citing the
+  earliest source;
+- for image forwards without exact-match reverse evidence, the image's origin
+  cannot be ruled True, or False when all claims are image claims (capped at
+  Unverified/low).
 """
 from __future__ import annotations
 
@@ -18,7 +22,7 @@ from datetime import date
 from config import agent_model
 from evidence.urls import normalize_url
 
-from .models import Argument, Verdict, evidence_brief
+from .models import Argument, ImageContext, Verdict, evidence_brief
 
 RECYCLED_DAYS = 30
 
@@ -37,7 +41,10 @@ INSTRUCTIONS = (
     "Write reason in the forward's language (given below). "
     "key_source must be one source_url copied EXACTLY from the evidence list. "
     "claim_timeframe is the ISO date the forward implies the event happened "
-    "(YYYY-MM-DD), or null when the forward implies no timeframe."
+    "(YYYY-MM-DD), or null when the forward implies no timeframe. "
+    "Entries marked visually similar are context only, never proof of origin "
+    "or date. When told no exact-match reverse evidence exists, do not rule "
+    "the image's origin True or False."
 )
 
 
@@ -83,16 +90,25 @@ def judge_verdict(
     client,
     tracker=None,
     today: date | None = None,
+    image: ImageContext | None = None,
 ) -> Verdict:
     evidence_urls = {normalize_url(item.source_url) for item in evidence}
     kept_prosecution = _keep_cited(prosecution, evidence_urls)
     kept_defense = _keep_cited(defense, evidence_urls)
 
+    image_line = ""
+    if image is not None:
+        image_line = (
+            f"Image forward: exact-match reverse evidence "
+            f"{'present' if image.reverse_evidence else 'absent'}; "
+            f"claims are "
+            f"{'all from the image' if image.origin_only else 'image plus caption'}.\n"
+        )
     response = client.responses.parse(
         model=agent_model(),
         instructions=INSTRUCTIONS,
         input=(
-            f"Forward language: {language}\nClaims:\n{claims}\n\n"
+            f"Forward language: {language}\n{image_line}Claims:\n{claims}\n\n"
             f"Evidence:\n{evidence_brief(evidence)}\n\n"
             f"Prosecution points kept: "
             f"{[p.model_dump() for p in kept_prosecution]}\n"
@@ -123,23 +139,29 @@ def judge_verdict(
         )
 
     if presented_as_recent:
-        earliest = min(
-            (
-                parsed
-                for item in evidence
-                if (parsed := _parse_ymd(item.date)) is not None
-            ),
-            default=None,
+        dated = sorted(
+            (parsed, item.source_url)
+            for item in evidence
+            if not getattr(item, "visual_only", False)
+            and (parsed := _parse_ymd(item.date)) is not None
         )
         claim_date = _parse_ymd(verdict.claim_timeframe) or (
             today or date.today()
         )
-        if earliest is not None and (claim_date - earliest).days > RECYCLED_DAYS:
+        if dated and (claim_date - dated[0][0]).days > RECYCLED_DAYS:
             note = RECYCLED_NOTES.get(language, RECYCLED_NOTES["en"])
-            return verdict.model_copy(
+            verdict = verdict.model_copy(
                 update={
                     "verdict": "Misleading",
                     "reason": f"{verdict.reason} {note}",
+                    "key_source": dated[0][1],
                 }
+            )
+    if image is not None and not image.reverse_evidence:
+        if verdict.verdict == "True" or (
+            image.origin_only and verdict.verdict == "False"
+        ):
+            verdict = verdict.model_copy(
+                update={"verdict": "Unverified", "confidence": "low"}
             )
     return verdict

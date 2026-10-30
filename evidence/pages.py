@@ -23,17 +23,9 @@ USER_AGENT = (
 )
 
 
-def fetch_html(url: str, *, client: httpx.Client | None = None) -> str | None:
-    """GET a page as text. Returns None on any failure or >2MB body."""
-    if not url.lower().startswith(("http://", "https://")):
-        return None
-    if client is None:
-        with httpx.Client() as owned:
-            return _get(owned, url)
-    return _get(client, url)
-
-
-def _get(client: httpx.Client, url: str) -> str | None:
+def _fetch(
+    client: httpx.Client, url: str, max_bytes: int, content_must_contain: tuple[str, ...]
+) -> tuple[bytes, str] | None:
     try:
         with client.stream(
             "GET",
@@ -44,19 +36,74 @@ def _get(client: httpx.Client, url: str) -> str | None:
         ) as response:
             response.raise_for_status()
             content_type = response.headers.get("content-type", "")
-            if "html" not in content_type and "text" not in content_type:
+            if content_must_contain and not any(
+                s in content_type for s in content_must_contain
+            ):
                 return None
             size = 0
             chunks: list[bytes] = []
             for chunk in response.iter_bytes(65536):
                 size += len(chunk)
-                if size > MAX_BYTES:
+                if size > max_bytes:
                     return None
                 chunks.append(chunk)
     except (httpx.HTTPError, ValueError):
         return None
-    encoding = response.charset_encoding or "utf-8"
-    return b"".join(chunks).decode(encoding, errors="replace")
+    return b"".join(chunks), response.charset_encoding or "utf-8"
+
+
+def _is_http(url: str) -> bool:
+    return url.lower().startswith(("http://", "https://"))
+
+
+def fetch_html(url: str, *, client: httpx.Client | None = None) -> str | None:
+    """GET a page as text. Returns None on any failure or >2MB body."""
+    if not _is_http(url):
+        return None
+    if client is None:
+        with httpx.Client() as owned:
+            fetched = _fetch(owned, url, MAX_BYTES, ("html", "text"))
+    else:
+        fetched = _fetch(client, url, MAX_BYTES, ("html", "text"))
+    if fetched is None:
+        return None
+    content, encoding = fetched
+    return content.decode(encoding, errors="replace")
+
+
+def download_bytes(
+    url: str,
+    *,
+    client: httpx.Client | None = None,
+    max_bytes: int = MAX_BYTES,
+    content_must_contain: tuple[str, ...] = (),
+) -> bytes | None:
+    """GET a URL as bytes (images, files). None on failure or over max_bytes."""
+    if not _is_http(url):
+        return None
+    if client is None:
+        with httpx.Client() as owned:
+            fetched = _fetch(owned, url, max_bytes, content_must_contain)
+    else:
+        fetched = _fetch(client, url, max_bytes, content_must_contain)
+    if fetched is None:
+        return None
+    return fetched[0]
+
+
+def enrich_from_page(
+    url: str, title: str, fallback: str, *, http_client=None
+) -> tuple[str, str | None]:
+    """Fetch a page for an excerpt + publish date; fall back silently."""
+    snippet = fallback or title
+    date = extract_date(f"{title}\n{snippet}")
+    html = fetch_html(url, client=http_client)
+    if not html:
+        return snippet, date
+    excerpt = make_excerpt(extract_main_text(html))
+    if excerpt:
+        snippet = excerpt
+    return snippet, extract_publish_date(html) or extract_date(f"{title}\n{snippet}")
 
 
 class _MetaParser(HTMLParser):

@@ -12,12 +12,7 @@ from config import agent_model
 
 from .dates import extract_date
 from .models import EvidenceItem
-from .pages import (
-    extract_main_text,
-    extract_publish_date,
-    fetch_html,
-    make_excerpt,
-)
+from .pages import enrich_from_page
 from .urls import normalize_url
 
 SEARCH_TOOL = {"type": "web_search", "search_context_size": "low"}
@@ -67,19 +62,6 @@ def _interleave(per_query: list[list]) -> list:
             if index < len(results):
                 ordered.append(results[index])
     return ordered
-
-
-def _enrich(url: str, title: str, fallback: str, *, http_client=None) -> tuple[str, str | None]:
-    """Fetch a page for a 500-char excerpt + meta date; fall back silently."""
-    snippet = fallback or title
-    date = extract_date(f"{title}\n{snippet}")
-    html = fetch_html(url, client=http_client)
-    if not html:
-        return snippet, date
-    excerpt = make_excerpt(extract_main_text(html))
-    if excerpt:
-        snippet = excerpt
-    return snippet, extract_publish_date(html) or extract_date(f"{title}\n{snippet}")
 
 
 def gather_evidence(
@@ -138,7 +120,7 @@ def gather_evidence(
             search_snippet = _field(result, "snippet") or ""
             if fetch_attempts < TOP_FETCH_PER_CLAIM:
                 fetch_attempts += 1
-                snippet, date = _enrich(
+                snippet, date = enrich_from_page(
                     url, title, search_snippet, http_client=http_client
                 )
             else:

@@ -10,7 +10,9 @@ INSTRUCTIONS = (
     "TRUE, using ONLY the evidence list below. Every point must cite one "
     "source_url copied EXACTLY from that list; a point with any other URL -- "
     "or none -- is dropped. Never invent URLs, dates, or quotes. If the "
-    "evidence does not support the claims being true, return few or no points."
+    "evidence does not support the claims being true, return few or no points. "
+    "Entries marked visually similar are context only; cite them solely as "
+    "similarity, never as proof of origin."
 )
 
 

@@ -3,6 +3,7 @@ import pytest
 
 from evidence import pages
 from evidence.pages import (
+    download_bytes,
     extract_main_text,
     extract_publish_date,
     fetch_html,
@@ -108,3 +109,43 @@ def test_fetch_network_error_returns_none():
 
 def test_fetch_rejects_non_http():
     assert fetch_html("file:///etc/passwd") is None
+
+
+def test_download_bytes_for_images():
+    def handler(request):
+        return httpx.Response(
+            200, content=b"img-bytes", headers={"content-type": "image/jpeg"}
+        )
+
+    data = download_bytes(
+        "https://a.com/x.jpg",
+        client=_client(handler),
+        content_must_contain=("image/",),
+    )
+    assert data == b"img-bytes"
+
+
+def test_download_bytes_rejects_wrong_type_and_oversize():
+    def html_handler(request):
+        return httpx.Response(
+            200, text="<html>", headers={"content-type": "text/html"}
+        )
+
+    assert (
+        download_bytes(
+            "https://a.com/x.jpg",
+            client=_client(html_handler),
+            content_must_contain=("image/",),
+        )
+        is None
+    )
+
+    def big_handler(request):
+        return httpx.Response(
+            200, content=b"x" * 100, headers={"content-type": "image/png"}
+        )
+
+    assert (
+        download_bytes("https://a.com/x.png", client=_client(big_handler), max_bytes=10)
+        is None
+    )

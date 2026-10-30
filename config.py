@@ -14,6 +14,7 @@ load_dotenv()
 
 BASE_URL = "https://api.meta.ai/v1"
 API_KEY_ENV = "MODEL_API_KEY"
+SERPAPI_KEY_ENV = "SERPAPI_KEY"
 
 AGENT_MODEL = "muse-spark-1.3"
 CONTRIBUTOR_MODEL = "muse-spark-1.3-contributor"
@@ -34,6 +35,11 @@ def agent_model() -> str:
     return CONTRIBUTOR_MODEL
 
 
+def serpapi_key() -> str | None:
+    """SerpAPI key for reverse image search, or None when not configured."""
+    return os.environ.get(SERPAPI_KEY_ENV) or None
+
+
 def get_client() -> OpenAI:
     """Build an OpenAI SDK client pointed at the Meta Model API."""
     api_key = os.environ.get(API_KEY_ENV)
@@ -52,6 +58,10 @@ class UsageTracker:
     input_tokens: int = 0
     output_tokens: int = 0
     stages: dict = field(default_factory=dict)
+    notes: list = field(default_factory=list)
+
+    def note(self, message: str) -> None:
+        self.notes.append(message)
 
     def add(self, usage, stage: str | None = None) -> None:
         if usage is None:

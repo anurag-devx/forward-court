@@ -24,19 +24,25 @@ in the user's language.
 - Never install packages globally.
 
 ## Structure
-- main.py    CLI entry: `python main.py "<forward text>"` (Module 0; gateway later)
+- main.py    CLI entry: `python main.py "<forward text>"` or
+             `python main.py --image path.jpg [--caption "text"]` (gateway later)
 - config.py  model names, API client, token-usage tracking
 - gateway/   WhatsApp webhook in/out (later)
 - intake/    language detection + claim extraction
-- evidence/  search grounding, link checks, image/video evidence
+- media/     image understanding + SAM segmentation crops
+- evidence/  search grounding, reverse image search, page fetching
 - court/     prosecutor, defender, judge agents
 - card/      verdict card formatting
+- scripts/   sample-fetch tooling (fetch_samples.py + manifest.json)
 - tests/     pytest per module + sample forwards
 
 ## API notes
 - Responses API throughout (`client.responses.parse` / `.create`).
 - Evidence uses the `web_search` tool with `include=["web_search_call.results"]`;
   URLs come only from grounding metadata, never from model text.
+- Reverse image search via SerpAPI Lens (key SERPAPI_KEY in .env, never logged);
+  exact_matches are origin evidence, visual_matches are context only.
+- SerpAPI uploads cap at 500KB; images are downscaled client-side first.
 
 ## Rules
 - Evidence first: both debating agents get the same evidence list and may cite only from it.

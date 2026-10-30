@@ -4,7 +4,7 @@ import pytest
 
 from court.defender import argue_true
 from court.judge import judge_verdict
-from court.models import Argument, ArgPoint, Verdict
+from court.models import Argument, ArgPoint, ImageContext, Verdict
 from court.prosecutor import argue_false
 from evidence.models import EvidenceItem
 from tests.fakes import FakeClient
@@ -168,6 +168,81 @@ def test_override_threshold_is_30_days(source_day, expected):
         "en", True, client=fake, today=date(2026, 10, 27),
     )
     assert verdict.verdict == expected
+
+
+def test_override_cites_earliest_source():
+    fake = FakeClient(
+        parsed_by_model={
+            Verdict: _verdict(
+                verdict="True", key_source="https://new.com/x",
+                claim_timeframe="2026-10-27",
+            )
+        }
+    )
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://new.com/x", date="2026-10-01",
+            snippet="new",
+        ),
+        EvidenceItem(
+            claim="c", source_url="https://old.com/y", date="2015-04-25",
+            snippet="old",
+        ),
+    ]
+    defense = Argument(
+        points=[
+            ArgPoint(text="new", source_url="https://new.com/x"),
+            ArgPoint(text="old", source_url="https://old.com/y"),
+        ]
+    )
+    verdict = judge_verdict(
+        ["c"], evidence, Argument(points=[]), defense, "en", True,
+        client=fake,
+    )
+    assert verdict.verdict == "Misleading"
+    assert verdict.key_source == "https://old.com/y"
+
+
+def test_visual_dates_never_trigger_override():
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(verdict="True", claim_timeframe=None)}
+    )
+    visual = [
+        EvidenceItem(
+            claim="c", source_url="https://a.com/x", date="2015-04-25",
+            snippet="similar", visual_only=True,
+        )
+    ]
+    verdict = judge_verdict(
+        ["c"], visual, Argument(points=[]), _defense(), "en", True,
+        client=fake, today=date(2026, 10, 27),
+    )
+    assert verdict.verdict == "True"
+
+
+@pytest.mark.parametrize(
+    "model_verdict, origin_only, reverse, expected, confidence",
+    [
+        ("True", True, False, "Unverified", "low"),
+        ("False", True, False, "Unverified", "low"),
+        ("False", False, False, "False", "high"),
+        ("True", True, True, "True", "high"),
+        ("Misleading", True, False, "Misleading", "high"),
+    ],
+)
+def test_origin_cap_without_reverse_evidence(
+    model_verdict, origin_only, reverse, expected, confidence
+):
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(verdict=model_verdict)}
+    )
+    verdict = judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
+        image=ImageContext(origin_only=origin_only, reverse_evidence=reverse),
+    )
+    assert verdict.verdict == expected
+    assert verdict.confidence == confidence
 
 
 def test_judge_keeps_verdict_without_source_dates():
