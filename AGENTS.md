@@ -12,6 +12,8 @@ in the user's language.
 
 ## Models
 - muse-spark-1.3: agents, judge, search grounding, image + video understanding
+- muse-spark-1.3-contributor: same uses when contributor mode is on (default;
+  set FC_CONTRIBUTOR=0 in .env for the standard model)
 - sam-3.1: object segmentation in images/video frames
 - muse-voice-transcribe-1.0: audio and voice notes
 - Model names live in config.py only; never hardcode them elsewhere.

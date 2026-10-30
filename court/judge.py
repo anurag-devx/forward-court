@@ -15,7 +15,7 @@ from __future__ import annotations
 from collections import Counter
 from datetime import date
 
-from config import AGENT_MODEL
+from config import agent_model
 from evidence.urls import normalize_url
 
 from .models import Argument, Verdict, evidence_brief
@@ -89,7 +89,7 @@ def judge_verdict(
     kept_defense = _keep_cited(defense, evidence_urls)
 
     response = client.responses.parse(
-        model=AGENT_MODEL,
+        model=agent_model(),
         instructions=INSTRUCTIONS,
         input=(
             f"Forward language: {language}\nClaims:\n{claims}\n\n"
@@ -101,7 +101,7 @@ def judge_verdict(
         text_format=Verdict,
     )
     if tracker is not None:
-        tracker.add(response.usage)
+        tracker.add(response.usage, stage="judge")
     verdict = response.output_parsed
 
     if normalize_url(verdict.key_source) not in evidence_urls:

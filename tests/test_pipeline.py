@@ -51,6 +51,23 @@ def test_full_pipeline_offline():
     assert tracker.total_tokens == 6 * 150
 
 
+def test_pipeline_records_per_stage_breakdown():
+    _, tracker = main.run_forward(
+        "some claim", client=_pipeline_client(), http_client=dead_http_client()
+    )
+    stages = [line.split(":")[0].strip() for line in tracker.breakdown()]
+    assert stages == [
+        "intake",
+        "grounding",
+        "grounding",
+        "prosecutor",
+        "defender",
+        "judge",
+    ]
+    assert any("claim1:support" in line for line in tracker.breakdown())
+    assert any("claim1:refute" in line for line in tracker.breakdown())
+
+
 def test_no_claims_short_circuits():
     client = _pipeline_client(
         parsed={

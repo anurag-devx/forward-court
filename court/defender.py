@@ -1,7 +1,7 @@
 """Defender: argues the forward's claims are TRUE from shared evidence."""
 from __future__ import annotations
 
-from config import AGENT_MODEL
+from config import agent_model
 
 from .models import Argument, evidence_brief
 
@@ -16,11 +16,11 @@ INSTRUCTIONS = (
 
 def argue_true(claims: list[str], evidence, *, client, tracker=None) -> Argument:
     response = client.responses.parse(
-        model=AGENT_MODEL,
+        model=agent_model(),
         instructions=INSTRUCTIONS,
         input=f"Claims:\n{claims}\n\nEvidence:\n{evidence_brief(evidence)}",
         text_format=Argument,
     )
     if tracker is not None:
-        tracker.add(response.usage)
+        tracker.add(response.usage, stage="defender")
     return response.output_parsed

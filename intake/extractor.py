@@ -1,7 +1,7 @@
 """Extract checkable claims and detect language via structured output."""
 from __future__ import annotations
 
-from config import AGENT_MODEL, MAX_CLAIMS
+from config import MAX_CLAIMS, agent_model
 
 from .models import IntakeResult
 
@@ -21,13 +21,13 @@ INSTRUCTIONS = (
 def extract_intake(text: str, *, client, tracker=None) -> IntakeResult:
     """Run intake on forward text. Never raises for empty claims (returns [])."""
     response = client.responses.parse(
-        model=AGENT_MODEL,
+        model=agent_model(),
         instructions=INSTRUCTIONS,
         input=text,
         text_format=IntakeResult,
     )
     if tracker is not None:
-        tracker.add(response.usage)
+        tracker.add(response.usage, stage="intake")
     result = response.output_parsed
     return IntakeResult(
         language=result.language,

@@ -8,7 +8,7 @@ GroundingError -- there is deliberately no ungrounded fallback.
 """
 from __future__ import annotations
 
-from config import AGENT_MODEL
+from config import agent_model
 
 from .dates import extract_date
 from .models import EvidenceItem
@@ -23,6 +23,7 @@ from .urls import normalize_url
 SEARCH_TOOL = {"type": "web_search", "search_context_size": "low"}
 INCLUDE_RESULTS = ["web_search_call.results"]
 TOP_FETCH_PER_CLAIM = 3
+MAX_TOOL_CALLS = 2
 
 SUPPORT_QUERY = "Find web evidence SUPPORTING this claim: {claim}"
 REFUTE_QUERY = (
@@ -94,26 +95,29 @@ def gather_evidence(
     """
     items: list[EvidenceItem] = []
     seen: set[str] = set()
-    for claim in claims:
+    for number, claim in enumerate(claims, start=1):
         queries = (
-            SUPPORT_QUERY.format(claim=claim),
-            REFUTE_QUERY.format(claim=claim),
+            ("support", SUPPORT_QUERY.format(claim=claim)),
+            ("refute", REFUTE_QUERY.format(claim=claim)),
         )
         per_query: list[list] = []
-        for query in queries:
+        for side, query in queries:
             try:
                 response = client.responses.create(
-                    model=AGENT_MODEL,
+                    model=agent_model(),
                     input=query,
                     tools=[dict(SEARCH_TOOL)],
                     include=list(INCLUDE_RESULTS),
+                    max_tool_calls=MAX_TOOL_CALLS,
                 )
             except Exception as exc:
                 raise GroundingError(
                     f"Search grounding failed for claim {claim!r}: {exc}"
                 ) from exc
             if tracker is not None:
-                tracker.add(response.usage)
+                tracker.add(
+                    response.usage, stage=f"grounding:claim{number}:{side}"
+                )
             results, searched = _results_from_output(response.output)
             if not searched:
                 raise GroundingError(

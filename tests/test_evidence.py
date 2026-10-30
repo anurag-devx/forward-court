@@ -61,6 +61,7 @@ def test_dual_queries_and_dedup():
         {"type": "web_search", "search_context_size": "low"}
     ]
     assert client.responses.calls[0][1]["include"] == ["web_search_call.results"]
+    assert client.responses.calls[0][1]["max_tool_calls"] == 2
 
 
 def test_handles_live_api_dict_shaped_results():

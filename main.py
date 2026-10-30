@@ -64,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     print(card)
     print()
+    for line in tracker.breakdown():
+        print(line)
     print(tracker.summary())
     return 0
 
