@@ -26,6 +26,16 @@ class VisionResult(BaseModel):
         "fact_check_marked: carries fact-check stamps, comparisons, or "
         "outlet logos/watermarks. other: anything else."
     )
+    shows_claimed_event: Literal["yes", "no", "unclear"] = Field(
+        default="unclear",
+        description="Whether the media shows the claimed event, when claim "
+        "context was given; 'unclear' otherwise.",
+    )
+    mismatch_reason: str = Field(
+        default="",
+        description="Why the media does not show the claimed event; "
+        "empty unless shows_claimed_event is 'no'.",
+    )
 
 
 class VideoResult(BaseModel):
@@ -44,4 +54,14 @@ class VideoResult(BaseModel):
     )
     language: str = Field(
         description="ISO 639-1 language of visible text, or 'en' if none."
+    )
+    shows_claimed_event: Literal["yes", "no", "unclear"] = Field(
+        default="unclear",
+        description="Whether the media shows the claimed event, when claim "
+        "context was given; 'unclear' otherwise.",
+    )
+    mismatch_reason: str = Field(
+        default="",
+        description="Why the media does not show the claimed event; "
+        "empty unless shows_claimed_event is 'no'.",
     )

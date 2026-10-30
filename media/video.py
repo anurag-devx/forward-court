@@ -29,6 +29,9 @@ INSTRUCTIONS = (
     "objects as short noun phrases. List the checkable claims the video "
     "itself makes about what, where, or when it shows. "
     "Report the ISO 639-1 language of visible text, or 'en' when there is none. "
+    "When claim context is given, judge whether the video shows the claimed "
+    "event: 'yes', 'no' (with a short mismatch_reason), or 'unclear'. "
+    "With no claim context, shows_claimed_event is 'unclear'. "
     "Never guess the video's origin, date, or filmer."
 )
 
@@ -62,9 +65,14 @@ def _upload(client, video_bytes: bytes) -> str:
     return file_id
 
 
-def describe_video(video_bytes: bytes, *, client, tracker=None) -> VideoResult:
+def describe_video(
+    video_bytes: bytes, *, client, tracker=None, context: str | None = None
+) -> VideoResult:
     """Run video understanding on uploaded bytes. Deletes the upload after."""
     file_id = _upload(client, video_bytes)
+    prompt = "Describe this forwarded video."
+    if context and context.strip():
+        prompt += f" Claim context: {context.strip()}"
     try:
         response = client.responses.parse(
             model=agent_model(),
@@ -75,7 +83,7 @@ def describe_video(video_bytes: bytes, *, client, tracker=None) -> VideoResult:
                     "content": [
                         {
                             "type": "input_text",
-                            "text": "Describe this forwarded video.",
+                            "text": prompt,
                         },
                         {"type": "input_file", "file_id": file_id},
                     ],

@@ -42,3 +42,7 @@ class EvidenceItem(BaseModel):
         default=None,
         description="Parsed ClaimReview rating from the page, when present.",
     )
+    exact_match: bool = Field(
+        default=False,
+        description="Exact reverse-search hit: media-provenance evidence.",
+    )

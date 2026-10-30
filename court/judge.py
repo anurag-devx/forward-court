@@ -10,9 +10,10 @@ Deterministic rules enforced here (never left to the model alone):
   it falls back to the most-cited kept non-tier-3 URL (then the first
   non-tier-3 evidence URL; most-cited anyway when all evidence is tier-3);
 - when intake marks the forward presented-as-recent and the earliest
-  non-visual source is more than RECYCLED_DAYS older than the forward's
+  eligible source is more than RECYCLED_DAYS older than the forward's
   implied date, old content presented as new is Misleading, citing the
-  earliest source;
+  earliest source (media forwards: exact matches and media-tied
+  fact-checks only; topic articles never trigger it);
 - for image forwards without exact-match reverse evidence, the image's origin
   cannot be ruled True, or False when all claims are image claims (capped at
   Unverified/low).
@@ -62,7 +63,11 @@ INSTRUCTIONS = (
     "the image's origin True or False. An existing fact-check with a clear "
     "rating weighs heavily: follow it and cite it as key_source when "
     "decisive, unless other cited evidence contradicts it. "
-    "Prefer tier-1 sources; never use a tier-3 source as key_source."
+    "Prefer tier-1 sources; never use a tier-3 source as key_source. "
+    "Rate the forward on the media claims first; report the event-claim "
+    "assessment in the reason. When told the media does not show the "
+    "claimed event, that weighs toward Misleading: say 'media does not "
+    "show the claimed event' in the reason."
 )
 
 
@@ -127,6 +132,29 @@ def _resolve_key_source(key_source: str, evidence, kept_points) -> str:
         top = cited.most_common(1)[0][0]
         return next(url for url in pool if normalize_url(url) == top)
     return pool[0]
+
+
+def _override_eligible(item, media: bool, exact_urls, media_claims) -> bool:
+    """True when the item may trigger the recycled-content override.
+
+    Text forwards use any non-visual dated item. Media forwards only use
+    media-provenance evidence: exact reverse matches, or fact-checks tied
+    to this media (their page is an exact hit, or their ClaimReview
+    matches a media claim). Topic articles never trigger it.
+    """
+    if getattr(item, "visual_only", False):
+        return False
+    if not media:
+        return True
+    if getattr(item, "exact_match", False):
+        return True
+    if not (getattr(item, "fact_check", False) or item.claim_review is not None):
+        return False
+    if normalize_url(item.source_url) in (exact_urls or set()):
+        return True
+    return any(
+        _review_matches_claim(item, claim) for claim in (media_claims or [])
+    )
 
 
 def _keep_cited(argument: Argument, evidence_urls: set[str]) -> list:
@@ -203,14 +231,15 @@ def find_claim_review_verdict(claims, evidence, language: str) -> Verdict | None
     template = CLAIM_REVIEW_REASONS.get(
         language, CLAIM_REVIEW_REASONS["en"]
     )
+    mapped = winner.claim_review.verdict
     return Verdict(
-        verdict=winner.claim_review.verdict,
+        verdict=mapped,
         reason=template.format(
             outlet=outlet, rating=winner.claim_review.rating_raw
         ),
         key_source=winner.source_url,
         language=language,
-        confidence="high",
+        confidence="medium" if mapped == "Unverified" else "high",
         fact_checked_by=outlet,
     )
 
@@ -241,6 +270,9 @@ def judge_verdict(
     today: date | None = None,
     image: ImageContext | None = None,
     no_evidence_claims: list[str] | None = None,
+    media_claims: list[str] | None = None,
+    exact_urls: set[str] | None = None,
+    media_mismatch: str | None = None,
 ) -> Verdict:
     evidence_urls = {normalize_url(item.source_url) for item in evidence}
     kept_prosecution = _keep_cited(prosecution, evidence_urls)
@@ -260,9 +292,20 @@ def judge_verdict(
             f"Claims with no kept evidence (treat as Unverified): "
             f"{no_evidence_claims}\n"
         )
+    mismatch_line = ""
+    if media_mismatch:
+        mismatch_line = (
+            f"Media mismatch: media does not show the claimed event "
+            f"({media_mismatch}).\n"
+        )
+    media_set = set(media_claims or [])
+    media_section = [claim for claim in claims if claim in media_set]
+    event_section = [claim for claim in claims if claim not in media_set]
     brief_input = (
         f"Forward language: {language}\n{image_line}{no_evidence_line}"
-        f"Claims:\n{claims}\n\n"
+        f"{mismatch_line}"
+        f"Media claims:\n{media_section}\n\n"
+        f"Event claims:\n{event_section}\n\n"
         f"Evidence:\n{evidence_brief(evidence)}\n\n"
         f"Prosecution points kept: "
         f"{[p.model_dump() for p in kept_prosecution]}\n"
@@ -300,7 +343,9 @@ def judge_verdict(
         dated = sorted(
             (parsed, item.source_url)
             for item in evidence
-            if not getattr(item, "visual_only", False)
+            if _override_eligible(
+                item, image is not None, exact_urls, media_claims
+            )
             and (parsed := _parse_ymd(item.date)) is not None
         )
         claim_date = _parse_ymd(verdict.claim_timeframe) or (

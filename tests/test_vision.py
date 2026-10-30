@@ -55,3 +55,20 @@ def test_read_image_rejects_oversize(tmp_path, monkeypatch):
     target.write_bytes(b"123")
     with pytest.raises(ValueError, match="exceeds"):
         read_image(target)
+
+
+def test_describe_image_includes_claim_context():
+    fake = FakeClient(parsed_by_model={VisionResult: _vision()})
+    describe_image(b"x", client=fake, context="floods hit Patna today")
+    sent = fake.responses.calls[0][1]["input"][0]["content"]
+    text = next(b for b in sent if b["type"] == "input_text")["text"]
+    assert "Claim context: floods hit Patna today" in text
+
+
+def test_describe_image_defaults_to_unclear_without_context():
+    fake = FakeClient(parsed_by_model={VisionResult: _vision()})
+    describe_image(b"x", client=fake)
+    sent = fake.responses.calls[0][1]["input"][0]["content"]
+    text = next(b for b in sent if b["type"] == "input_text")["text"]
+    assert "Claim context" not in text
+    assert _vision().shows_claimed_event == "unclear"

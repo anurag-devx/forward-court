@@ -196,3 +196,28 @@ def test_cli_rejects_text_plus_image(capsys):
 def test_cli_rejects_caption_without_image(capsys):
     assert main.main(["--caption", "hi"]) == 2
     assert "--caption needs --image" in capsys.readouterr().err
+
+
+def test_vision_mismatch_reaches_judge_brief(tmp_path):
+    client = _client()
+    client.responses.parsed_by_model[VisionResult] = _vision().model_copy(
+        update={
+            "shows_claimed_event": "no",
+            "mismatch_reason": "shows a test pattern",
+        }
+    )
+    _, tracker = main.run_image_forward(
+        _image_file(tmp_path),
+        "floods hit Patna today",
+        client=client,
+        http_client=dead_http_client(),
+        provider=_FakeProvider([]),
+    )
+    assert "media_mismatch: shows a test pattern" in tracker.notes
+    judge_inputs = [
+        kwargs["input"]
+        for _, kwargs in client.responses.calls
+        if kwargs.get("text_format") is Verdict
+    ]
+    assert judge_inputs
+    assert all("Media mismatch" in sent for sent in judge_inputs)

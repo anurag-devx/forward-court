@@ -58,6 +58,9 @@ in the user's language.
 - ClaimReview: tier-1 JSON-LD ratings matching a claim decide the verdict
   deterministically (high confidence, skips debate + votes) unless two tier-1
   ratings contradict; the card adds "Already fact-checked by <outlet>".
+- Media forwards: recycled override uses exact matches + media-tied
+  fact-checks only; media/caption mismatch note weighs toward Misleading;
+  judge rates media claims first, event claims in the reason.
 
 ## Rules
 - Evidence first: both debating agents get the same evidence list and may cite only from it.

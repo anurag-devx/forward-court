@@ -63,6 +63,14 @@ def test_describe_video_upload_failure_raises():
         describe_video(b"bytes", client=client)
 
 
+def test_describe_video_includes_claim_context():
+    client = FakeClient(parsed_by_model={VideoResult: _video_result()})
+    describe_video(b"bytes", client=client, context="bridge collapsed today")
+    sent = client.responses.calls[0][1]["input"][0]["content"]
+    text = next(b for b in sent if b["type"] == "input_text")["text"]
+    assert "Claim context: bridge collapsed today" in text
+
+
 @ffmpeg
 def test_key_frames_from_changing_clip_capped(tmp_path):
     clip = tmp_path / "clip.mp4"

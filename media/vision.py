@@ -30,6 +30,9 @@ INSTRUCTIONS = (
     "'fact_check_marked' when it carries fact-check markings (FAKE/FALSE/ "
     "MISLEADING stamps or labels, side-by-side comparisons, outlet logos, "
     "watermarks, or tickers); 'other' otherwise. "
+    "When claim context is given, judge whether the image shows the claimed "
+    "event: 'yes', 'no' (with a short mismatch_reason), or 'unclear'. "
+    "With no claim context, shows_claimed_event is 'unclear'. "
     "Never guess the image's origin, date, or photographer."
 )
 
@@ -49,12 +52,16 @@ def read_image(path: str | Path) -> tuple[bytes, str]:
 
 
 def describe_image(
-    image_bytes: bytes, *, mime: str = "image/jpeg", client, tracker=None
+    image_bytes: bytes, *, mime: str = "image/jpeg", client, tracker=None,
+    context: str | None = None,
 ) -> VisionResult:
     """Run image understanding. Local bytes are sent as a base64 data URL."""
     data_url = (
         f"data:{mime};base64,{base64.b64encode(image_bytes).decode()}"
     )
+    prompt = "Describe this forwarded image."
+    if context and context.strip():
+        prompt += f" Claim context: {context.strip()}"
     response = client.responses.parse(
         model=agent_model(),
         instructions=INSTRUCTIONS,
@@ -64,7 +71,7 @@ def describe_image(
                 "content": [
                     {
                         "type": "input_text",
-                        "text": "Describe this forwarded image.",
+                        "text": prompt,
                     },
                     {"type": "input_image", "image_url": data_url},
                 ],

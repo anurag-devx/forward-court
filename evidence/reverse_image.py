@@ -185,7 +185,7 @@ def matches_to_evidence(
         items.append(
             EvidenceItem(
                 claim=claim, source_url=match.source_url, date=date,
-                snippet=snippet, claim_review=review,
+                snippet=snippet, claim_review=review, exact_match=True,
             )
         )
     for index, match in enumerate(visual):

@@ -469,6 +469,18 @@ def test_claim_review_hit_sets_verdict_without_model_calls():
     assert "altnews.in" in verdict.reason
 
 
+def test_claim_review_unverified_caps_confidence_at_medium():
+    item = _review_item(
+        "https://www.altnews.in/check", "Vaccines contain microchips",
+        "Unverified", "Vaccines contain microchips, the viral claim says",
+    )
+    verdict = find_claim_review_verdict(
+        ["Vaccines contain microchips"], [item], "en"
+    )
+    assert verdict.verdict == "Unverified"
+    assert verdict.confidence == "medium"
+
+
 def test_claim_review_matches_on_shared_tokens():
     item = _review_item(
         "https://boomlive.in/x", "Prime minister resigned yesterday",
@@ -566,3 +578,119 @@ def test_judge_brief_marks_claims_without_evidence():
     sent = fake.responses.calls[0][1]["input"]
     assert "bare" in sent
     assert "no kept evidence" in sent
+
+
+def _media_image():
+    return ImageContext(origin_only=False, reverse_evidence=True)
+
+
+def _true_recent_vote():
+    return FakeClient(
+        parsed_by_model={
+            Verdict: _verdict(
+                verdict="True", confidence="high",
+                claim_timeframe="2026-10-27",
+            )
+        }
+    )
+
+
+def test_media_override_ignores_old_topic_article():
+    verdict = judge_verdict(
+        ["c"], _old_evidence(), Argument(points=[]), _defense(), "en", True,
+        client=_true_recent_vote(), image=_media_image(),
+    )
+    assert verdict.verdict == "True"
+
+
+def test_media_override_fires_on_old_exact_match():
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://a.com/x", date="2015-04-25",
+            snippet="old", exact_match=True,
+        )
+    ]
+    verdict = judge_verdict(
+        ["c"], evidence, Argument(points=[]), _defense(), "en", True,
+        client=_true_recent_vote(), image=_media_image(),
+        exact_urls={"https://a.com/x"},
+    )
+    assert verdict.verdict == "Misleading"
+    assert verdict.key_source == "https://a.com/x"
+
+
+def test_media_override_fires_on_factcheck_in_exact_urls():
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://www.altnews.in/old", date="2015-04-25",
+            snippet="old", fact_check=True,
+        )
+    ]
+    defense = Argument(
+        points=[ArgPoint(text="old", source_url="https://www.altnews.in/old")]
+    )
+    verdict = judge_verdict(
+        ["c"], evidence, Argument(points=[]), defense, "en", True,
+        client=_true_recent_vote(), image=_media_image(),
+        exact_urls={"https://www.altnews.in/old"},
+    )
+    assert verdict.verdict == "Misleading"
+
+
+def test_media_override_fires_on_review_matching_media_claim():
+    item = _review_item(
+        "https://www.altnews.in/old", "photo shows Patna floods",
+        "False", "photo shows Patna floods in the viral post",
+    )
+    item = item.model_copy(update={"date": "2015-04-25"})
+    defense = Argument(
+        points=[ArgPoint(text="old", source_url="https://www.altnews.in/old")]
+    )
+    verdict = judge_verdict(
+        ["photo shows Patna floods"], [item], Argument(points=[]), defense,
+        "en", True, client=_true_recent_vote(), image=_media_image(),
+        media_claims=["photo shows Patna floods"],
+    )
+    assert verdict.verdict == "Misleading"
+
+
+def test_media_override_skips_untied_factcheck():
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://www.altnews.in/other",
+            date="2015-04-25", snippet="old", fact_check=True,
+        )
+    ]
+    defense = Argument(
+        points=[ArgPoint(text="old", source_url="https://www.altnews.in/other")]
+    )
+    verdict = judge_verdict(
+        ["c"], evidence, Argument(points=[]), defense, "en", True,
+        client=_true_recent_vote(), image=_media_image(),
+        exact_urls=set(), media_claims=["c"],
+    )
+    assert verdict.verdict == "True"
+
+
+def test_judge_brief_sections_media_first_and_mismatch_line():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict()})
+    judge_verdict(
+        ["floods hit Patna", "video shows it"], _evidence(),
+        Argument(points=[]), _defense(), "en", False, client=fake,
+        media_claims=["video shows it"], media_mismatch="shows a test pattern",
+    )
+    sent = fake.responses.calls[0][1]["input"]
+    assert "Media claims:\n['video shows it']" in sent
+    assert "Event claims:\n['floods hit Patna']" in sent
+    assert sent.index("Media claims") < sent.index("Event claims")
+    assert "media does not show the claimed event" in sent
+    assert "test pattern" in sent
+
+
+def test_judge_brief_omits_mismatch_line_when_none():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict()})
+    judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
+    )
+    assert "Media mismatch" not in fake.responses.calls[0][1]["input"]

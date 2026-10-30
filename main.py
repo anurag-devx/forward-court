@@ -97,12 +97,21 @@ def run_image_forward(
         client = get_client()
     tracker = UsageTracker()
     image_bytes, mime = read_image(image_path)
-    vision = describe_image(image_bytes, mime=mime, client=client, tracker=tracker)
+    vision = describe_image(
+        image_bytes, mime=mime, client=client, tracker=tracker,
+        context=caption,
+    )
+    media_mismatch: str | None = None
+    if vision.shows_claimed_event == "no":
+        media_mismatch = vision.mismatch_reason or "media shows other content"
+        tracker.note(f"media_mismatch: {media_mismatch}")
     caption_claims: list[str] = []
+    caption_media: list[str] = []
     language = vision.language
     if caption:
         intake = extract_intake(caption, client=client, tracker=tracker)
         caption_claims = intake.claims
+        caption_media = intake.media_claims
         language = intake.language
     presented_as_recent = is_presented_as_recent(
         [vision.visible_text, caption or ""]
@@ -110,7 +119,12 @@ def run_image_forward(
     claims = (vision.claims_from_image + caption_claims)[:MAX_CLAIMS]
     if not claims:
         return "No checkable claims found in this forward.", tracker
+    media_for_judge = [
+        claim for claim in claims
+        if claim in set(vision.claims_from_image + caption_media)
+    ]
     reverse_items, reverse_evidence = [], False
+    exact_urls: set[str] = set()
     active_provider = provider
     if active_provider is None and serpapi_key() is not None:
         active_provider = SerpApiLensProvider(
@@ -132,6 +146,11 @@ def run_image_forward(
                 matches, claims[0], http_client=http_client
             )
             reverse_evidence = any(match.exact for match in matches)
+            exact_urls = {
+                normalize_url(match.source_url)
+                for match in matches
+                if match.exact
+            }
             tracker.note(
                 f"reverse matches: {len(matches)} "
                 f"({sum(1 for m in matches if m.exact)} exact) "
@@ -187,6 +206,9 @@ def run_image_forward(
             reverse_evidence=reverse_evidence,
         ),
         no_evidence_claims=bare_claims,
+        media_claims=media_for_judge,
+        exact_urls=exact_urls,
+        media_mismatch=media_mismatch,
     )
     return format_card(verdict), tracker
 
@@ -212,8 +234,15 @@ def run_video_forward(
         client = get_client()
     tracker = UsageTracker()
     video_bytes, resolved = read_video(video_path)
-    video = describe_video(video_bytes, client=client, tracker=tracker)
+    video = describe_video(
+        video_bytes, client=client, tracker=tracker, context=caption
+    )
+    media_mismatch: str | None = None
+    if video.shows_claimed_event == "no":
+        media_mismatch = video.mismatch_reason or "media shows other content"
+        tracker.note(f"media_mismatch: {media_mismatch}")
     transcript_claims: list[str] = []
+    transcript_media: list[str] = []
     transcript = ""
     language = video.language
     audio = extract_audio(resolved)
@@ -228,13 +257,16 @@ def run_video_forward(
         if transcript.strip():
             spoken = extract_intake(transcript, client=client, tracker=tracker)
             transcript_claims = spoken.claims
+            transcript_media = spoken.media_claims
             language = spoken.language
     else:
         tracker.note("no usable audio track: transcript skipped.")
     caption_claims: list[str] = []
+    caption_media: list[str] = []
     if caption:
         intake = extract_intake(caption, client=client, tracker=tracker)
         caption_claims = intake.claims
+        caption_media = intake.media_claims
         language = intake.language
     presented_as_recent = is_presented_as_recent(
         [video.visible_text, transcript, caption or ""]
@@ -244,8 +276,15 @@ def run_video_forward(
     )[:MAX_CLAIMS]
     if not claims:
         return "No checkable claims found in this forward.", tracker
+    media_for_judge = [
+        claim for claim in claims
+        if claim in set(
+            video.claims_from_video + transcript_media + caption_media
+        )
+    ]
     reverse_items = []
     reverse_evidence = False
+    exact_urls: set[str] = set()
     active_provider = provider
     if active_provider is None and serpapi_key() is not None:
         active_provider = SerpApiLensProvider(
@@ -274,6 +313,11 @@ def run_video_forward(
                     break
                 if any(match.exact for match in matches):
                     reverse_evidence = True
+                exact_urls.update(
+                    normalize_url(match.source_url)
+                    for match in matches
+                    if match.exact
+                )
                 for item in matches_to_evidence(
                     matches, claims[0], http_client=http_client
                 ):
@@ -323,6 +367,9 @@ def run_video_forward(
             reverse_evidence=reverse_evidence,
         ),
         no_evidence_claims=bare_claims,
+        media_claims=media_for_judge,
+        exact_urls=exact_urls,
+        media_mismatch=media_mismatch,
     )
     return format_card(verdict), tracker
 
