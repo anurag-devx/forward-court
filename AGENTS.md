@@ -25,11 +25,12 @@ in the user's language.
 
 ## Structure
 - main.py    CLI entry: `python main.py "<forward text>"` or
-             `python main.py --image path.jpg [--caption "text"]` (gateway later)
+             `python main.py --image path.jpg [--caption "text"]` or
+             `python main.py --video path.mp4 [--caption "text"]` (gateway later)
 - config.py  model names, API client, token-usage tracking
 - gateway/   WhatsApp webhook in/out (later)
 - intake/    language detection + claim extraction
-- media/     image understanding + SAM segmentation crops
+- media/     image/video understanding + SAM crops + audio transcription
 - evidence/  search grounding, reverse image search, page fetching
 - court/     prosecutor, defender, judge agents
 - card/      verdict card formatting
@@ -44,6 +45,10 @@ in the user's language.
 - Reverse image search via SerpAPI Lens (key SERPAPI_KEY in .env, never logged);
   exact_matches are origin evidence, visual_matches are context only.
 - SerpAPI uploads cap at 500KB; images are downscaled client-side first.
+- Video: .mp4 only, 16MB WhatsApp cap; Files API upload (purpose=user_data)
+  referenced by file_id, deleted after understanding; ffmpeg scene frames
+  (max 3) reuse the image reverse path; audio extracted to WAV and sent to
+  POST /asr/transcribe (muse-voice-transcribe-1.0), language via intake.
 - Lookup stage: `fact check: <claim>` per claim, trusted domains only
   (TRUSTED_FACTCHECK_DOMAINS in config.py); skip with --no-factcheck.
 - Judge votes 3x (majority wins, tie → Unverified); confidence from agreement.

@@ -46,9 +46,27 @@ class FakeResponses:
         return SimpleNamespace(output=self.outputs.pop(0), usage=FakeUsage())
 
 
+class FakeFiles:
+    """Mimics client.files with canned upload ids."""
+
+    def __init__(self, file_id="file-test-123"):
+        self.file_id = file_id
+        self.calls = []
+        self.deleted = []
+
+    def create(self, **kwargs):
+        self.calls.append(("create", kwargs))
+        return SimpleNamespace(id=self.file_id)
+
+    def delete(self, file_id):
+        self.deleted.append(file_id)
+        return SimpleNamespace(id=file_id, deleted=True)
+
+
 class FakeClient:
     def __init__(self, parsed_by_model=None, outputs=None, parse_queue=None):
         self.responses = FakeResponses(parsed_by_model, outputs, parse_queue)
+        self.files = FakeFiles()
 
 
 def dead_http_client():

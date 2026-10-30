@@ -30,7 +30,9 @@ from evidence.reverse_image import (
 from evidence.urls import normalize_url
 from intake.extractor import extract_intake
 from intake.recency import is_presented_as_recent
+from media.audio import TranscribeError, extract_audio, transcribe_audio
 from media.segment import segment_subjects
+from media.video import describe_video, extract_key_frames, read_video
 from media.vision import describe_image, read_image
 
 
@@ -189,28 +191,171 @@ def run_image_forward(
     return format_card(verdict), tracker
 
 
+class _CountingProvider:
+    """Wraps a reverse-search provider and counts image searches."""
+
+    def __init__(self, provider):
+        self.provider = provider
+        self.searches = 0
+
+    def search(self, image):
+        self.searches += 1
+        return self.provider.search(image)
+
+
+def run_video_forward(
+    video_path: str, caption: str | None = None, *, client=None,
+    http_client=None, provider=None, factcheck=True,
+) -> tuple[str, UsageTracker]:
+    """Run the pipeline on a video forward. Returns (card, usage)."""
+    if client is None:
+        client = get_client()
+    tracker = UsageTracker()
+    video_bytes, resolved = read_video(video_path)
+    video = describe_video(video_bytes, client=client, tracker=tracker)
+    transcript_claims: list[str] = []
+    transcript = ""
+    language = video.language
+    audio = extract_audio(resolved)
+    if audio is not None:
+        try:
+            transcript = transcribe_audio(
+                audio, http_client=http_client, tracker=tracker
+            )
+        except TranscribeError as exc:
+            tracker.note(f"transcription unavailable: {exc}")
+            transcript = ""
+        if transcript.strip():
+            spoken = extract_intake(transcript, client=client, tracker=tracker)
+            transcript_claims = spoken.claims
+            language = spoken.language
+    else:
+        tracker.note("no usable audio track: transcript skipped.")
+    caption_claims: list[str] = []
+    if caption:
+        intake = extract_intake(caption, client=client, tracker=tracker)
+        caption_claims = intake.claims
+        language = intake.language
+    presented_as_recent = is_presented_as_recent(
+        [video.visible_text, transcript, caption or ""]
+    )
+    claims = (
+        video.claims_from_video + transcript_claims + caption_claims
+    )[:MAX_CLAIMS]
+    if not claims:
+        return "No checkable claims found in this forward.", tracker
+    reverse_items = []
+    reverse_evidence = False
+    active_provider = provider
+    if active_provider is None and serpapi_key() is not None:
+        active_provider = SerpApiLensProvider(
+            serpapi_key(), http_client=http_client
+        )
+    if active_provider is None:
+        tracker.note("reverse search skipped: SERPAPI_KEY not set.")
+    else:
+        counting = _CountingProvider(active_provider)
+        frames = extract_key_frames(resolved)
+        tracker.note(f"key frames extracted: {len(frames)}.")
+        seen: set[str] = set()
+        try:
+            for frame in frames:
+                crops = segment_subjects(
+                    frame, video.people_places_objects,
+                    client=client, tracker=tracker,
+                )
+                try:
+                    matches = search_images(
+                        frame, [crop.data for crop in crops],
+                        provider=counting,
+                    )
+                except ReverseSearchError as exc:
+                    tracker.note(f"reverse search unavailable: {exc}")
+                    break
+                if any(match.exact for match in matches):
+                    reverse_evidence = True
+                for item in matches_to_evidence(
+                    matches, claims[0], http_client=http_client
+                ):
+                    key = normalize_url(item.source_url)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    reverse_items.append(item)
+        finally:
+            tracker.note(f"SerpAPI image searches: {counting.searches}.")
+    evidence = reverse_items + gather_evidence(
+        claims, client=client, tracker=tracker, http_client=http_client
+    )
+    if factcheck:
+        evidence = lookup_factchecks(
+            claims, client=client, tracker=tracker, http_client=http_client,
+            language=language,
+        ) + evidence
+    else:
+        tracker.note("fact-check lookup disabled.")
+    evidence, bare_claims = filter_evidence(
+        claims, evidence, client=client, tracker=tracker
+    )
+    if not evidence:
+        tracker.note("no relevant evidence: verdict Unverified.")
+        return format_card(no_evidence_verdict(language)), tracker
+    review_verdict = find_claim_review_verdict(claims, evidence, language)
+    if review_verdict is not None:
+        tracker.note(
+            f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
+            f"{review_verdict.verdict}."
+        )
+        return format_card(review_verdict), tracker
+    prosecution = argue_false(claims, evidence, client=client, tracker=tracker)
+    defense = argue_true(claims, evidence, client=client, tracker=tracker)
+    verdict = judge_verdict(
+        claims,
+        evidence,
+        prosecution,
+        defense,
+        language,
+        presented_as_recent,
+        client=client,
+        tracker=tracker,
+        image=ImageContext(
+            origin_only=not caption_claims and not transcript_claims,
+            reverse_evidence=reverse_evidence,
+        ),
+        no_evidence_claims=bare_claims,
+    )
+    return format_card(verdict), tracker
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Fact-check a WhatsApp forward with a debating court."
     )
     parser.add_argument("text", nargs="?", help="Forward text (else read stdin).")
     parser.add_argument("--image", default=None, help="Image forward file path.")
-    parser.add_argument("--caption", default=None, help="Caption for --image.")
+    parser.add_argument("--video", default=None, help="Video forward file path.")
+    parser.add_argument(
+        "--caption", default=None, help="Caption for --image or --video."
+    )
     parser.add_argument("--no-factcheck", action="store_true",
                         help="Skip the existing-fact-check lookup stage.")
     args = parser.parse_args(argv)
-    if args.image and args.text:
-        print("Error: pass either forward text or --image, not both.",
+    if sum(bool(part) for part in (args.text, args.image, args.video)) > 1:
+        print("Error: pass forward text, --image, or --video — only one.",
               file=sys.stderr)
         return 2
-    if args.caption and not args.image:
-        print("Error: --caption needs --image.", file=sys.stderr)
+    if args.caption and not (args.image or args.video):
+        print("Error: --caption needs --image or --video.", file=sys.stderr)
         return 2
     use_factcheck = not args.no_factcheck
     try:
         if args.image:
             card, tracker = run_image_forward(
                 args.image, args.caption, factcheck=use_factcheck
+            )
+        elif args.video:
+            card, tracker = run_video_forward(
+                args.video, args.caption, factcheck=use_factcheck
             )
         else:
             text = args.text if args.text is not None else sys.stdin.read()

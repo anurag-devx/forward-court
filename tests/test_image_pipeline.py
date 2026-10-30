@@ -190,7 +190,7 @@ def test_no_provider_skips_reverse_and_caps_verdict(tmp_path, monkeypatch):
 
 def test_cli_rejects_text_plus_image(capsys):
     assert main.main(["hello", "--image", "x.jpg"]) == 2
-    assert "not both" in capsys.readouterr().err
+    assert "only one" in capsys.readouterr().err
 
 
 def test_cli_rejects_caption_without_image(capsys):
