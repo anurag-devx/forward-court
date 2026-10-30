@@ -13,6 +13,7 @@ from config import agent_model
 from dates import extract_date
 from .models import EvidenceItem
 from .pages import enrich_from_page
+from .responses import field, web_search_results
 from .urls import normalize_url
 
 SEARCH_TOOL = {"type": "web_search", "search_context_size": "low"}
@@ -28,30 +29,6 @@ REFUTE_QUERY = (
 
 class GroundingError(RuntimeError):
     """Search grounding failed. Stop the run; never use ungrounded URLs."""
-
-
-def _field(obj, name: str):
-    """Read a field from either a dict or an object (the live API mixes both)."""
-    if isinstance(obj, dict):
-        return obj.get(name)
-    return getattr(obj, name, None)
-
-
-def _results_from_output(output) -> tuple[list, bool]:
-    """Return (results, searched) from a Responses API output list.
-
-    `searched` is True only when at least one web_search_call completed.
-    Duck-typed so tests can use simple fake objects.
-    """
-    results: list = []
-    searched = False
-    for item in output or []:
-        if _field(item, "type") != "web_search_call":
-            continue
-        if _field(item, "status") == "completed":
-            searched = True
-            results.extend(_field(item, "results") or [])
-    return results, searched
 
 
 def _interleave(per_query: list[list]) -> list:
@@ -100,7 +77,7 @@ def gather_evidence(
                 tracker.add(
                     response.usage, stage=f"grounding:claim{number}:{side}"
                 )
-            results, searched = _results_from_output(response.output)
+            results, searched = web_search_results(response.output)
             if not searched:
                 raise GroundingError(
                     f"Model performed no grounded search for claim {claim!r}; stopping."
@@ -109,26 +86,28 @@ def gather_evidence(
         claim_items: list[EvidenceItem] = []
         fetch_attempts = 0
         for result in _interleave(per_query):
-            url = _field(result, "url")
+            url = field(result, "url")
             if not url:
                 continue
             normalized = normalize_url(url)
             if normalized in seen:
                 continue
             seen.add(normalized)
-            title = _field(result, "title") or ""
-            search_snippet = _field(result, "snippet") or ""
+            title = field(result, "title") or ""
+            search_snippet = field(result, "snippet") or ""
             if fetch_attempts < TOP_FETCH_PER_CLAIM:
                 fetch_attempts += 1
-                snippet, date = enrich_from_page(
+                snippet, date, review = enrich_from_page(
                     url, title, search_snippet, http_client=http_client
                 )
             else:
                 snippet = search_snippet or title
                 date = extract_date(f"{title}\n{snippet}")
+                review = None
             claim_items.append(
                 EvidenceItem(
-                    claim=claim, source_url=url, date=date, snippet=snippet
+                    claim=claim, source_url=url, date=date, snippet=snippet,
+                    claim_review=review,
                 )
             )
         if not claim_items:

@@ -27,11 +27,14 @@ KEYWORDS = (
     "picture",
     "viral image",
     "old photo",
+    "old",
+    "recycled",
     "तस्वीर",
     "फोटो",
     "वायरल",
 )
-MAX_URLS = 20
+MAX_URLS = 50
+MAX_PAGES = 5
 DEFAULT_OUT = Path("tests/samples/image_urls.txt")
 
 
@@ -56,26 +59,44 @@ def is_image_related(title: str, description: str) -> bool:
     return any(keyword in haystack for keyword in KEYWORDS)
 
 
+def _page_url(feed_url: str, page: int) -> str:
+    if page == 1:
+        return feed_url
+    separator = "&" if "?" in feed_url else "?"
+    return f"{feed_url}{separator}paged={page}"
+
+
 def collect(feeds, *, client=None, max_urls: int = MAX_URLS) -> list[str]:
-    """Gather deduplicated image-related article links across feeds."""
+    """Gather deduplicated image-related article links across feeds.
+
+    Pages back through WordPress-style ?paged=N URLs until max_urls or the
+    feed ends; feeds that fail or repeat a page simply stop paging.
+    """
     urls: list[str] = []
     seen: set[str] = set()
     for feed_url in feeds:
-        raw = download_bytes(feed_url, client=client)
-        if raw is None:
-            print(f"warning: fetch failed for {feed_url}", file=sys.stderr)
-            continue
-        try:
-            items = parse_feed(raw.decode("utf-8", errors="replace"))
-        except ET.ParseError:
-            print(f"warning: invalid RSS from {feed_url}", file=sys.stderr)
-            continue
-        for title, link, description in items:
-            if link not in seen and is_image_related(title, description):
+        for page in range(1, MAX_PAGES + 1):
+            raw = download_bytes(_page_url(feed_url, page), client=client)
+            if raw is None:
+                if page == 1:
+                    print(f"warning: fetch failed for {feed_url}", file=sys.stderr)
+                break
+            try:
+                items = parse_feed(raw.decode("utf-8", errors="replace"))
+            except ET.ParseError:
+                if page == 1:
+                    print(f"warning: invalid RSS from {feed_url}", file=sys.stderr)
+                break
+            page_links = {link for _, link, _ in items}
+            if page > 1 and page_links <= seen:
+                break
+            for title, link, _ in items:
                 seen.add(link)
-                urls.append(link)
-                if len(urls) >= max_urls:
-                    return urls
+            for title, link, description in items:
+                if link not in urls and is_image_related(title, description):
+                    urls.append(link)
+                    if len(urls) >= max_urls:
+                        return urls
     return urls
 
 

@@ -4,6 +4,7 @@ import pytest
 from evidence import pages
 from evidence.pages import (
     download_bytes,
+    extract_claim_review,
     extract_main_text,
     extract_publish_date,
     fetch_html,
@@ -149,3 +150,97 @@ def test_download_bytes_rejects_wrong_type_and_oversize():
         download_bytes("https://a.com/x.png", client=_client(big_handler), max_bytes=10)
         is None
     )
+
+
+def _claim_review_html(node):
+    import json
+
+    return (
+        "<html><head><script type=\"application/ld+json\">"
+        + json.dumps(node)
+        + "</script></head><body><p>text</p></body></html>"
+    )
+
+
+def _review_node(rating, reviewed="Vaccines contain microchips"):
+    return {
+        "@type": "ClaimReview",
+        "claimReviewed": reviewed,
+        "reviewRating": rating,
+    }
+
+
+def test_claim_review_alternate_name_mapping():
+    html = _claim_review_html(_review_node({"alternateName": "False"}))
+    review = extract_claim_review(html)
+    assert review.verdict == "False"
+    assert review.rating_raw == "False"
+    assert review.claim_text == "Vaccines contain microchips"
+
+
+@pytest.mark.parametrize(
+    "raw,verdict",
+    [
+        ("fake", "False"),
+        ("Partly False", "Misleading"),
+        ("missing context", "Misleading"),
+        ("TRUE", "True"),
+        ("correct", "True"),
+    ],
+)
+def test_claim_review_alternate_name_variants(raw, verdict):
+    html = _claim_review_html(_review_node({"alternateName": raw}))
+    assert extract_claim_review(html).verdict == verdict
+
+
+def test_claim_review_inside_graph_and_list():
+    html = _claim_review_html(
+        {"@graph": [_review_node({"alternateName": "Misleading"})]}
+    )
+    assert extract_claim_review(html).verdict == "Misleading"
+    html = _claim_review_html([_review_node({"alternateName": "True"})])
+    assert extract_claim_review(html).verdict == "True"
+
+
+def test_claim_review_numeric_uses_best_worst_scale():
+    html = _claim_review_html(
+        _review_node(
+            {"ratingValue": "1", "bestRating": "5", "worstRating": "1"}
+        )
+    )
+    assert extract_claim_review(html).verdict == "False"
+    html = _claim_review_html(
+        _review_node(
+            {"ratingValue": 5, "bestRating": 5, "worstRating": 1}
+        )
+    )
+    assert extract_claim_review(html).verdict == "True"
+    html = _claim_review_html(
+        _review_node(
+            {"ratingValue": "3", "bestRating": "5", "worstRating": "1"}
+        )
+    )
+    review = extract_claim_review(html)
+    assert review.verdict == "Unverified"
+    assert review.rating_raw == "3"
+
+
+def test_claim_review_numeric_defaults_to_schema_scale():
+    html = _claim_review_html(_review_node({"ratingValue": "1"}))
+    assert extract_claim_review(html).verdict == "False"
+
+
+def test_claim_review_unmapped_name_falls_back_to_numeric():
+    html = _claim_review_html(
+        _review_node({"alternateName": "Mixture", "ratingValue": "1"})
+    )
+    assert extract_claim_review(html).verdict == "False"
+
+
+def test_claim_review_absent_or_broken_returns_none():
+    assert extract_claim_review("<html><body>no json</body></html>") is None
+    assert extract_claim_review("") is None
+    html = _claim_review_html({"@type": "ClaimReview"})
+    assert extract_claim_review(html) is None
+    html = _claim_review_html(_review_node({"alternateName": "Mixture"}))
+    assert extract_claim_review(html) is None

@@ -3,10 +3,17 @@ from pathlib import Path
 import main
 from court.models import Argument, ArgPoint, Verdict
 from evidence.grounder import GroundingError
+from evidence.relevance import RelevanceScore, RelevanceScores
 from intake.models import IntakeResult
 from tests.fakes import FakeClient, dead_http_client, search_call
 
 SAMPLES = Path(__file__).parent / "samples"
+
+
+def _all_relevant():
+    return RelevanceScores(
+        scores=[RelevanceScore(index=i, score=2) for i in range(12)]
+    )
 
 
 def _pipeline_client(**overrides):
@@ -16,6 +23,7 @@ def _pipeline_client(**overrides):
             claims=["hot lemon water cures cancer"],
             presented_as_recent=False,
         ),
+        RelevanceScores: _all_relevant(),
         Argument: Argument(
             points=[ArgPoint(text="no evidence", source_url="https://debunk.com/x")]
         ),
@@ -34,6 +42,7 @@ def _pipeline_client(**overrides):
         [
             [search_call([("https://debunk.com/x", "T", "April 3, 2026 review")])],
             [search_call([("https://debunk.com/x", "T", "dup")])],
+            [search_call([("https://www.altnews.in/y", "T", "checked false")])],
         ],
     )
     return FakeClient(parsed_by_model=parsed, outputs=outputs)
@@ -47,8 +56,8 @@ def test_full_pipeline_offline():
     )
     assert "❌ *Forward Court Verdict: FALSE*" in card
     assert "🔗 Source: https://debunk.com/x" in card
-    # intake + 2 searches + prosecutor + defender + judge
-    assert tracker.total_tokens == 6 * 150
+    # intake + 2 searches + lookup + relevance + prosecutor + defender + 3 votes
+    assert tracker.total_tokens == 10 * 150
 
 
 def test_pipeline_records_per_stage_breakdown():
@@ -60,12 +69,94 @@ def test_pipeline_records_per_stage_breakdown():
         "intake",
         "grounding",
         "grounding",
+        "factcheck",
+        "relevance",
         "prosecutor",
         "defender",
         "judge",
     ]
     assert any("claim1:support" in line for line in tracker.breakdown())
     assert any("claim1:refute" in line for line in tracker.breakdown())
+
+
+def test_factcheck_disabled_skips_lookup():
+    client = _pipeline_client()
+    card, tracker = main.run_forward(
+        "something",
+        client=client,
+        http_client=dead_http_client(),
+        factcheck=False,
+    )
+    creates = [c for c in client.responses.calls if c[0] == "create"]
+    assert len(creates) == 2  # grounding only, no lookup
+    assert "fact-check lookup disabled." in tracker.notes
+    assert "FALSE" in card.splitlines()[0]
+
+
+def test_no_factcheck_flag_plumbs_through(monkeypatch, capsys):
+    from config import UsageTracker
+
+    seen = {}
+
+    def fake_run(text, **kwargs):
+        seen.update(kwargs)
+        return ("card", UsageTracker())
+
+    monkeypatch.setattr(main, "run_forward", fake_run)
+    assert main.main(["hello", "--no-factcheck"]) == 0
+    assert seen == {"factcheck": False}
+    assert "lookup disabled" not in capsys.readouterr().out
+
+
+def test_claim_review_path_skips_debate_and_votes(monkeypatch):
+    import evidence.factcheck as factcheck_module
+    from evidence.models import ClaimReview
+
+    review = ClaimReview(
+        rating_raw="False",
+        verdict="False",
+        claim_text="hot lemon water cures cancer",
+    )
+    real_enrich = factcheck_module.enrich_from_page
+
+    def patched(url, title, fallback, **kwargs):
+        snippet, date, _ = real_enrich(url, title, fallback, **kwargs)
+        if "altnews" in url:
+            return snippet, date, review
+        return snippet, date, None
+
+    monkeypatch.setattr(factcheck_module, "enrich_from_page", patched)
+    client = _pipeline_client()
+    card, tracker = main.run_forward(
+        "some claim", client=client, http_client=dead_http_client()
+    )
+    assert "❌ *Forward Court Verdict: FALSE*" in card
+    assert "Already fact-checked by altnews.in" in card
+    assert "🔗 Source: https://www.altnews.in/y" in card
+    parses = [c for c in client.responses.calls if c[0] == "parse"]
+    assert len(parses) == 2  # intake + relevance; no debate, no judge votes
+    assert any("ClaimReview verdict" in note for note in tracker.notes)
+
+
+def test_all_filtered_evidence_yields_unverified_without_debate():
+    client = _pipeline_client(
+        parsed={
+            RelevanceScores: RelevanceScores(
+                scores=[
+                    RelevanceScore(index=0, score=0),
+                    RelevanceScore(index=1, score=0),
+                ]
+            )
+        }
+    )
+    card, tracker = main.run_forward(
+        "some claim", client=client, http_client=dead_http_client()
+    )
+    assert "UNVERIFIED" in card.splitlines()[0]
+    assert "🔗" not in card
+    assert "no relevant evidence: verdict Unverified." in tracker.notes
+    parses = [c for c in client.responses.calls if c[0] == "parse"]
+    assert len(parses) == 2  # intake + relevance only
 
 
 def test_no_claims_short_circuits():

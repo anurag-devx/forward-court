@@ -5,10 +5,17 @@ from PIL import Image
 
 import main
 from court.models import Argument, ArgPoint, Verdict
+from evidence.relevance import RelevanceScore, RelevanceScores
 from evidence.reverse_image import ReverseMatch
 from intake.models import IntakeResult
 from media.models import VisionResult
 from tests.fakes import FakeClient, dead_http_client, search_call
+
+
+def _all_relevant():
+    return RelevanceScores(
+        scores=[RelevanceScore(index=i, score=2) for i in range(12)]
+    )
 
 
 def _image_file(tmp_path, name="fwd.jpg", width=200, height=100):
@@ -54,6 +61,7 @@ def _client():
             Argument: Argument(
                 points=[ArgPoint(text="p", source_url="https://g.com/0")]
             ),
+            RelevanceScores: _all_relevant(),
             Verdict: Verdict(
                 verdict="False",
                 reason="Debunked.",
@@ -67,7 +75,8 @@ def _client():
         + [
             [search_call([(f"https://g.com/{i}", "T", "snippet")])]
             for i in range(6)
-        ],
+        ]
+        + [[search_call([])]] * 3,
     )
 
 
@@ -102,7 +111,8 @@ def test_full_image_pipeline_offline(tmp_path):
         provider=provider,
     )
     assert "FALSE" in card.splitlines()[0]
-    assert tracker.notes == ["reverse matches: 2 (1 exact) from 2 image(s)."]
+    assert "reverse matches: 2 (1 exact) from 2 image(s)." in tracker.notes
+    assert "judge agreement: 3/3 (False, False, False)." in tracker.notes
     stages = [line.split(":")[0].strip() for line in tracker.breakdown()]
     assert stages[0] == "vision"
     assert "segment" in stages
@@ -120,11 +130,26 @@ def test_claims_merge_image_first_truncated_to_3(tmp_path):
     grounding_inputs = [
         kwargs["input"]
         for _, kwargs in client.responses.calls
-        if "tools" in kwargs
+        if "tools" in kwargs and not kwargs["input"].startswith("fact check:")
     ]
     assert len(grounding_inputs) == 6  # 3 merged claims x support/refute
     assert "vision claim one" in grounding_inputs[0]
     assert "caption claim two" not in "".join(grounding_inputs)
+
+
+def test_ground_truth_note_reports_exact_hit(tmp_path):
+    provider = _FakeProvider(
+        [ReverseMatch(source_url="https://orig.com/pic", page_title="t", exact=True)]
+    )
+    _, tracker = main.run_image_forward(
+        _image_file(tmp_path),
+        "breaking today",
+        client=_client(),
+        http_client=dead_http_client(),
+        provider=provider,
+        ground_truth=["https://orig.com/pic?utm_s=1"],
+    )
+    assert "found ground truth: yes." in tracker.notes
 
 
 def test_no_provider_skips_reverse_and_caps_verdict(tmp_path, monkeypatch):
@@ -142,6 +167,7 @@ def test_no_provider_skips_reverse_and_caps_verdict(tmp_path, monkeypatch):
             Argument: Argument(
                 points=[ArgPoint(text="p", source_url="https://g.com/x")]
             ),
+            RelevanceScores: _all_relevant(),
             Verdict: Verdict(
                 verdict="True",
                 reason="Looks right.",
@@ -151,14 +177,15 @@ def test_no_provider_skips_reverse_and_caps_verdict(tmp_path, monkeypatch):
                 claim_timeframe=None,
             ),
         },
-        outputs=[[search_call([("https://g.com/x", "T", "s")])]] * 2,
+        outputs=[[search_call([("https://g.com/x", "T", "s")])]] * 2
+        + [[search_call([])]],
     )
     card, tracker = main.run_image_forward(
         _image_file(tmp_path), None, client=client,
         http_client=dead_http_client(),
     )
     assert "UNVERIFIED" in card.splitlines()[0]
-    assert tracker.notes == ["reverse search skipped: SERPAPI_KEY not set."]
+    assert "reverse search skipped: SERPAPI_KEY not set." in tracker.notes
 
 
 def test_cli_rejects_text_plus_image(capsys):

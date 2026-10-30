@@ -3,10 +3,12 @@
 Usage: python scripts/fetch_samples.py urls.txt [out_dir]
 
 Extracts body <img> URLs from each article, drops small/logo images,
-classifies the rest with vision, and keeps viral_claim images only. Writes
-kept files plus manifest.json into out_dir (default tests/samples/images/).
-Manifest entries: kept {file, article_url, image_url, role, expected} or
-skipped {file: null, article_url, image_url, skipped: true, skip_reason}.
+classifies the rest with vision, and keeps viral_claim and original_source
+images (only viral_claim entries run as bench samples). Writes kept files
+plus manifest.json into out_dir (default tests/samples/images/).
+Kept viral entries: {file, article_url, image_url, role, expected, claim,
+ground_truth}. Originals: {file, article_url, image_url, role}. Skips:
+{file: null, article_url, image_url, skipped: true, skip_reason}.
 Failures skip with a reason; they never abort the run.
 """
 from __future__ import annotations
@@ -33,30 +35,34 @@ DEFAULT_OUT = Path("tests/samples/images")
 MIN_DIMENSION = 300
 MAX_IMAGES_PER_ARTICLE = 6
 SKIP_HINTS = ("logo", "icon", "sprite", "avatar")
+KEEP_ROLES = ("viral_claim", "original_source")
 
 
-class ArticleVerdict(BaseModel):
+class ArticleReading(BaseModel):
     verdict: Literal["False", "Misleading", "AI-generated", "Unverified"]
+    false_claim: str
 
 
-CLASSIFY_INSTRUCTIONS = (
-    "Read this fact-check article and report its conclusion about the "
-    "viral claim: 'False' when the claim is debunked as untrue, "
-    "'Misleading' when real content is shown with wrong context or as "
-    "recycled old news, 'AI-generated' when the article says the image or "
-    "video was AI-created or synthetic, 'Unverified' when unclear."
+READ_INSTRUCTIONS = (
+    "Read this fact-check article. Report its conclusion about the viral "
+    "claim as verdict: 'False' when debunked as untrue, 'Misleading' when "
+    "real content is shown with wrong context or as recycled old news, "
+    "'AI-generated' when the article says the image or video was AI-created "
+    "or synthetic, 'Unverified' when unclear. Also state the false or "
+    "misleading claim being shared, as one sentence quoting the article's "
+    "description of the viral post."
 )
 
 
-def classify_article(title: str, text: str, *, client) -> str:
-    """Classify the article's own conclusion about the viral claim."""
+def read_article(title: str, text: str, *, client) -> ArticleReading:
+    """Read the article's conclusion and the false claim it describes."""
     response = client.responses.parse(
         model=agent_model(),
-        instructions=CLASSIFY_INSTRUCTIONS,
+        instructions=READ_INSTRUCTIONS,
         input=f"{title}\n\n{text[:4000]}",
-        text_format=ArticleVerdict,
+        text_format=ArticleReading,
     )
-    return response.output_parsed.verdict
+    return response.output_parsed
 
 
 class _ImgParser(HTMLParser):
@@ -167,14 +173,6 @@ def _slug(article_url: str, image_url: str, index: int, img_index: int) -> str:
     return f"{index:02d}-{img_index}-{host or 'image'}{suffix}"
 
 
-def _skip(manifest: list[dict], article_url: str, image_url: str | None,
-          reason: str) -> None:
-    manifest.append(
-        {"file": None, "article_url": article_url, "image_url": image_url,
-         "skipped": True, "skip_reason": reason}
-    )
-
-
 def fetch_samples(
     urls: list[str], out_dir: Path, *, client=None, vision_client=None
 ) -> list[dict]:
@@ -186,65 +184,85 @@ def fetch_samples(
     for index, article_url in enumerate(urls):
         html = fetch_html(article_url, client=client)
         if not html:
-            _skip(manifest, article_url, None, "article fetch failed")
+            manifest.append(_skip(article_url, None, "article fetch failed"))
             continue
         images = extract_body_images(html, article_url)
         if not images:
-            _skip(manifest, article_url, None, "no body images found")
+            manifest.append(_skip(article_url, None, "no body images found"))
             continue
-        expected: str | None = None
-        for img_index, image_url in enumerate(images):
+        screened: list[tuple[str, bytes, str]] = []
+        for image_url in images:
             data = download_bytes(
                 image_url, client=client, content_must_contain=("image/",)
             )
             if not data:
-                _skip(manifest, article_url, image_url, "image download failed")
+                manifest.append(
+                    _skip(article_url, image_url, "image download failed"))
                 continue
             small = _is_small(data)
             if small is None:
-                _skip(manifest, article_url, image_url, "unreadable image")
+                manifest.append(
+                    _skip(article_url, image_url, "unreadable image"))
                 continue
             if small:
-                _skip(manifest, article_url, image_url, "too small (<300px)")
+                manifest.append(
+                    _skip(article_url, image_url, "too small (<300px)"))
                 continue
             try:
                 vision = describe_image(
                     data, mime=_mime_from_url(image_url), client=vision_client
                 )
             except Exception as exc:
-                _skip(manifest, article_url, image_url,
-                       f"vision screening failed: {exc}")
+                manifest.append(
+                    _skip(article_url, image_url,
+                           f"vision screening failed: {exc}"))
                 continue
-            if vision.image_role != "viral_claim":
-                _skip(manifest, article_url, image_url,
-                       f"role: {vision.image_role}")
+            if vision.image_role not in KEEP_ROLES:
+                manifest.append(
+                    _skip(article_url, image_url, f"role: {vision.image_role}"))
                 continue
-            if expected is None:
-                title_parser = _TitleParser()
-                try:
-                    title_parser.feed(html)
-                except Exception:
-                    pass
-                try:
-                    expected = classify_article(
-                        title_parser.title, extract_main_text(html),
-                        client=vision_client,
-                    )
-                except Exception:
-                    expected = "Unverified"
+            screened.append((image_url, data, vision.image_role))
+        viral = [entry for entry in screened if entry[2] == "viral_claim"]
+        originals = [url for url, _, role in screened if role == "original_source"]
+        reading: ArticleReading | None = None
+        if viral:
+            title_parser = _TitleParser()
+            try:
+                title_parser.feed(html)
+            except Exception:
+                pass
+            try:
+                reading = read_article(
+                    title_parser.title, extract_main_text(html),
+                    client=vision_client,
+                )
+            except Exception:
+                reading = ArticleReading(
+                    verdict="Unverified", false_claim="")
+        for img_index, (image_url, data, role) in enumerate(screened):
             filename = _slug(article_url, image_url, index, img_index)
             (out_dir / filename).write_bytes(data)
-            manifest.append(
-                {"file": filename, "article_url": article_url,
-                 "image_url": image_url, "role": "viral_claim",
-                 "expected": expected}
-            )
+            entry: dict = {
+                "file": filename, "article_url": article_url,
+                "image_url": image_url, "role": role,
+            }
+            if role == "viral_claim" and reading is not None:
+                entry["expected"] = reading.verdict
+                entry["claim"] = reading.false_claim
+                entry["ground_truth"] = originals
+            manifest.append(entry)
     (out_dir / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
     )
     kept = sum(1 for entry in manifest if not entry.get("skipped"))
     print(f"kept {kept} images from {len(urls)} articles to {out_dir}")
     return manifest
+
+
+def _skip(article_url: str, image_url: str | None, reason: str) -> dict:
+    print(f"warning: skipping {article_url}: {reason}", file=sys.stderr)
+    return {"file": None, "article_url": article_url, "image_url": image_url,
+            "skipped": True, "skip_reason": reason}
 
 
 def main(argv: list[str] | None = None) -> int:

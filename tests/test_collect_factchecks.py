@@ -52,6 +52,44 @@ def test_collect_filters_dedupes_and_caps():
     ]
 
 
+def _feed(*links):
+    items = "".join(
+        f"<item><title>old photo {i}</title><link>{link}</link>"
+        "<description>x</description></item>"
+        for i, link in enumerate(links)
+    )
+    return f'<?xml version="1.0"?><rss><channel>{items}</channel></rss>'
+
+
+def test_collect_pages_back_until_cap():
+    client = _client(
+        {
+            "https://f.com/rss": (_feed("https://x.com/1"), 200),
+            "https://f.com/rss?paged=2": (_feed("https://x.com/2"), 200),
+        }
+    )
+    assert collect(["https://f.com/rss"], client=client) == [
+        "https://x.com/1",
+        "https://x.com/2",
+    ]
+
+
+def test_collect_stops_when_page_repeats():
+    feed = _feed("https://x.com/1")
+    client = _client(
+        {
+            "https://f.com/rss": (feed, 200),
+            "https://f.com/rss?paged=2": (feed, 200),
+        }
+    )
+    assert collect(["https://f.com/rss"], client=client) == ["https://x.com/1"]
+
+
+def test_recycled_keywords_match():
+    assert is_image_related("recycled clips viral again", "") is True
+    assert is_image_related("10-year-old boy missing", "") is True
+
+
 def test_collect_skips_failed_feeds(capsys):
     client = _client({"https://good.com/rss": (FEED_XML, 200)})
     urls = collect(["https://bad.com/rss", "https://good.com/rss"], client=client)

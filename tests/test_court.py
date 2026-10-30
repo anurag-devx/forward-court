@@ -2,11 +2,23 @@ from datetime import date
 
 import pytest
 
+from config import UsageTracker
 from court.defender import argue_true
-from court.judge import judge_verdict
-from court.models import Argument, ArgPoint, ImageContext, Verdict
+from court.judge import (
+    find_claim_review_verdict,
+    judge_verdict,
+    no_evidence_verdict,
+    outlet_host,
+)
+from court.models import (
+    Argument,
+    ArgPoint,
+    ImageContext,
+    Verdict,
+    evidence_brief,
+)
 from court.prosecutor import argue_false
-from evidence.models import EvidenceItem
+from evidence.models import ClaimReview, EvidenceItem
 from tests.fakes import FakeClient
 
 
@@ -259,6 +271,162 @@ def test_unverified_confidence_capped_at_medium():
     assert verdict.confidence == "medium"
 
 
+def test_brief_labels_fact_check_items():
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://www.altnews.in/x", date=None,
+            snippet="debunked", fact_check=True,
+        )
+    ]
+    assert "existing fact-check" in evidence_brief(evidence)
+
+
+def test_brief_labels_tiers():
+    import json
+
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://www.altnews.in/x", date=None,
+            snippet="t1",
+        ),
+        EvidenceItem(
+            claim="c", source_url="https://x.com/post", date=None,
+            snippet="t3",
+        ),
+    ]
+    entries = json.loads(evidence_brief(evidence))
+    assert [entry["tier"] for entry in entries] == [1, 3]
+
+
+@pytest.mark.parametrize(
+    "key_source, cited_url, expected",
+    [
+        ("https://www.altnews.in/x", "https://a.com/x", "yes"),
+        ("https://a.com/x", "https://www.altnews.in/x", "yes"),
+        ("https://a.com/x", "https://a.com/x", "no"),
+    ],
+)
+def test_judge_notes_fact_check_usage(key_source, cited_url, expected):
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(key_source=key_source)}
+    )
+    evidence = _evidence() + [
+        EvidenceItem(
+            claim="c", source_url="https://www.altnews.in/x", date=None,
+            snippet="debunked", fact_check=True,
+        )
+    ]
+    defense = Argument(
+        points=[ArgPoint(text="p", source_url=cited_url)]
+    )
+    tracker = UsageTracker()
+    judge_verdict(
+        ["c"], evidence, Argument(points=[]), defense, "en", False,
+        client=fake, tracker=tracker,
+    )
+    assert tracker.notes[-1] == f"existing fact-check cited: {expected}."
+    assert tracker.notes[0].startswith("judge agreement: 3/3")
+
+
+def test_judge_silent_without_fact_check_items():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict()})
+    tracker = UsageTracker()
+    judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake, tracker=tracker,
+    )
+    assert tracker.notes == ["judge agreement: 3/3 (False, False, False)."]
+
+
+def test_majority_vote_sets_verdict_and_medium():
+    fake = FakeClient(
+        parse_queue=[
+            _verdict(verdict="False", reason="first"),
+            _verdict(verdict="Misleading", reason="second"),
+            _verdict(verdict="False", reason="third"),
+        ]
+    )
+    tracker = UsageTracker()
+    verdict = judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake, tracker=tracker,
+    )
+    assert verdict.verdict == "False"
+    assert verdict.confidence == "medium"
+    assert verdict.reason == "first"
+    assert tracker.notes == ["judge agreement: 2/3 (False, Misleading, False)."]
+
+
+def test_tie_vote_becomes_unverified_low():
+    fake = FakeClient(
+        parse_queue=[
+            _verdict(verdict="True"),
+            _verdict(verdict="False"),
+            _verdict(verdict="Misleading"),
+        ]
+    )
+    verdict = judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
+    )
+    assert verdict.verdict == "Unverified"
+    assert verdict.confidence == "low"
+
+
+def test_tier3_key_source_rejected():
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(key_source="https://x.com/post")}
+    )
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://www.altnews.in/x", date=None,
+            snippet="t1",
+        ),
+        EvidenceItem(
+            claim="c", source_url="https://x.com/post", date=None,
+            snippet="t3",
+        ),
+    ]
+    defense = Argument(
+        points=[
+            ArgPoint(text="a", source_url="https://x.com/post"),
+            ArgPoint(text="b", source_url="https://x.com/post"),
+            ArgPoint(text="c", source_url="https://www.altnews.in/x"),
+        ]
+    )
+    verdict = judge_verdict(
+        ["c"], evidence, Argument(points=[]), defense, "en", False,
+        client=fake,
+    )
+    assert verdict.key_source == "https://www.altnews.in/x"
+
+
+def test_all_tier3_keeps_most_cited():
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(key_source="https://evil.com")}
+    )
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://x.com/a", date=None, snippet="s1"
+        ),
+        EvidenceItem(
+            claim="c", source_url="https://x.com/b", date=None, snippet="s2"
+        ),
+    ]
+    defense = Argument(
+        points=[
+            ArgPoint(text="a", source_url="https://x.com/b"),
+            ArgPoint(text="b", source_url="https://x.com/b"),
+            ArgPoint(text="c", source_url="https://x.com/a"),
+        ]
+    )
+    verdict = judge_verdict(
+        ["c"], evidence, Argument(points=[]), defense, "en", False,
+        client=fake,
+    )
+    assert verdict.key_source == "https://x.com/b"
+
+
 def test_judge_keeps_verdict_without_source_dates():
     fake = FakeClient(
         parsed_by_model={Verdict: _verdict(verdict="True", claim_timeframe=None)}
@@ -271,3 +439,130 @@ def test_judge_keeps_verdict_without_source_dates():
         client=fake, today=date(2026, 10, 27),
     )
     assert verdict.verdict == "True"
+
+
+def _review_item(url, claim, verdict, reviewed, **flags):
+    return EvidenceItem(
+        claim=claim,
+        source_url=url,
+        date=None,
+        snippet="s",
+        claim_review=ClaimReview(
+            rating_raw="False", verdict=verdict, claim_text=reviewed
+        ),
+        **flags,
+    )
+
+
+def test_claim_review_hit_sets_verdict_without_model_calls():
+    item = _review_item(
+        "https://www.altnews.in/check", "Vaccines contain microchips",
+        "False", "Vaccines contain microchips, the viral claim says",
+    )
+    verdict = find_claim_review_verdict(
+        ["Vaccines contain microchips"], [item], "en"
+    )
+    assert verdict.verdict == "False"
+    assert verdict.confidence == "high"
+    assert verdict.key_source == "https://www.altnews.in/check"
+    assert verdict.fact_checked_by == "altnews.in"
+    assert "altnews.in" in verdict.reason
+
+
+def test_claim_review_matches_on_shared_tokens():
+    item = _review_item(
+        "https://boomlive.in/x", "Prime minister resigned yesterday",
+        "Misleading", "Did the prime minister quit yesterday morning?",
+    )
+    verdict = find_claim_review_verdict(
+        ["Prime minister resigned yesterday"], [item], "en"
+    )
+    assert verdict is not None
+    assert verdict.verdict == "Misleading"
+
+
+def test_claim_review_matches_lookup_item_with_score_two():
+    item = _review_item(
+        "https://factly.in/y", "कल पटना में बाढ़ आई", "False",
+        "Completely different English words here",
+        fact_check=True, relevance=2,
+    )
+    verdict = find_claim_review_verdict(["कल पटना में बाढ़ आई"], [item], "hi")
+    assert verdict is not None
+    assert verdict.verdict == "False"
+    assert verdict.language == "hi"
+
+
+def test_claim_review_lookup_match_needs_score_two():
+    item = _review_item(
+        "https://factly.in/y", "कल पटना में बाढ़ आई", "False",
+        "Completely different English words here",
+        fact_check=True, relevance=1,
+    )
+    assert (
+        find_claim_review_verdict(["कल पटना में बाढ़ आई"], [item], "hi")
+        is None
+    )
+
+
+def test_claim_review_contradiction_falls_through():
+    items = [
+        _review_item(
+            "https://www.altnews.in/a", "Vaccines contain microchips",
+            "False", "Vaccines contain microchips in the blood",
+        ),
+        _review_item(
+            "https://boomlive.in/b", "Vaccines contain microchips",
+            "True", "Do vaccines contain microchips inside blood?",
+        ),
+    ]
+    assert find_claim_review_verdict(["Vaccines contain microchips"], items, "en") is None
+
+
+def test_claim_review_ignores_tier2_and_unmatched():
+    tier2 = _review_item(
+        "https://randomblog.com/z", "Vaccines contain microchips",
+        "False", "Vaccines contain microchips", relevance=2,
+        fact_check=False,
+    )
+    assert find_claim_review_verdict(["Vaccines contain microchips"], [tier2], "en") is None
+    unmatched = _review_item(
+        "https://www.altnews.in/a", "Vaccines contain microchips",
+        "False", "Cricket match abandoned due to rain", relevance=2,
+        fact_check=False,
+    )
+    assert (
+        find_claim_review_verdict(["Vaccines contain microchips"], [unmatched], "en")
+        is None
+    )
+    plain = EvidenceItem(
+        claim="c", source_url="https://www.altnews.in/a", snippet="s"
+    )
+    assert find_claim_review_verdict(["c"], [plain], "en") is None
+
+
+def test_outlet_host_strips_www():
+    assert outlet_host("https://www.altnews.in/a") == "altnews.in"
+    assert outlet_host("not a url") == "not a url"
+
+
+def test_no_evidence_verdict_is_unverified_low():
+    verdict = no_evidence_verdict("en")
+    assert verdict.verdict == "Unverified"
+    assert verdict.confidence == "low"
+    assert verdict.key_source == ""
+    assert no_evidence_verdict("hi").reason != verdict.reason
+
+
+def test_judge_brief_marks_claims_without_evidence():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict()})
+    evidence = [
+        EvidenceItem(claim="kept", source_url="https://a.com/x", snippet="s")
+    ]
+    judge_verdict(
+        ["kept", "bare"], evidence, Argument(points=[]), _defense(), "en",
+        False, client=fake, no_evidence_claims=["bare"],
+    )
+    sent = fake.responses.calls[0][1]["input"]
+    assert "bare" in sent
+    assert "no kept evidence" in sent

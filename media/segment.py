@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from PIL import Image, ImageOps
 
 from config import SEGMENTATION_MODEL
+from evidence.responses import output_text
 
 MAX_SUBJECTS = 3
 TOP_CROPS = 2
@@ -30,23 +31,6 @@ class Crop:
     data: bytes
     subject: str
     confidence: float
-
-
-def _output_text(output) -> str:
-    parts: list[str] = []
-    for item in output or []:
-        get = item.get if isinstance(item, dict) else lambda k: getattr(item, k, None)
-        if get("type") != "message":
-            continue
-        for block in get("content") or []:
-            bget = (
-                block.get
-                if isinstance(block, dict)
-                else lambda k: getattr(block, k, None)
-            )
-            if bget("type") == "output_text":
-                parts.append(bget("text") or "")
-    return "".join(parts)
 
 
 def _parse_boxes(text: str) -> list[tuple[float, tuple[int, int, int, int, int, int]]]:
@@ -111,7 +95,7 @@ def segment_subjects(
             continue
         if tracker is not None:
             tracker.add(response.usage, stage="segment")
-        for conf, box in _parse_boxes(_output_text(response.output)):
+        for conf, box in _parse_boxes(output_text(response.output)):
             ranked.append((conf, box, subject))
     ranked.sort(key=lambda item: item[0], reverse=True)
     crops: list[Crop] = []

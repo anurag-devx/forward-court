@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
+from config import TIER1_OUTLETS, TIER3_UGC
+
 _TRACKING_PREFIXES = ("utm_", "pk_", "piwik_", "matomo_")
 _TRACKING_PARAMS = frozenset(
     {
@@ -56,3 +58,43 @@ def normalize_url(url: str) -> str:
         if not _is_tracking(k)
     )
     return urlunsplit((scheme, host, path, urlencode(query), ""))
+
+
+def split_host_path(url: str) -> tuple[str | None, str]:
+    """Return (lowercased host without www, path) or (None, '') if invalid."""
+    try:
+        parts = urlsplit(url.strip())
+    except ValueError:
+        return None, ""
+    if not parts.hostname:
+        return None, ""
+    host = parts.hostname.lower()
+    if host.startswith("www."):
+        host = host[4:]
+    return host, parts.path or "/"
+
+
+def matches_entries(host: str, path: str, entries) -> bool:
+    """True when host (+path) matches hostname or host/path-prefix entries."""
+    for entry in entries:
+        if "/" in entry:
+            entry_host, entry_path = entry.split("/", 1)
+            if (host == entry_host or host.endswith("." + entry_host)) and (
+                path.startswith("/" + entry_path)
+            ):
+                return True
+        elif host == entry or host.endswith("." + entry):
+            return True
+    return False
+
+
+def tier_of(url: str) -> int:
+    """Source tier: 1 for top outlets, 3 for UGC, 2 by default."""
+    host, path = split_host_path(url)
+    if host is None:
+        return 2
+    if matches_entries(host, path, TIER3_UGC):
+        return 3
+    if matches_entries(host, path, TIER1_OUTLETS):
+        return 1
+    return 2

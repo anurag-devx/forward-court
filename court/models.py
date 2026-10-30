@@ -6,6 +6,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from evidence.urls import tier_of
+
 
 class ArgPoint(BaseModel):
     text: str
@@ -26,6 +28,10 @@ class Verdict(BaseModel):
         default=None,
         description="ISO date the forward implies the event happened, else null.",
     )
+    fact_checked_by: str | None = Field(
+        default=None,
+        description="Outlet host when a ClaimReview rating decided the verdict.",
+    )
 
 
 class ImageContext(BaseModel):
@@ -45,11 +51,14 @@ def evidence_brief(evidence) -> str:
             "source_url": item.source_url,
             "date": item.date,
             "snippet": item.snippet,
+            "tier": tier_of(item.source_url),
         }
         if item.visual_only:
             entry["note"] = (
                 "visually similar match: context only, "
                 "not proof of origin or date"
             )
+        elif item.fact_check:
+            entry["note"] = "existing fact-check from a trusted outlet"
         entries.append(entry)
     return json.dumps(entries, ensure_ascii=False, indent=2)

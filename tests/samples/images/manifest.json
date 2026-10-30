@@ -1,45 +1,472 @@
 [
   {
     "file": null,
+    "article_url": "https://www.altnews.in/jamia-cracks-down-on-students-as-hunger-strike-police-action-and-campus-shutdown-deepen-crisis/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-1024x576.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/jamia-cracks-down-on-students-as-hunger-strike-police-action-and-campus-shutdown-deepen-crisis/",
+    "image_url": "https://i0.wp.com/www.altnews.in/wp-content/uploads/2026/10/RSS.jpeg?w=406&h=294&ssl=1",
+    "skipped": true,
+    "skip_reason": "image download failed"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/jamia-cracks-down-on-students-as-hunger-strike-police-action-and-campus-shutdown-deepen-crisis/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/jamia-cracks-down-on-students-as-hunger-strike-police-action-and-campus-shutdown-deepen-crisis/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-2026-10-23T175858.979-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/jamia-cracks-down-on-students-as-hunger-strike-police-action-and-campus-shutdown-deepen-crisis/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-4-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "00-0-www.altnews.in.jpeg",
+    "article_url": "https://www.altnews.in/jamia-cracks-down-on-students-as-hunger-strike-police-action-and-campus-shutdown-deepen-crisis/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-27-at-7.23.17-AM.jpeg",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "CPI(ML) Liberation alleged that Jamia Millia Islamia administration forcibly removed students on hunger strike from the campus around 5:30 am on Saturday while they were demanding the restoration of the students’ union.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/only-sanatanis-can-touch-durga-idols-announces-suvendu-adhikari-claims-its-nothing-communal/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-1-1024x576.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/only-sanatanis-can-touch-durga-idols-announces-suvendu-adhikari-claims-its-nothing-communal/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/only-sanatanis-can-touch-durga-idols-announces-suvendu-adhikari-claims-its-nothing-communal/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/only-sanatanis-can-touch-durga-idols-announces-suvendu-adhikari-claims-its-nothing-communal/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-2026-10-23T175858.979-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/only-sanatanis-can-touch-durga-idols-announces-suvendu-adhikari-claims-its-nothing-communal/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-4-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "01-0-www.altnews.in.png",
+    "article_url": "https://www.altnews.in/only-sanatanis-can-touch-durga-idols-announces-suvendu-adhikari-claims-its-nothing-communal/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-FI-Kit-2026-10-23T000522.558-300x157.png",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "Only those following Sanatan dharma should touch idols, says West Bengal CM Suvendu Adhikari during inspection of ghats in Kolkata ahead of Maa Durga idol immersion.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/demolition-of-book-stalls-continue-in-bengal-locals-resist-bulldozer-in-night-long-standoff-in-jadavpur/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-FI-Kit-2026-10-21T105730.355-1024x536.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/demolition-of-book-stalls-continue-in-bengal-locals-resist-bulldozer-in-night-long-standoff-in-jadavpur/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/demolition-of-book-stalls-continue-in-bengal-locals-resist-bulldozer-in-night-long-standoff-in-jadavpur/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "02-0-www.altnews.in.jpeg",
+    "article_url": "https://www.altnews.in/demolition-of-book-stalls-continue-in-bengal-locals-resist-bulldozer-in-night-long-standoff-in-jadavpur/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-19-at-12.25.56-AM-1024x768.jpeg",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "A bulldozer was brought in by the Kolkata Municipal Corporation (KMC) and Kolkata Police to demolish bookstalls of Left parties set up near 8B bus stand of Jadavpur while locals and Left workers protested through the night to thwart the attempted demolition.",
+    "ground_truth": []
+  },
+  {
+    "file": "02-1-www.altnews.in.jpeg",
+    "article_url": "https://www.altnews.in/demolition-of-book-stalls-continue-in-bengal-locals-resist-bulldozer-in-night-long-standoff-in-jadavpur/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-19-at-12.25.56-AM-1-1024x768.jpeg",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "A bulldozer was brought in by the Kolkata Municipal Corporation (KMC) and Kolkata Police to demolish bookstalls of Left parties set up near 8B bus stand of Jadavpur while locals and Left workers protested through the night to thwart the attempted demolition.",
+    "ground_truth": []
+  },
+  {
+    "file": "02-2-www.altnews.in.jpeg",
+    "article_url": "https://www.altnews.in/demolition-of-book-stalls-continue-in-bengal-locals-resist-bulldozer-in-night-long-standoff-in-jadavpur/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-19-at-12.25.57-AM-1024x768.jpeg",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "A bulldozer was brought in by the Kolkata Municipal Corporation (KMC) and Kolkata Police to demolish bookstalls of Left parties set up near 8B bus stand of Jadavpur while locals and Left workers protested through the night to thwart the attempted demolition.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/hans-raj-college-student-alleges-knife-attack-by-teenage-boy-from-hindutva-group-at-delhi-protest/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-1-1-1024x576.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/hans-raj-college-student-alleges-knife-attack-by-teenage-boy-from-hindutva-group-at-delhi-protest/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/hans-raj-college-student-alleges-knife-attack-by-teenage-boy-from-hindutva-group-at-delhi-protest/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/hans-raj-college-student-alleges-knife-attack-by-teenage-boy-from-hindutva-group-at-delhi-protest/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-2026-10-23T175858.979-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/hans-raj-college-student-alleges-knife-attack-by-teenage-boy-from-hindutva-group-at-delhi-protest/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-4-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "03-0-www.altnews.in.png",
+    "article_url": "https://www.altnews.in/hans-raj-college-student-alleges-knife-attack-by-teenage-boy-from-hindutva-group-at-delhi-protest/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Screenshot-2026-10-11-113358-1024x967.png",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "Twenty-one-year-old Ajay, a 4th-year History honours student at Hans Raj College, alleged that a teenage boy from a Hindutva group slashed a knife across his throat during the October 12 rally to the Supreme Court.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
     "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
     "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Untitled-design-88-1024x536.png",
     "skipped": true,
     "skip_reason": "role: fact_check_marked"
   },
   {
-    "file": "00-1-www.altnews.in.jpg",
+    "file": "04-0-www.altnews.in.jpg",
     "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
     "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Radhika-Khera-on-X-Liar-Liar-https-t-co-jLYHewdEo6-X-10-12-2026_06_40_PM.jpg",
     "role": "viral_claim",
-    "expected": "AI-generated"
+    "expected": "AI-generated",
+    "claim": "It was claimed that this was the bond the CJP founder had signed at the time of his release.",
+    "ground_truth": []
   },
   {
-    "file": "00-2-www.altnews.in.jpeg",
+    "file": "04-1-www.altnews.in.jpeg",
     "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
     "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-12-at-1.48.36-AM.jpeg",
     "role": "viral_claim",
-    "expected": "AI-generated"
+    "expected": "AI-generated",
+    "claim": "It was claimed that this was the bond the CJP founder had signed at the time of his release.",
+    "ground_truth": []
   },
   {
-    "file": "00-3-www.altnews.in.jpg",
+    "file": "04-2-www.altnews.in.jpg",
     "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
     "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/HUWXOTgaEAAUmss1.jpg",
     "role": "viral_claim",
-    "expected": "AI-generated"
+    "expected": "AI-generated",
+    "claim": "It was claimed that this was the bond the CJP founder had signed at the time of his release.",
+    "ground_truth": []
   },
   {
-    "file": "00-4-www.altnews.in.jpg",
+    "file": "04-3-www.altnews.in.jpg",
     "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
     "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Verify-OpenAI-generated-content-OpenAI-10-12-2026_06_24_PM.jpg",
     "role": "viral_claim",
-    "expected": "AI-generated"
+    "expected": "AI-generated",
+    "claim": "It was claimed that this was the bond the CJP founder had signed at the time of his release.",
+    "ground_truth": []
   },
   {
-    "file": "00-5-www.altnews.in.jpeg",
+    "file": "04-4-www.altnews.in.jpeg",
     "article_url": "https://www.altnews.in/ai-generated-image-of-a-bond-with-dipkes-signature-is-being-falsely-shared-bu-bjp-leader/",
     "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-11-at-9.40.08-PM.jpeg",
     "role": "viral_claim",
-    "expected": "AI-generated"
+    "expected": "AI-generated",
+    "claim": "It was claimed that this was the bond the CJP founder had signed at the time of his release.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/namo-seva-students-made-to-act-in-play-glorifying-modi-chant-modi-hai-toh-mumkin-hai-jai-sri-ram/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-FI-Kit-2026-10-06T113906.428-1024x536.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/namo-seva-students-made-to-act-in-play-glorifying-modi-chant-modi-hai-toh-mumkin-hai-jai-sri-ram/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/namo-seva-students-made-to-act-in-play-glorifying-modi-chant-modi-hai-toh-mumkin-hai-jai-sri-ram/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "05-0-www.altnews.in.jpg",
+    "article_url": "https://www.altnews.in/namo-seva-students-made-to-act-in-play-glorifying-modi-chant-modi-hai-toh-mumkin-hai-jai-sri-ram/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Screenshot_14-1.jpg",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "Students were made to act in a play glorifying Modi and chant 'Modi hai toh mumkin hai' and 'Jai Sri Ram'.",
+    "ground_truth": []
+  },
+  {
+    "file": "05-1-www.altnews.in.png",
+    "article_url": "https://www.altnews.in/namo-seva-students-made-to-act-in-play-glorifying-modi-chant-modi-hai-toh-mumkin-hai-jai-sri-ram/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-FI-Kit-2026-10-06T121430.520.png",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "Students were made to act in a play glorifying Modi and chant 'Modi hai toh mumkin hai' and 'Jai Sri Ram'.",
+    "ground_truth": []
+  },
+  {
+    "file": "05-2-www.altnews.in.jpeg",
+    "article_url": "https://www.altnews.in/namo-seva-students-made-to-act-in-play-glorifying-modi-chant-modi-hai-toh-mumkin-hai-jai-sri-ram/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/hoogly.jpeg",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "Students were made to act in a play glorifying Modi and chant 'Modi hai toh mumkin hai' and 'Jai Sri Ram'.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/go-back-to-your-country-manipuri-musicians-killing-reignites-concerns-over-racism-against-northeasterners-govt-inaction/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Copy-of-FI-Kit-2026-09-19T005648.012-1024x536.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/go-back-to-your-country-manipuri-musicians-killing-reignites-concerns-over-racism-against-northeasterners-govt-inaction/",
+    "image_url": "https://ichef.bbci.co.uk/news/480/cpsprodpb/b907/live/c9ac58b0-eba2-11f0-b28e-9b17195bb0de.jpg.webp",
+    "skipped": true,
+    "skip_reason": "image download failed"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/go-back-to-your-country-manipuri-musicians-killing-reignites-concerns-over-racism-against-northeasterners-govt-inaction/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "06-0-www.altnews.in.png",
+    "article_url": "https://www.altnews.in/go-back-to-your-country-manipuri-musicians-killing-reignites-concerns-over-racism-against-northeasterners-govt-inaction/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Screenshot-2026-09-14-6.24.50-PM.png",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "Chongtham Vikram Singh, a 55-year-old Manipuri guitarist in Delhi, was beaten to death in a racially motivated attack involving the 'Go back to your country' slur.",
+    "ground_truth": []
+  },
+  {
+    "file": "06-1-www.altnews.in.png",
+    "article_url": "https://www.altnews.in/go-back-to-your-country-manipuri-musicians-killing-reignites-concerns-over-racism-against-northeasterners-govt-inaction/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Screenshot-2026-09-14-6.24.32-PM.png",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "Chongtham Vikram Singh, a 55-year-old Manipuri guitarist in Delhi, was beaten to death in a racially motivated attack involving the 'Go back to your country' slur.",
+    "ground_truth": []
+  },
+  {
+    "file": "06-2-www.altnews.in.png",
+    "article_url": "https://www.altnews.in/go-back-to-your-country-manipuri-musicians-killing-reignites-concerns-over-racism-against-northeasterners-govt-inaction/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Screenshot-2026-09-16-6.00.17-PM.png",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "Chongtham Vikram Singh, a 55-year-old Manipuri guitarist in Delhi, was beaten to death in a racially motivated attack involving the 'Go back to your country' slur.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/mallikarjun-kharge-kept-away-from-rahul-gandhi-anwar-ibrahims-breakfast-table-morphed-photo-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Copy-of-FI-Kit-2026-09-17T231711.675-1024x536.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/mallikarjun-kharge-kept-away-from-rahul-gandhi-anwar-ibrahims-breakfast-table-morphed-photo-viral/",
+    "image_url": "https://i0.wp.com/www.altnews.in/wp-content/uploads/2026/09/r1.jpg?w=641&h=464&ssl=1",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/mallikarjun-kharge-kept-away-from-rahul-gandhi-anwar-ibrahims-breakfast-table-morphed-photo-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/mallikarjun-kharge-kept-away-from-rahul-gandhi-anwar-ibrahims-breakfast-table-morphed-photo-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/mallikarjun-kharge-kept-away-from-rahul-gandhi-anwar-ibrahims-breakfast-table-morphed-photo-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-2026-10-23T175858.979-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "07-0-www.altnews.in.jpg",
+    "article_url": "https://www.altnews.in/mallikarjun-kharge-kept-away-from-rahul-gandhi-anwar-ibrahims-breakfast-table-morphed-photo-viral/",
+    "image_url": "https://i0.wp.com/www.altnews.in/wp-content/uploads/2026/09/r2.jpg?w=641&h=464&ssl=1",
+    "role": "viral_claim",
+    "expected": "False",
+    "claim": "A photo of Leader of Opposition in Lok Sabha Rahul Gandhi and Wayanad MP Priyanka Gandhi meeting Malaysian Prime Minister Anwar Ibrahim over breakfast has gone viral, in which Congress president Mallikarjun Kharge can be seen seated in a corner of the room away from the dining table.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/bela-estate-farmland-and-homes-gone-728-delhi-pavement-dwellers-now-fight-to-retain-voting-rights/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Copy-of-FI-Kit-2026-09-14T171944.735-1024x536.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/bela-estate-farmland-and-homes-gone-728-delhi-pavement-dwellers-now-fight-to-retain-voting-rights/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Bela-Estate-ASDD-Infographic-1-1024x951.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/bela-estate-farmland-and-homes-gone-728-delhi-pavement-dwellers-now-fight-to-retain-voting-rights/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Yamuna-River-2-1024x768.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/bela-estate-farmland-and-homes-gone-728-delhi-pavement-dwellers-now-fight-to-retain-voting-rights/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "08-0-www.altnews.in.png",
+    "article_url": "https://www.altnews.in/bela-estate-farmland-and-homes-gone-728-delhi-pavement-dwellers-now-fight-to-retain-voting-rights/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Screenshot-2026-09-14-165401-1024x693.png",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "In other words, 728 voters out of 729 were excluded from the draft SIR roll — an unprecedented 99.8% deletion rate.",
+    "ground_truth": []
+  },
+  {
+    "file": "08-1-www.altnews.in.png",
+    "article_url": "https://www.altnews.in/bela-estate-farmland-and-homes-gone-728-delhi-pavement-dwellers-now-fight-to-retain-voting-rights/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Screenshot-2026-09-14-165412-1024x699.png",
+    "role": "viral_claim",
+    "expected": "Unverified",
+    "claim": "In other words, 728 voters out of 729 were excluded from the draft SIR roll — an unprecedented 99.8% deletion rate.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/modi-gifted-self-portrait-to-xi-jinping-no-old-video-falsely-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Copy-of-FI-Kit-2026-09-13T003142.913-1024x536.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/modi-gifted-self-portrait-to-xi-jinping-no-old-video-falsely-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-3-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/modi-gifted-self-portrait-to-xi-jinping-no-old-video-falsely-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/modi-gifted-self-portrait-to-xi-jinping-no-old-video-falsely-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-2026-10-23T175858.979-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.altnews.in/modi-gifted-self-portrait-to-xi-jinping-no-old-video-falsely-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/10/Copy-of-Feature-Image-Template-4-300x169.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "09-0-www.altnews.in.jpg",
+    "article_url": "https://www.altnews.in/modi-gifted-self-portrait-to-xi-jinping-no-old-video-falsely-viral/",
+    "image_url": "https://www.altnews.in/wp-content/uploads/2026/09/Screenshot_11.jpg",
+    "role": "viral_claim",
+    "expected": "Misleading",
+    "claim": "PM Modi presented Xi Jinping with his own portrait, during the 2026 BRICS summit in New Delhi.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.boomlive.in/fact-check/old-unrelated-visuals-falsely-linked-to-india-china-arunachal-face-offs-32410",
+    "image_url": "https://www.boomlive.in/h-upload/2026/10/08/1058459-google.webp",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
   },
   {
     "file": null,
@@ -172,7 +599,7 @@
     "article_url": "https://www.vishvasnews.com/ai-check/fact-check-france-protest-news-viral-france-police-with-pigs-video-is-ai-generated/",
     "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
     "skipped": true,
-    "skip_reason": "role: fact_check_marked"
+    "skip_reason": "image download failed"
   },
   {
     "file": null,
@@ -256,7 +683,7 @@
     "article_url": "https://www.vishvasnews.com/ai-check/ai-generated-image-of-an-rss-march-in-kannur-goes-viral-here-is-truth/",
     "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
     "skipped": true,
-    "skip_reason": "image download failed"
+    "skip_reason": "role: fact_check_marked"
   },
   {
     "file": null,
@@ -378,11 +805,13 @@
     "skip_reason": "role: other"
   },
   {
-    "file": null,
+    "file": "57-0-www.vishvasnews.com.jpg",
     "article_url": "https://www.vishvasnews.com/viral/uttarakhand-pithoragarh-bridge-collapse-old-video-viral-false-claim/",
-    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
-    "skipped": true,
-    "skip_reason": "role: fact_check_marked"
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/Claim-Pithoragarh-1024x760.jpg",
+    "role": "viral_claim",
+    "expected": "Misleading",
+    "claim": "उत्तराखंड के पिथौरागढ़ में ओवरलोड ट्रक गुजरते ही भरभराकर ढह गया पुल।",
+    "ground_truth": []
   },
   {
     "file": null,
@@ -422,6 +851,1228 @@
   {
     "file": null,
     "article_url": "https://www.vishvasnews.com/politics/fact-check-video-of-ugc-protest-goes-viral-falsely-linked-to-a-bjp-leader-here-is-truth/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-abhijit-deepke-viral-video-an-old-video-regarding-neet-paper-leak/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-abhijit-deepke-viral-video-an-old-video-regarding-neet-paper-leak/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-abhijit-deepke-viral-video-an-old-video-regarding-neet-paper-leak/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-abhijit-deepke-viral-video-an-old-video-regarding-neet-paper-leak/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-22-at-3.16.20-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-abhijit-deepke-viral-video-an-old-video-regarding-neet-paper-leak/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-abhijit-deepke-viral-video-an-old-video-regarding-neet-paper-leak/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/old-2012-ravi-shankar-prasad-video-falsely-shared-as-statement-against-pm-modi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/old-2012-ravi-shankar-prasad-video-falsely-shared-as-statement-against-pm-modi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/old-2012-ravi-shankar-prasad-video-falsely-shared-as-statement-against-pm-modi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/old-2012-ravi-shankar-prasad-video-falsely-shared-as-statement-against-pm-modi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-21-at-13.11.19.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/old-2012-ravi-shankar-prasad-video-falsely-shared-as-statement-against-pm-modi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/old-2012-ravi-shankar-prasad-video-falsely-shared-as-statement-against-pm-modi/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cjp-spokesperson-ashutosh-ranka-attack-viral-video-mumbai-news/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cjp-spokesperson-ashutosh-ranka-attack-viral-video-mumbai-news/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cjp-spokesperson-ashutosh-ranka-attack-viral-video-mumbai-news/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cjp-spokesperson-ashutosh-ranka-attack-viral-video-mumbai-news/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-20-at-4.39.55-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cjp-spokesperson-ashutosh-ranka-attack-viral-video-mumbai-news/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cjp-spokesperson-ashutosh-ranka-attack-viral-video-mumbai-news/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-these-videos-which-depict-women-in-an-objectionable-manner-at-garba-events-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-these-videos-which-depict-women-in-an-objectionable-manner-at-garba-events-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-these-videos-which-depict-women-in-an-objectionable-manner-at-garba-events-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-these-videos-which-depict-women-in-an-objectionable-manner-at-garba-events-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-19-at-5.55.13-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-these-videos-which-depict-women-in-an-objectionable-manner-at-garba-events-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-these-videos-which-depict-women-in-an-objectionable-manner-at-garba-events-are-ai-generated/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-ambala-highway-old-video-tear-gas-police-protesters-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-ambala-highway-old-video-tear-gas-police-protesters-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-ambala-highway-old-video-tear-gas-police-protesters-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-ambala-highway-old-video-tear-gas-police-protesters-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-19-at-4.49.56-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-ambala-highway-old-video-tear-gas-police-protesters-viral/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/society/fact-check-ambala-highway-old-video-tear-gas-police-protesters-viral/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-shivraj-singh-chouhan-edited-video-bjp-leaders-viral-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-shivraj-singh-chouhan-edited-video-bjp-leaders-viral-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-shivraj-singh-chouhan-edited-video-bjp-leaders-viral-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-shivraj-singh-chouhan-edited-video-bjp-leaders-viral-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-19-at-2.52.42-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-shivraj-singh-chouhan-edited-video-bjp-leaders-viral-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-shivraj-singh-chouhan-edited-video-bjp-leaders-viral-know-truth/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/bihar-rjd-rally-old-video-viral-cjp-tricolour-march/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/bihar-rjd-rally-old-video-viral-cjp-tricolour-march/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/bihar-rjd-rally-old-video-viral-cjp-tricolour-march/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/bihar-rjd-rally-old-video-viral-cjp-tricolour-march/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-17-at-15.24.21.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/bihar-rjd-rally-old-video-viral-cjp-tricolour-march/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/bihar-rjd-rally-old-video-viral-cjp-tricolour-march/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-pm-modi-video-targeting-congress-falsely-linked-to-protest-against-cec-gyanesh-kumar/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-pm-modi-video-targeting-congress-falsely-linked-to-protest-against-cec-gyanesh-kumar/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-pm-modi-video-targeting-congress-falsely-linked-to-protest-against-cec-gyanesh-kumar/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-pm-modi-video-targeting-congress-falsely-linked-to-protest-against-cec-gyanesh-kumar/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-16-at-12.54.49-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-pm-modi-video-targeting-congress-falsely-linked-to-protest-against-cec-gyanesh-kumar/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-pm-modi-video-targeting-congress-falsely-linked-to-protest-against-cec-gyanesh-kumar/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-police-women-protesters-viral-images-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-police-women-protesters-viral-images-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-police-women-protesters-viral-images-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-police-women-protesters-viral-images-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-16-at-12.35.40-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-police-women-protesters-viral-images-are-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-police-women-protesters-viral-images-are-ai-generated/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/sunny-deol-viral-statement-intellectual-naxals-bjp-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/sunny-deol-viral-statement-intellectual-naxals-bjp-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/sunny-deol-viral-statement-intellectual-naxals-bjp-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/sunny-deol-viral-statement-intellectual-naxals-bjp-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-16-at-13.07.16.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/sunny-deol-viral-statement-intellectual-naxals-bjp-know-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/sunny-deol-viral-statement-intellectual-naxals-bjp-know-truth/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bjp-mla-sit-ups-in-public-viral-video-from-2022/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bjp-mla-sit-ups-in-public-viral-video-from-2022/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bjp-mla-sit-ups-in-public-viral-video-from-2022/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bjp-mla-sit-ups-in-public-viral-video-from-2022/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-15-at-3.50.43-PM-1.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bjp-mla-sit-ups-in-public-viral-video-from-2022/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bjp-mla-sit-ups-in-public-viral-video-from-2022/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-viral-image-of-bail-bond-concerning-abhijit-dipke-was-created-using-ai-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-viral-image-of-bail-bond-concerning-abhijit-dipke-was-created-using-ai-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-viral-image-of-bail-bond-concerning-abhijit-dipke-was-created-using-ai-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-viral-image-of-bail-bond-concerning-abhijit-dipke-was-created-using-ai-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-15-at-4.17.54-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-viral-image-of-bail-bond-concerning-abhijit-dipke-was-created-using-ai-here-is-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-viral-image-of-bail-bond-concerning-abhijit-dipke-was-created-using-ai-here-is-truth/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhim-army-bengal-rally-old-video-viral-with-false-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhim-army-bengal-rally-old-video-viral-with-false-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhim-army-bengal-rally-old-video-viral-with-false-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhim-army-bengal-rally-old-video-viral-with-false-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-15-at-5.12.10-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhim-army-bengal-rally-old-video-viral-with-false-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhim-army-bengal-rally-old-video-viral-with-false-claims/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/rahul-gandhi-neha-bora-photo-goes-viral-amid-protest-for-cec-gyanesh-kumar-resignation/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/rahul-gandhi-neha-bora-photo-goes-viral-amid-protest-for-cec-gyanesh-kumar-resignation/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/rahul-gandhi-neha-bora-photo-goes-viral-amid-protest-for-cec-gyanesh-kumar-resignation/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/rahul-gandhi-neha-bora-photo-goes-viral-amid-protest-for-cec-gyanesh-kumar-resignation/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-15-at-16.09.36.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/rahul-gandhi-neha-bora-photo-goes-viral-amid-protest-for-cec-gyanesh-kumar-resignation/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/rahul-gandhi-neha-bora-photo-goes-viral-amid-protest-for-cec-gyanesh-kumar-resignation/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/delhi-protest-viral-video-indian-army-youth-beating-know-truth-behind/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/delhi-protest-viral-video-indian-army-youth-beating-know-truth-behind/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/delhi-protest-viral-video-indian-army-youth-beating-know-truth-behind/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/delhi-protest-viral-video-indian-army-youth-beating-know-truth-behind/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-14-at-18.06.09.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": "73-0-www.vishvasnews.com.jpg",
+    "article_url": "https://www.vishvasnews.com/viral/delhi-protest-viral-video-indian-army-youth-beating-know-truth-behind/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/Claim-Kashmir.jpg",
+    "role": "viral_claim",
+    "expected": "Misleading",
+    "claim": "The viral post claims a video showing two army jawans brutally beating a man lying on the ground is from Delhi where protesting has become a crime and the Indian Army has been deployed to beat protesters.",
+    "ground_truth": []
+  },
+  {
+    "file": "73-1-www.vishvasnews.com.jpg",
+    "article_url": "https://www.vishvasnews.com/viral/delhi-protest-viral-video-indian-army-youth-beating-know-truth-behind/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/Kashmir-IE-1024x694.jpg",
+    "role": "viral_claim",
+    "expected": "Misleading",
+    "claim": "The viral post claims a video showing two army jawans brutally beating a man lying on the ground is from Delhi where protesting has become a crime and the Indian Army has been deployed to beat protesters.",
+    "ground_truth": []
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-neet-paper-leak-protest-at-rajiv-chowk-metro-station-falsely-linked-to-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-neet-paper-leak-protest-at-rajiv-chowk-metro-station-falsely-linked-to-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-neet-paper-leak-protest-at-rajiv-chowk-metro-station-falsely-linked-to-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-neet-paper-leak-protest-at-rajiv-chowk-metro-station-falsely-linked-to-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-14-at-5.24.54-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-neet-paper-leak-protest-at-rajiv-chowk-metro-station-falsely-linked-to-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-neet-paper-leak-protest-at-rajiv-chowk-metro-station-falsely-linked-to-cec-protest/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/west-bengal-police-uniform-video-viral-with-delhi-cjp-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/west-bengal-police-uniform-video-viral-with-delhi-cjp-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/west-bengal-police-uniform-video-viral-with-delhi-cjp-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/west-bengal-police-uniform-video-viral-with-delhi-cjp-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-14-at-14.26.17.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/west-bengal-police-uniform-video-viral-with-delhi-cjp-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/west-bengal-police-uniform-video-viral-with-delhi-cjp-protest/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cec-gyanesh-kumar-resignation-protest-parliament-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cec-gyanesh-kumar-resignation-protest-parliament-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cec-gyanesh-kumar-resignation-protest-parliament-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cec-gyanesh-kumar-resignation-protest-parliament-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-14-at-4.16.45-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cec-gyanesh-kumar-resignation-protest-parliament-viral-video/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-cec-gyanesh-kumar-resignation-protest-parliament-viral-video/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-video-falsely-shared-as-mp-chandrashekhar-azad-reaching-delhi-jantar-mantar-against-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-video-falsely-shared-as-mp-chandrashekhar-azad-reaching-delhi-jantar-mantar-against-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-video-falsely-shared-as-mp-chandrashekhar-azad-reaching-delhi-jantar-mantar-against-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-video-falsely-shared-as-mp-chandrashekhar-azad-reaching-delhi-jantar-mantar-against-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-13-at-2.20.35-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-video-falsely-shared-as-mp-chandrashekhar-azad-reaching-delhi-jantar-mantar-against-cec-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-old-video-falsely-shared-as-mp-chandrashekhar-azad-reaching-delhi-jantar-mantar-against-cec-protest/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhopal-farmers-protest-video-falsely-shared-as-delhi-jantar-mantar-demonstration/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhopal-farmers-protest-video-falsely-shared-as-delhi-jantar-mantar-demonstration/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhopal-farmers-protest-video-falsely-shared-as-delhi-jantar-mantar-demonstration/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhopal-farmers-protest-video-falsely-shared-as-delhi-jantar-mantar-demonstration/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-13-at-5.01.56-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhopal-farmers-protest-video-falsely-shared-as-delhi-jantar-mantar-demonstration/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-bhopal-farmers-protest-video-falsely-shared-as-delhi-jantar-mantar-demonstration/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-panipat-garbage-dumping-video-falsely-shared-as-delhi-cjp-protest-disruption/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-panipat-garbage-dumping-video-falsely-shared-as-delhi-cjp-protest-disruption/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-panipat-garbage-dumping-video-falsely-shared-as-delhi-cjp-protest-disruption/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-panipat-garbage-dumping-video-falsely-shared-as-delhi-cjp-protest-disruption/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-13-at-4.59.27-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-panipat-garbage-dumping-video-falsely-shared-as-delhi-cjp-protest-disruption/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-panipat-garbage-dumping-video-falsely-shared-as-delhi-cjp-protest-disruption/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/mohali-sikh-youth-mistreatment-old-video-linked-to-delhi-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/mohali-sikh-youth-mistreatment-old-video-linked-to-delhi-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/mohali-sikh-youth-mistreatment-old-video-linked-to-delhi-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/mohali-sikh-youth-mistreatment-old-video-linked-to-delhi-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-13-at-14.47.20.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/mohali-sikh-youth-mistreatment-old-video-linked-to-delhi-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/mohali-sikh-youth-mistreatment-old-video-linked-to-delhi-protest/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/viral-video-sealdah-railway-station-kolkata-not-from-delhi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/viral-video-sealdah-railway-station-kolkata-not-from-delhi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/viral-video-sealdah-railway-station-kolkata-not-from-delhi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/viral-video-sealdah-railway-station-kolkata-not-from-delhi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-12-at-14.36.08.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/viral-video-sealdah-railway-station-kolkata-not-from-delhi/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/viral-video-sealdah-railway-station-kolkata-not-from-delhi/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/fact-check-viral-video-of-woman-stopping-bus-during-protest-at-jantar-mantar-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/fact-check-viral-video-of-woman-stopping-bus-during-protest-at-jantar-mantar-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/fact-check-viral-video-of-woman-stopping-bus-during-protest-at-jantar-mantar-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/fact-check-viral-video-of-woman-stopping-bus-during-protest-at-jantar-mantar-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-10-at-3.35.04-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/fact-check-viral-video-of-woman-stopping-bus-during-protest-at-jantar-mantar-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/105-1024x606.jpg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/viral/fact-check-viral-video-of-woman-stopping-bus-during-protest-at-jantar-mantar-is-ai-generated/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/102-1024x488.jpg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-an-old-video-is-going-viral-with-claims-that-hindu-organizations-are-arriving-at-jantar-mantar-to-oppose-a-protest-proposed-by-cjp/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-an-old-video-is-going-viral-with-claims-that-hindu-organizations-are-arriving-at-jantar-mantar-to-oppose-a-protest-proposed-by-cjp/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-an-old-video-is-going-viral-with-claims-that-hindu-organizations-are-arriving-at-jantar-mantar-to-oppose-a-protest-proposed-by-cjp/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-an-old-video-is-going-viral-with-claims-that-hindu-organizations-are-arriving-at-jantar-mantar-to-oppose-a-protest-proposed-by-cjp/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-09-at-3.49.30-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-an-old-video-is-going-viral-with-claims-that-hindu-organizations-are-arriving-at-jantar-mantar-to-oppose-a-protest-proposed-by-cjp/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-an-old-video-is-going-viral-with-claims-that-hindu-organizations-are-arriving-at-jantar-mantar-to-oppose-a-protest-proposed-by-cjp/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/entertainment/fact-check-actor-nana-patekar-last-rites-with-viral-unrelated-videos-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/entertainment/fact-check-actor-nana-patekar-last-rites-with-viral-unrelated-videos-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/entertainment/fact-check-actor-nana-patekar-last-rites-with-viral-unrelated-videos-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/entertainment/fact-check-actor-nana-patekar-last-rites-with-viral-unrelated-videos-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-09-at-5.25.12-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/entertainment/fact-check-actor-nana-patekar-last-rites-with-viral-unrelated-videos-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/entertainment/fact-check-actor-nana-patekar-last-rites-with-viral-unrelated-videos-truth/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-seemapuri-building-collapse-viral-ai-video-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-seemapuri-building-collapse-viral-ai-video-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-seemapuri-building-collapse-viral-ai-video-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-seemapuri-building-collapse-viral-ai-video-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-09-at-12.53.04-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-seemapuri-building-collapse-viral-ai-video-truth/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/ai-check/fact-check-delhi-seemapuri-building-collapse-viral-ai-video-truth/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/former-minister-smriti-irani-saudi-arabia-old-photos-viral-with-misleading-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/former-minister-smriti-irani-saudi-arabia-old-photos-viral-with-misleading-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/former-minister-smriti-irani-saudi-arabia-old-photos-viral-with-misleading-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/former-minister-smriti-irani-saudi-arabia-old-photos-viral-with-misleading-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-08-at-16.46.38.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/former-minister-smriti-irani-saudi-arabia-old-photos-viral-with-misleading-claims/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/former-minister-smriti-irani-saudi-arabia-old-photos-viral-with-misleading-claims/",
+    "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-a-video-showing-a-clash-between-police-and-the-public-in-delhis-rohini-is-being-circulated-as-footage-from-the-jantar-mantar-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/subscribe-popup-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-a-video-showing-a-clash-between-police-and-the-public-in-delhis-rohini-is-being-circulated-as-footage-from-the-jantar-mantar-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/google-news-img.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-a-video-showing-a-clash-between-police-and-the-public-in-delhis-rohini-is-being-circulated-as-footage-from-the-jantar-mantar-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatsapp-channel-hindi.png",
+    "skipped": true,
+    "skip_reason": "too small (<300px)"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-a-video-showing-a-clash-between-police-and-the-public-in-delhis-rohini-is-being-circulated-as-footage-from-the-jantar-mantar-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/uploads/2026/10/WhatsApp-Image-2026-10-08-at-5.46.42-PM.jpeg",
+    "skipped": true,
+    "skip_reason": "role: fact_check_marked"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-a-video-showing-a-clash-between-police-and-the-public-in-delhis-rohini-is-being-circulated-as-footage-from-the-jantar-mantar-protest/",
+    "image_url": "https://www.vishvasnews.com/wp-content/themes/vishvasnews-advanced/images/whatapp-banner-hindi.png",
+    "skipped": true,
+    "skip_reason": "role: other"
+  },
+  {
+    "file": null,
+    "article_url": "https://www.vishvasnews.com/politics/fact-check-a-video-showing-a-clash-between-police-and-the-public-in-delhis-rohini-is-being-circulated-as-footage-from-the-jantar-mantar-protest/",
     "image_url": "https://ifcn-code-of-principles.nyc3.digitaloceanspaces.com/storage/badges/F4763216-516B-7CF2-C4EB-5045191A979E.png",
     "skipped": true,
     "skip_reason": "role: fact_check_marked"

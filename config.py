@@ -16,6 +16,45 @@ BASE_URL = "https://api.meta.ai/v1"
 API_KEY_ENV = "MODEL_API_KEY"
 SERPAPI_KEY_ENV = "SERPAPI_KEY"
 
+# Trusted fact-checker sites for the lookup stage. Entries are hostnames or
+# hostname/path-prefixes (path-scoped outlets match only under that path).
+TRUSTED_FACTCHECK_DOMAINS = (
+    "altnews.in",
+    "boomlive.in",
+    "newschecker.in",
+    "vishvasnews.com",
+    "factly.in",
+    "pib.gov.in",
+    "factcheck.afp.com",
+    "indiatoday.in/fact-check",
+    "thequint.com/news/webqoof",
+    "factcrescendo.com",
+    "english.factcrescendo.com",
+)
+
+# Tier-1 outlets: trusted fact-checkers plus major newsrooms. Tier 2 is the
+# default for everything else; tier 3 is user-generated content.
+TIER1_OUTLETS = TRUSTED_FACTCHECK_DOMAINS + (
+    "reuters.com",
+    "apnews.com",
+    "bbc.com",
+    "bbc.co.uk",
+    "thehindu.com",
+    "indianexpress.com",
+    "hindustantimes.com",
+    "ndtv.com",
+)
+TIER3_UGC = (
+    "x.com",
+    "facebook.com",
+    "youtube.com",
+    "scribd.com",
+    "substack.com",
+    "medium.com",
+    "blogspot.com",
+    "wordpress.com",
+)
+
 AGENT_MODEL = "muse-spark-1.3"
 CONTRIBUTOR_MODEL = "muse-spark-1.3-contributor"
 SEGMENTATION_MODEL = "sam-3.1"

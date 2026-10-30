@@ -29,6 +29,18 @@ def test_hindi_card():
     assert "स्रोत: https://a.com/x" in card
 
 
+def test_fact_checked_line_shown_in_both_languages():
+    card = format_card(_verdict(fact_checked_by="altnews.in"))
+    assert "Already fact-checked by altnews.in" in card
+    card = format_card(_verdict(language="hi", fact_checked_by="altnews.in"))
+    assert "पहले से तथ्य-जांचित: altnews.in" in card
+
+
+def test_missing_key_source_omits_source_line():
+    card = format_card(_verdict(verdict="Unverified", key_source=""))
+    assert "🔗" not in card
+
+
 def test_unknown_language_falls_back_to_english():
     card = format_card(_verdict(language="xx"))
     assert "Forward Court Verdict" in card

@@ -6,10 +6,10 @@ from PIL import Image
 
 from media.models import VisionResult
 from scripts.fetch_samples import (
-    ArticleVerdict,
-    classify_article,
+    ArticleReading,
     extract_body_images,
     fetch_samples,
+    read_article,
 )
 from tests.fakes import FakeClient
 
@@ -51,17 +51,25 @@ def test_extract_body_images_caps_per_article():
     assert len(extract_body_images(html, "https://x.com")) == 6
 
 
-def test_classify_article_returns_verdict():
+def test_read_article_returns_verdict_and_claim():
     fake = FakeClient(
-        parsed_by_model={ArticleVerdict: ArticleVerdict(verdict="Misleading")}
+        parsed_by_model={
+            ArticleReading: ArticleReading(
+                verdict="Misleading", false_claim="Old flood photo as today."
+            )
+        }
     )
-    assert classify_article("t", "body", client=fake) == "Misleading"
+    reading = read_article("t", "body", client=fake)
+    assert (reading.verdict, reading.false_claim) == (
+        "Misleading", "Old flood photo as today.",
+    )
 
 
-def test_fetch_samples_keeps_viral_claim_only(tmp_path):
+def test_fetch_samples_keeps_viral_and_original_with_claim(tmp_path):
     article = """
     <html><head><title>Old photo viral</title></head><body>
     <img src="/photos/claim.jpg" />
+    <img src="/photos/original.jpg" />
     <img src="/photos/stamp.jpg" />
     <img src="/photos/tiny.jpg" />
     </body></html>
@@ -85,8 +93,9 @@ def test_fetch_samples_keeps_viral_claim_only(tmp_path):
     vision_client = FakeClient(
         parse_queue=[
             _vision("viral_claim"),
-            ArticleVerdict(verdict="False"),
+            _vision("original_source"),
             _vision("fact_check_marked"),
+            ArticleReading(verdict="False", false_claim="Flood today."),
         ]
     )
     out = tmp_path / "images"
@@ -102,7 +111,15 @@ def test_fetch_samples_keeps_viral_claim_only(tmp_path):
             "image_url": "https://news.com/photos/claim.jpg",
             "role": "viral_claim",
             "expected": "False",
-        }
+            "claim": "Flood today.",
+            "ground_truth": ["https://news.com/photos/original.jpg"],
+        },
+        {
+            "file": "00-1-news.com.jpg",
+            "article_url": "https://news.com/a",
+            "image_url": "https://news.com/photos/original.jpg",
+            "role": "original_source",
+        },
     ]
     assert [entry["skip_reason"] for entry in skipped] == [
         "role: fact_check_marked",

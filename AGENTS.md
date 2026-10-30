@@ -44,6 +44,15 @@ in the user's language.
 - Reverse image search via SerpAPI Lens (key SERPAPI_KEY in .env, never logged);
   exact_matches are origin evidence, visual_matches are context only.
 - SerpAPI uploads cap at 500KB; images are downscaled client-side first.
+- Lookup stage: `fact check: <claim>` per claim, trusted domains only
+  (TRUSTED_FACTCHECK_DOMAINS in config.py); skip with --no-factcheck.
+- Judge votes 3x (majority wins, tie → Unverified); confidence from agreement.
+- Source tiers in config.py: tier-3 (UGC) can never be key_source; prefer tier-1.
+- Relevance gate (evidence/relevance.py): one structured call scores each item
+  0/1/2 per claim; 0s are dropped before debate, claims left bare yield Unverified.
+- ClaimReview: tier-1 JSON-LD ratings matching a claim decide the verdict
+  deterministically (high confidence, skips debate + votes) unless two tier-1
+  ratings contradict; the card adds "Already fact-checked by <outlet>".
 
 ## Rules
 - Evidence first: both debating agents get the same evidence list and may cite only from it.

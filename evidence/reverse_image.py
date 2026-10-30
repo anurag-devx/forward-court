@@ -174,30 +174,34 @@ def matches_to_evidence(
     items: list[EvidenceItem] = []
     for index, match in enumerate(exact):
         if index < ENRICH_EXACT:
-            snippet, date = enrich_from_page(
+            snippet, date, review = enrich_from_page(
                 match.source_url, match.page_title, match.page_title,
                 http_client=http_client,
             )
         else:
-            snippet, date = match.page_title, extract_date(match.page_title)
+            snippet, date, review = (
+                match.page_title, extract_date(match.page_title), None
+            )
         items.append(
             EvidenceItem(
                 claim=claim, source_url=match.source_url, date=date,
-                snippet=snippet,
+                snippet=snippet, claim_review=review,
             )
         )
     for index, match in enumerate(visual):
         if index < ENRICH_VISUAL:
-            snippet, date = enrich_from_page(
+            snippet, date, review = enrich_from_page(
                 match.source_url, match.page_title, match.page_title,
                 http_client=http_client,
             )
         else:
-            snippet, date = match.page_title, extract_date(match.page_title)
+            snippet, date, review = (
+                match.page_title, extract_date(match.page_title), None
+            )
         items.append(
             EvidenceItem(
                 claim=claim, source_url=match.source_url, date=date,
-                snippet=snippet, visual_only=True,
+                snippet=snippet, visual_only=True, claim_review=review,
             )
         )
     return items
