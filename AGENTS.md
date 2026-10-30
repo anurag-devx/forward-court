@@ -22,12 +22,19 @@ in the user's language.
 - Never install packages globally.
 
 ## Structure
+- main.py    CLI entry: `python main.py "<forward text>"` (Module 0; gateway later)
+- config.py  model names, API client, token-usage tracking
 - gateway/   WhatsApp webhook in/out (later)
 - intake/    language detection + claim extraction
 - evidence/  search grounding, link checks, image/video evidence
 - court/     prosecutor, defender, judge agents
 - card/      verdict card formatting
 - tests/     pytest per module + sample forwards
+
+## API notes
+- Responses API throughout (`client.responses.parse` / `.create`).
+- Evidence uses the `web_search` tool with `include=["web_search_call.results"]`;
+  URLs come only from grounding metadata, never from model text.
 
 ## Rules
 - Evidence first: both debating agents get the same evidence list and may cite only from it.
