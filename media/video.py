@@ -32,6 +32,9 @@ INSTRUCTIONS = (
     "Report the ISO 639-1 language of visible text, or 'en' when there is none. "
     "When claim context is given, judge whether the video shows the claimed "
     "event: 'yes', 'no' (with a short mismatch_reason), or 'unclear'. "
+    "'unclear' is only for media that could plausibly show the event but "
+    "cannot be confirmed; abstract, decorative, or clearly unrelated "
+    "visuals (test patterns, solid colors, wrong place or subject) are 'no'. "
     "With no claim context, shows_claimed_event is 'unclear'. "
     "Never guess the video's origin, date, or filmer."
 )

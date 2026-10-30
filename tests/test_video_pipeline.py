@@ -71,8 +71,8 @@ def _client(frames=2):
         + [
             [search_call([(f"https://g.com/{i}", "T", "snippet")])]
             for i in range(6)
-        ]
-        + [[search_call([])]] * 3,
+        ],
+        lookup_outputs=[[search_call([])]] * 3,
     )
 
 
@@ -136,7 +136,7 @@ def test_claims_merge_video_first_truncated_to_3(tmp_path, monkeypatch):
         if "tools" in kwargs and not kwargs["input"].startswith("fact check:")
     ]
     assert len(grounding_inputs) == 6  # 3 merged claims x support/refute
-    assert "video claim one" in grounding_inputs[0]
+    assert any("video claim one" in text for text in grounding_inputs)
     assert "caption claim" not in "".join(grounding_inputs)
 
 
@@ -186,3 +186,33 @@ def test_cli_rejects_oversize_video(tmp_path, capsys):
     big.write_bytes(b"x" * (16 * 1024 * 1024 + 1))
     assert main.main(["--video", str(big)]) == 2
     assert "16MB" in capsys.readouterr().err
+
+
+def test_video_mismatch_short_circuits_before_frames(tmp_path, monkeypatch):
+    client = _client()
+    client.responses.parsed_by_model[VideoResult] = _video().model_copy(
+        update={
+            "shows_claimed_event": "no",
+            "mismatch_reason": "shows a test pattern",
+            "consistency_agreement": 3,
+        }
+    )
+
+    def _forbidden(*args, **kwargs):
+        raise AssertionError("must not run after mismatch gate")
+
+    monkeypatch.setattr(main, "extract_audio", lambda path: b"fake-wav")
+    monkeypatch.setattr(
+        main, "transcribe_audio", lambda audio, **kwargs: "the river flooded"
+    )
+    monkeypatch.setattr(main, "extract_key_frames", _forbidden)
+    card, tracker = main.run_video_forward(
+        _clip(tmp_path),
+        "floods hit Patna today",
+        client=client,
+        http_client=dead_http_client(),
+        provider=_FakeProvider([]),
+    )
+    assert "MISLEADING" in card.splitlines()[0]
+    assert "media mismatch verdict (agreement 3/3)." in tracker.notes
+    assert not [call for call in client.responses.calls if call[0] == "create"]

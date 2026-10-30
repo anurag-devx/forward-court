@@ -14,7 +14,6 @@ from config import MAX_CLAIMS, UsageTracker, get_client, serpapi_key
 from court.defender import argue_true
 from court.judge import (
     find_claim_review_verdict,
-    has_media_tied_evidence,
     judge_verdict,
     mismatch_verdict,
     no_evidence_verdict,
@@ -22,7 +21,12 @@ from court.judge import (
 from court.models import ImageContext, Verdict
 from court.prosecutor import argue_false
 from evidence.factcheck import lookup_factchecks
-from evidence.grounder import GroundingError, gather_evidence
+from evidence.grounder import (
+    EVIDENCE_WORKERS,
+    DaemonPool,
+    GroundingError,
+    gather_evidence,
+)
 from evidence.relevance import filter_evidence
 from evidence.reverse_image import (
     ReverseSearchError,
@@ -96,16 +100,23 @@ def run_forward(
         tracker.language = intake.language
         if not intake.claims:
             return "No checkable claims found in this forward.", tracker
-        evidence = gather_evidence(
-            intake.claims, client=client, tracker=tracker, http_client=http_client
-        )
-        if factcheck:
-            evidence = lookup_factchecks(
-                intake.claims, client=client, tracker=tracker,
-                http_client=http_client, language=intake.language,
-            ) + evidence
-        else:
-            tracker.note("fact-check lookup disabled.")
+        with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
+            grounding = pool.submit(
+                gather_evidence, intake.claims, client=client,
+                tracker=tracker, http_client=http_client, executor=pool,
+            )
+            lookup = None
+            if factcheck:
+                lookup = pool.submit(
+                    lookup_factchecks, intake.claims, client=client,
+                    tracker=tracker, http_client=http_client,
+                    language=intake.language, executor=pool,
+                )
+            evidence = grounding.result()
+            if lookup is not None:
+                evidence = lookup.result() + evidence
+            else:
+                tracker.note("fact-check lookup disabled.")
         evidence, bare_claims = filter_evidence(
             intake.claims, evidence, client=client, tracker=tracker
         )
@@ -154,10 +165,6 @@ def run_image_forward(
             image_bytes, mime=mime, client=client, tracker=tracker,
             context=caption,
         )
-        media_mismatch: str | None = None
-        if vision.shows_claimed_event == "no":
-            media_mismatch = vision.mismatch_reason or "media shows other content"
-            tracker.note(f"media_mismatch: {media_mismatch}")
         caption_claims: list[str] = []
         caption_media: list[str] = []
         language = vision.language
@@ -167,12 +174,23 @@ def run_image_forward(
             caption_media = intake.media_claims
             language = intake.language
         tracker.language = language
-        presented_as_recent = is_presented_as_recent(
-            [vision.visible_text, caption or ""]
-        )
         claims = (vision.claims_from_image + caption_claims)[:MAX_CLAIMS]
         if not claims:
             return "No checkable claims found in this forward.", tracker
+        if vision.shows_claimed_event == "no":
+            reason = vision.mismatch_reason or "media shows other content"
+            tracker.note(f"media_mismatch: {reason}")
+            agreement = vision.consistency_agreement
+            tracker.note(f"media mismatch verdict (agreement {agreement}/3).")
+            return (
+                format_card(
+                    mismatch_verdict(reason, language, agreement)
+                ),
+                tracker,
+            )
+        presented_as_recent = is_presented_as_recent(
+            [vision.visible_text, caption or ""]
+        )
         media_for_judge = [
             claim for claim in claims
             if claim in set(vision.claims_from_image + caption_media)
@@ -222,16 +240,23 @@ def run_image_forward(
                         f"found ground truth: {'yes' if found else 'no'}.")
             except ReverseSearchError as exc:
                 tracker.note(f"reverse search unavailable: {exc}")
-        evidence = reverse_items + gather_evidence(
-            claims, client=client, tracker=tracker, http_client=http_client
-        )
-        if factcheck:
-            evidence = lookup_factchecks(
-                claims, client=client, tracker=tracker, http_client=http_client,
-                language=language,
-            ) + evidence
-        else:
-            tracker.note("fact-check lookup disabled.")
+        with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
+            grounding = pool.submit(
+                gather_evidence, claims, client=client,
+                tracker=tracker, http_client=http_client, executor=pool,
+            )
+            lookup = None
+            if factcheck:
+                lookup = pool.submit(
+                    lookup_factchecks, claims, client=client,
+                    tracker=tracker, http_client=http_client,
+                    language=language, executor=pool,
+                )
+            evidence = reverse_items + grounding.result()
+            if lookup is not None:
+                evidence = lookup.result() + evidence
+            else:
+                tracker.note("fact-check lookup disabled.")
         evidence, bare_claims = filter_evidence(
             claims, evidence, client=client, tracker=tracker
         )
@@ -247,15 +272,6 @@ def run_image_forward(
                 f"{review_verdict.verdict}."
             )
             return format_card(review_verdict), tracker
-        if media_mismatch is not None and not has_media_tied_evidence(
-            evidence, exact_urls, media_for_judge
-        ):
-            agreement = vision.consistency_agreement
-            tracker.note(f"media mismatch verdict (agreement {agreement}/3).")
-            return (
-                format_card(mismatch_verdict(media_mismatch, language, agreement)),
-                tracker,
-            )
         prosecution = argue_false(claims, evidence, client=client, tracker=tracker)
         defense = argue_true(claims, evidence, client=client, tracker=tracker)
         verdict = judge_verdict(
@@ -274,7 +290,6 @@ def run_image_forward(
             no_evidence_claims=bare_claims,
             media_claims=media_for_judge,
             exact_urls=exact_urls,
-            media_mismatch=media_mismatch,
         )
         return format_card(verdict), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
@@ -306,14 +321,18 @@ def run_video_forward(
         video = describe_video(
             video_bytes, client=client, tracker=tracker, context=caption
         )
-        media_mismatch: str | None = None
-        if video.shows_claimed_event == "no":
-            media_mismatch = video.mismatch_reason or "media shows other content"
-            tracker.note(f"media_mismatch: {media_mismatch}")
+        language = video.language
+        caption_claims: list[str] = []
+        caption_media: list[str] = []
+        if caption:
+            intake = extract_intake(caption, client=client, tracker=tracker)
+            caption_claims = intake.claims
+            caption_media = intake.media_claims
+            language = intake.language
         transcript_claims: list[str] = []
         transcript_media: list[str] = []
         transcript = ""
-        language = video.language
+        transcript_language: str | None = None
         audio = extract_audio(resolved)
         if audio is not None:
             try:
@@ -327,25 +346,31 @@ def run_video_forward(
                 spoken = extract_intake(transcript, client=client, tracker=tracker)
                 transcript_claims = spoken.claims
                 transcript_media = spoken.media_claims
-                language = spoken.language
+                transcript_language = spoken.language
         else:
             tracker.note("no usable audio track: transcript skipped.")
-        caption_claims: list[str] = []
-        caption_media: list[str] = []
-        if caption:
-            intake = extract_intake(caption, client=client, tracker=tracker)
-            caption_claims = intake.claims
-            caption_media = intake.media_claims
-            language = intake.language
+        if not caption and transcript_language is not None:
+            language = transcript_language
         tracker.language = language
-        presented_as_recent = is_presented_as_recent(
-            [video.visible_text, transcript, caption or ""]
-        )
         claims = (
             video.claims_from_video + transcript_claims + caption_claims
         )[:MAX_CLAIMS]
         if not claims:
             return "No checkable claims found in this forward.", tracker
+        if video.shows_claimed_event == "no":
+            reason = video.mismatch_reason or "media shows other content"
+            tracker.note(f"media_mismatch: {reason}")
+            agreement = video.consistency_agreement
+            tracker.note(f"media mismatch verdict (agreement {agreement}/3).")
+            return (
+                format_card(
+                    mismatch_verdict(reason, language, agreement)
+                ),
+                tracker,
+            )
+        presented_as_recent = is_presented_as_recent(
+            [video.visible_text, transcript, caption or ""]
+        )
         media_for_judge = [
             claim for claim in claims
             if claim in set(
@@ -399,16 +424,23 @@ def run_video_forward(
                         reverse_items.append(item)
             finally:
                 tracker.note(f"SerpAPI image searches: {counting.searches}.")
-        evidence = reverse_items + gather_evidence(
-            claims, client=client, tracker=tracker, http_client=http_client
-        )
-        if factcheck:
-            evidence = lookup_factchecks(
-                claims, client=client, tracker=tracker, http_client=http_client,
-                language=language,
-            ) + evidence
-        else:
-            tracker.note("fact-check lookup disabled.")
+        with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
+            grounding = pool.submit(
+                gather_evidence, claims, client=client,
+                tracker=tracker, http_client=http_client, executor=pool,
+            )
+            lookup = None
+            if factcheck:
+                lookup = pool.submit(
+                    lookup_factchecks, claims, client=client,
+                    tracker=tracker, http_client=http_client,
+                    language=language, executor=pool,
+                )
+            evidence = reverse_items + grounding.result()
+            if lookup is not None:
+                evidence = lookup.result() + evidence
+            else:
+                tracker.note("fact-check lookup disabled.")
         evidence, bare_claims = filter_evidence(
             claims, evidence, client=client, tracker=tracker
         )
@@ -424,15 +456,6 @@ def run_video_forward(
                 f"{review_verdict.verdict}."
             )
             return format_card(review_verdict), tracker
-        if media_mismatch is not None and not has_media_tied_evidence(
-            evidence, exact_urls, media_for_judge
-        ):
-            agreement = video.consistency_agreement
-            tracker.note(f"media mismatch verdict (agreement {agreement}/3).")
-            return (
-                format_card(mismatch_verdict(media_mismatch, language, agreement)),
-                tracker,
-            )
         prosecution = argue_false(claims, evidence, client=client, tracker=tracker)
         defense = argue_true(claims, evidence, client=client, tracker=tracker)
         verdict = judge_verdict(
@@ -451,7 +474,6 @@ def run_video_forward(
             no_evidence_claims=bare_claims,
             media_claims=media_for_judge,
             exact_urls=exact_urls,
-            media_mismatch=media_mismatch,
         )
         return format_card(verdict), tracker
     return _run_with_deadline(tracker, _go, deadline_s)

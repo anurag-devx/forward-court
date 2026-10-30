@@ -70,9 +70,7 @@ INSTRUCTIONS = (
     "decisive, unless other cited evidence contradicts it. "
     "Prefer tier-1 sources; never use a tier-3 source as key_source. "
     "Rate the forward on the media claims first; report the event-claim "
-    "assessment in the reason. When told the media does not show the "
-    "claimed event, that weighs toward Misleading: say 'media does not "
-    "show the claimed event' in the reason."
+    "assessment in the reason."
 )
 
 
@@ -257,14 +255,6 @@ def find_claim_review_verdict(
     )
 
 
-def has_media_tied_evidence(evidence, exact_urls, media_claims) -> bool:
-    """True when any item is media-provenance evidence for the override."""
-    return any(
-        _override_eligible(item, True, exact_urls, media_claims)
-        for item in evidence
-    )
-
-
 def mismatch_verdict(reason: str, language: str, agreement: int) -> Verdict:
     """Misleading verdict from a voted media mismatch. No key source:
     the verdict rests on the media itself, not on a cited URL."""
@@ -307,7 +297,6 @@ def judge_verdict(
     no_evidence_claims: list[str] | None = None,
     media_claims: list[str] | None = None,
     exact_urls: set[str] | None = None,
-    media_mismatch: str | None = None,
 ) -> Verdict:
     if tracker is not None:
         tracker.mark("judge")
@@ -329,18 +318,11 @@ def judge_verdict(
             f"Claims with no kept evidence (treat as Unverified): "
             f"{no_evidence_claims}\n"
         )
-    mismatch_line = ""
-    if media_mismatch:
-        mismatch_line = (
-            f"Media mismatch: media does not show the claimed event "
-            f"({media_mismatch}).\n"
-        )
     media_set = set(media_claims or [])
     media_section = [claim for claim in claims if claim in media_set]
     event_section = [claim for claim in claims if claim not in media_set]
     brief_input = (
         f"Forward language: {language}\n{image_line}{no_evidence_line}"
-        f"{mismatch_line}"
         f"Media claims:\n{media_section}\n\n"
         f"Event claims:\n{event_section}\n\n"
         f"Evidence:\n{evidence_brief(evidence)}\n\n"

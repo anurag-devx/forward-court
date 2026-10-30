@@ -5,6 +5,7 @@ Model names live ONLY in this file. Every other module imports them from here.
 from __future__ import annotations
 
 import os
+import threading
 from dataclasses import dataclass, field
 
 from dotenv import load_dotenv
@@ -109,24 +110,32 @@ class UsageTracker:
     notes: list = field(default_factory=list)
     current: str | None = None
     language: str = "en"
+    lock: threading.Lock = field(
+        default_factory=threading.Lock, repr=False, compare=False
+    )
 
     def note(self, message: str) -> None:
-        self.notes.append(message)
+        with self.lock:
+            self.notes.append(message)
 
     def mark(self, stage: str) -> None:
         """Record the currently executing stage (for timeout reports)."""
-        self.current = stage
+        with self.lock:
+            self.current = stage
 
     def add(self, usage, stage: str | None = None) -> None:
         if usage is None:
             return
         in_tokens = int(getattr(usage, "input_tokens", 0) or 0)
         out_tokens = int(getattr(usage, "output_tokens", 0) or 0)
-        self.input_tokens += in_tokens
-        self.output_tokens += out_tokens
-        if stage is not None:
-            stage_in, stage_out = self.stages.get(stage, (0, 0))
-            self.stages[stage] = (stage_in + in_tokens, stage_out + out_tokens)
+        with self.lock:
+            self.input_tokens += in_tokens
+            self.output_tokens += out_tokens
+            if stage is not None:
+                stage_in, stage_out = self.stages.get(stage, (0, 0))
+                self.stages[stage] = (
+                    stage_in + in_tokens, stage_out + out_tokens
+                )
 
     @property
     def total_tokens(self) -> int:

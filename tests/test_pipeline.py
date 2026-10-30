@@ -42,10 +42,16 @@ def _pipeline_client(**overrides):
         [
             [search_call([("https://debunk.com/x", "T", "April 3, 2026 review")])],
             [search_call([("https://debunk.com/x", "T", "dup")])],
-            [search_call([("https://www.altnews.in/y", "T", "checked false")])],
         ],
     )
-    return FakeClient(parsed_by_model=parsed, outputs=outputs)
+    lookup_outputs = overrides.get(
+        "lookup_outputs",
+        [[search_call([("https://www.altnews.in/y", "T", "checked false")])]],
+    )
+    return FakeClient(
+        parsed_by_model=parsed, outputs=outputs,
+        lookup_outputs=lookup_outputs,
+    )
 
 
 def test_full_pipeline_offline():
@@ -61,20 +67,25 @@ def test_full_pipeline_offline():
 
 
 def test_pipeline_records_per_stage_breakdown():
+    from collections import Counter
+
     _, tracker = main.run_forward(
         "some claim", client=_pipeline_client(), http_client=dead_http_client()
     )
     stages = [line.split(":")[0].strip() for line in tracker.breakdown()]
-    assert stages == [
-        "intake",
-        "grounding",
-        "grounding",
-        "factcheck",
-        "relevance",
-        "prosecutor",
-        "defender",
-        "judge",
-    ]
+    # concurrent grounding/lookup interleave; compare order-free
+    assert Counter(stages) == Counter(
+        [
+            "intake",
+            "grounding",
+            "grounding",
+            "factcheck",
+            "relevance",
+            "prosecutor",
+            "defender",
+            "judge",
+        ]
+    )
     assert any("claim1:support" in line for line in tracker.breakdown())
     assert any("claim1:refute" in line for line in tracker.breakdown())
 
@@ -117,15 +128,16 @@ def test_claim_review_path_skips_debate_and_votes(monkeypatch):
         verdict="False",
         claim_text="hot lemon water cures cancer",
     )
-    real_enrich = factcheck_module.enrich_from_page
+    real_fetch = factcheck_module.fetch_page_unit
 
-    def patched(url, title, fallback, **kwargs):
-        snippet, date, _ = real_enrich(url, title, fallback, **kwargs)
+    def patched(args):
+        url = args[0]
+        snippet, date, _ = real_fetch(args)
         if "altnews" in url:
             return snippet, date, review
         return snippet, date, None
 
-    monkeypatch.setattr(factcheck_module, "enrich_from_page", patched)
+    monkeypatch.setattr(factcheck_module, "fetch_page_unit", patched)
     client = _pipeline_client()
     card, tracker = main.run_forward(
         "some claim", client=client, http_client=dead_http_client()
@@ -204,7 +216,12 @@ def test_deadline_card_uses_detected_language():
         "something", client=HangingClient(), deadline_s=0.5
     )
     assert "अभी सत्यापित नहीं हो सका" in card
-    assert "run timed out during stage: grounding." in tracker.notes
+    # grounding and lookup race; either may hold the last mark
+    assert len(tracker.notes) == 1
+    assert tracker.notes[0] in (
+        "run timed out during stage: grounding.",
+        "run timed out during stage: lookup.",
+    )
 
 
 def test_no_claims_short_circuits():

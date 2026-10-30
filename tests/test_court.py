@@ -6,7 +6,6 @@ from config import UsageTracker
 from court.defender import argue_true
 from court.judge import (
     find_claim_review_verdict,
-    has_media_tied_evidence,
     judge_verdict,
     mismatch_verdict,
     no_evidence_verdict,
@@ -693,19 +692,17 @@ def test_media_override_skips_untied_factcheck():
     assert verdict.verdict == "True"
 
 
-def test_judge_brief_sections_media_first_and_mismatch_line():
+def test_judge_brief_sections_media_claims_first():
     fake = FakeClient(parsed_by_model={Verdict: _verdict()})
     judge_verdict(
         ["floods hit Patna", "video shows it"], _evidence(),
         Argument(points=[]), _defense(), "en", False, client=fake,
-        media_claims=["video shows it"], media_mismatch="shows a test pattern",
+        media_claims=["video shows it"],
     )
     sent = fake.responses.calls[0][1]["input"]
     assert "Media claims:\n['video shows it']" in sent
     assert "Event claims:\n['floods hit Patna']" in sent
     assert sent.index("Media claims") < sent.index("Event claims")
-    assert "media does not show the claimed event" in sent
-    assert "test pattern" in sent
 
 
 def test_judge_brief_omits_mismatch_line_when_none():
@@ -728,14 +725,11 @@ def test_mismatch_verdict_confidence_follows_agreement():
     assert split.language == "hi"
 
 
-def test_has_media_tied_evidence():
-    exact = EvidenceItem(
-        claim="c", source_url="https://a.com/x", snippet="s",
-        exact_match=True,
+def test_judge_brief_never_mentions_mismatch():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict()})
+    judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
     )
-    topic = EvidenceItem(
-        claim="c", source_url="https://b.com/y", snippet="s"
-    )
-    assert has_media_tied_evidence([exact], set(), []) is True
-    assert has_media_tied_evidence([topic], set(), []) is False
-    assert has_media_tied_evidence([], set(), []) is False
+    sent = fake.responses.calls[0][1]["input"]
+    assert "mismatch" not in sent.lower()

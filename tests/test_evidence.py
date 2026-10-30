@@ -5,7 +5,12 @@ import pytest
 
 from config import UsageTracker
 from evidence.grounder import GroundingError, gather_evidence
-from tests.fakes import FakeClient, dead_http_client, search_call
+from tests.fakes import (
+    FakeClient,
+    SyncExecutor,
+    dead_http_client,
+    search_call,
+)
 
 
 def _client(outputs):
@@ -49,7 +54,8 @@ def test_dual_queries_and_dedup():
         ]
     )
     items = gather_evidence(
-        ["claim one"], client=client, http_client=dead_http_client()
+        ["claim one"], client=client, http_client=dead_http_client(),
+        executor=SyncExecutor()
     )
     assert [i.source_url for i in items] == ["https://a.com/x?utm_s=1", "https://b.com/y"]
     assert items[0].date == "2026-01-05"
@@ -80,7 +86,8 @@ def test_handles_live_api_dict_shaped_results():
     }
     client = _client([[dict_call], [search_call([])]])
     items = gather_evidence(
-        ["claim one"], client=client, http_client=dead_http_client()
+        ["claim one"], client=client, http_client=dead_http_client(),
+        executor=SyncExecutor()
     )
     assert [i.source_url for i in items] == ["https://debunk.com/x"]
     assert items[0].snippet == "Lemon water fact check, April 3, 2026"
@@ -107,7 +114,10 @@ def test_fetches_top3_interleaved_with_meta_dates():
         },
         seen,
     )
-    items = gather_evidence(["claim one"], client=client, http_client=http)
+    items = gather_evidence(
+        ["claim one"], client=client, http_client=http,
+        executor=SyncExecutor(),
+    )
     assert [i.source_url for i in items] == [
         "https://x.com/s1",
         "https://x.com/r1",
@@ -133,7 +143,10 @@ def test_fetch_failure_keeps_fallback_and_continues():
     client = _client([[search_call(support)], [search_call(refute)]])
     seen: list[str] = []
     http = _http_client({"https://x.com/ok": _page("OKMARK", "2019-01-02")}, seen)
-    items = gather_evidence(["claim one"], client=client, http_client=http)
+    items = gather_evidence(
+        ["claim one"], client=client, http_client=http,
+        executor=SyncExecutor(),
+    )
     assert items[0].snippet == "2020-11-12 gone snippet"
     assert items[0].date == "2020-11-12"
     assert "OKMARK" in items[1].snippet
@@ -141,7 +154,8 @@ def test_fetch_failure_keeps_fallback_and_continues():
 
 
 def test_raises_when_model_does_not_search():
-    client = _client([[SimpleNamespace(type="message", status="completed")]])
+    empty = [SimpleNamespace(type="message", status="completed")]
+    client = _client([empty, empty])
     with pytest.raises(GroundingError, match="no grounded search"):
         gather_evidence(["claim one"], client=client)
 
@@ -171,3 +185,46 @@ def test_tracks_usage():
         ["c"], client=client, tracker=tracker, http_client=dead_http_client()
     )
     assert tracker.total_tokens == 300
+
+
+def test_real_pool_matches_sync_pool_results():
+    def _fresh():
+        return _client(
+            [
+                [search_call([("https://a.com/1", "T", "s")])],
+                [search_call([("https://b.com/2", "T", "s")])],
+            ]
+        )
+
+    sync_items = gather_evidence(
+        ["c"], client=_fresh(), http_client=dead_http_client(),
+        executor=SyncExecutor(),
+    )
+    expected = sorted(i.source_url for i in sync_items)
+    for _ in range(5):
+        live_items = gather_evidence(
+            ["c"], client=_fresh(), http_client=dead_http_client()
+        )
+        assert sorted(i.source_url for i in live_items) == expected
+
+
+def test_tracker_totals_exact_under_threads():
+    import threading
+    from types import SimpleNamespace
+
+    tracker = UsageTracker()
+    usage = SimpleNamespace(input_tokens=100, output_tokens=50)
+
+    def _hammer():
+        for _ in range(200):
+            tracker.add(usage, stage="grounding")
+            tracker.note("n")
+
+    threads = [threading.Thread(target=_hammer) for _ in range(8)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert tracker.total_tokens == 8 * 200 * 150
+    assert tracker.stages["grounding"] == (8 * 200 * 100, 8 * 200 * 50)
+    assert len(tracker.notes) == 8 * 200

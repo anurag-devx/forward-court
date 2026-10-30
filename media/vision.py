@@ -34,6 +34,9 @@ INSTRUCTIONS = (
     "watermarks, or tickers); 'other' otherwise. "
     "When claim context is given, judge whether the image shows the claimed "
     "event: 'yes', 'no' (with a short mismatch_reason), or 'unclear'. "
+    "'unclear' is only for media that could plausibly show the event but "
+    "cannot be confirmed; abstract, decorative, or clearly unrelated "
+    "visuals (test patterns, solid colors, wrong place or subject) are 'no'. "
     "With no claim context, shows_claimed_event is 'unclear'. "
     "Never guess the image's origin, date, or photographer."
 )

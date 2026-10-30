@@ -75,8 +75,8 @@ def _client():
         + [
             [search_call([(f"https://g.com/{i}", "T", "snippet")])]
             for i in range(6)
-        ]
-        + [[search_call([])]] * 3,
+        ],
+        lookup_outputs=[[search_call([])]] * 3,
     )
 
 
@@ -133,7 +133,7 @@ def test_claims_merge_image_first_truncated_to_3(tmp_path):
         if "tools" in kwargs and not kwargs["input"].startswith("fact check:")
     ]
     assert len(grounding_inputs) == 6  # 3 merged claims x support/refute
-    assert "vision claim one" in grounding_inputs[0]
+    assert any("vision claim one" in text for text in grounding_inputs)
     assert "caption claim two" not in "".join(grounding_inputs)
 
 
@@ -227,11 +227,61 @@ def test_vision_mismatch_short_circuits_without_tied_evidence(tmp_path):
         for _, kwargs in client.responses.calls
         if kwargs.get("text_format") is Verdict
     ]
+    assert not [call for call in client.responses.calls if call[0] == "create"]
 
 
-def test_vision_mismatch_reaches_judge_brief_when_tied(tmp_path):
+def test_no_claims_short_circuits_before_mismatch_gate(tmp_path):
+    client = _client()
+    client.responses.parsed_by_model[VisionResult] = _vision().model_copy(
+        update={
+            "claims_from_image": [],
+            "shows_claimed_event": "no",
+            "mismatch_reason": "shows a test pattern",
+            "consistency_agreement": 3,
+        }
+    )
+    client.responses.parsed_by_model[IntakeResult] = IntakeResult(
+        language="en", claims=[], presented_as_recent=False
+    )
+    card, tracker = main.run_image_forward(
+        _image_file(tmp_path),
+        "just a greeting",
+        client=client,
+        http_client=dead_http_client(),
+        provider=_FakeProvider([]),
+    )
+    assert card == "No checkable claims found in this forward."
+    assert "media mismatch verdict" not in "".join(tracker.notes)
+
+
+def test_mismatch_card_uses_caption_language(tmp_path):
+    client = _client()
+    client.responses.parsed_by_model[VisionResult] = _vision().model_copy(
+        update={
+            "language": "en",
+            "shows_claimed_event": "no",
+            "mismatch_reason": "shows a test pattern",
+            "consistency_agreement": 3,
+        }
+    )
+    client.responses.parsed_by_model[IntakeResult] = IntakeResult(
+        language="hi",
+        claims=["बाढ़ आई"],
+        presented_as_recent=False,
+    )
+    card, _ = main.run_image_forward(
+        _image_file(tmp_path),
+        "बाढ़ आई",
+        client=client,
+        http_client=dead_http_client(),
+        provider=_FakeProvider([]),
+    )
+    assert "मीडिया दावा की गई घटना नहीं दिखाता" in card
+
+
+def test_vision_mismatch_short_circuits_despite_tied_evidence(tmp_path):
     client = _mismatch_client()
-    _, tracker = main.run_image_forward(
+    card, tracker = main.run_image_forward(
         _image_file(tmp_path),
         "floods hit Patna today",
         client=client,
@@ -245,11 +295,10 @@ def test_vision_mismatch_reaches_judge_brief_when_tied(tmp_path):
             ]
         ),
     )
-    assert "media_mismatch: shows a test pattern" in tracker.notes
-    judge_inputs = [
-        kwargs["input"]
+    assert "MISLEADING" in card.splitlines()[0]
+    assert "media mismatch verdict (agreement 3/3)." in tracker.notes
+    assert not [
+        kwargs
         for _, kwargs in client.responses.calls
         if kwargs.get("text_format") is Verdict
     ]
-    assert judge_inputs
-    assert all("Media mismatch" in sent for sent in judge_inputs)
