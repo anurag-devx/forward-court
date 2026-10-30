@@ -11,7 +11,10 @@ INSTRUCTIONS = (
     "Return an ISO 639-1 language code (e.g. 'en' for English, 'hi' for Hindi). "
     "List each distinct checkable factual claim once, most important first. "
     "Skip greetings, opinions, prayers, jokes, and calls to forward. "
-    "If there is no checkable factual claim, return an empty list."
+    "If there is no checkable factual claim, return an empty list. "
+    "Set presented_as_recent true when the forward presents events as "
+    "breaking, just-happened, or otherwise current "
+    "(e.g. 'breaking', 'just now', 'today', 'this morning'); false otherwise."
 )
 
 
@@ -27,5 +30,7 @@ def extract_intake(text: str, *, client, tracker=None) -> IntakeResult:
         tracker.add(response.usage)
     result = response.output_parsed
     return IntakeResult(
-        language=result.language, claims=list(result.claims)[:MAX_CLAIMS]
+        language=result.language,
+        claims=list(result.claims)[:MAX_CLAIMS],
+        presented_as_recent=result.presented_as_recent,
     )

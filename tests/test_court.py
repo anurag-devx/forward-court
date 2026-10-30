@@ -1,3 +1,7 @@
+from datetime import date
+
+import pytest
+
 from court.defender import argue_true
 from court.judge import judge_verdict
 from court.models import Argument, ArgPoint, Verdict
@@ -48,6 +52,20 @@ def _verdict(**overrides):
     return Verdict(**base)
 
 
+def _old_evidence(day="2015-04-25"):
+    return [
+        EvidenceItem(
+            claim="c", source_url="https://a.com/x", date=day, snippet="old"
+        )
+    ]
+
+
+def _defense():
+    return Argument(
+        points=[ArgPoint(text="it happened", source_url="https://a.com/x")]
+    )
+
+
 def test_judge_drops_uncited_points():
     fake = FakeClient(parsed_by_model={Verdict: _verdict(verdict="False")})
     prosecution = Argument(
@@ -57,7 +75,8 @@ def test_judge_drops_uncited_points():
         ]
     )
     verdict = judge_verdict(
-        ["c"], _evidence(), prosecution, Argument(points=[]), "en", client=fake
+        ["c"], _evidence(), prosecution, Argument(points=[]), "en", False,
+        client=fake,
     )
     brief = fake.responses.calls[0][1]["input"]
     assert "real cite" in brief
@@ -71,7 +90,8 @@ def test_judge_forces_unverified_when_all_dropped():
         points=[ArgPoint(text="invented", source_url="https://evil.com")]
     )
     verdict = judge_verdict(
-        ["c"], _evidence(), prosecution, Argument(points=[]), "en", client=fake
+        ["c"], _evidence(), prosecution, Argument(points=[]), "en", False,
+        client=fake,
     )
     assert verdict.verdict == "Unverified"
     assert verdict.confidence == "low"
@@ -89,7 +109,8 @@ def test_judge_falls_back_to_most_cited_key_source():
         ]
     )
     verdict = judge_verdict(
-        ["c"], _evidence(), prosecution, Argument(points=[]), "en", client=fake
+        ["c"], _evidence(), prosecution, Argument(points=[]), "en", False,
+        client=fake,
     )
     assert verdict.key_source == "https://b.com/y"
 
@@ -102,39 +123,62 @@ def test_judge_flags_recycled_old_news():
             )
         }
     )
-    old = [
-        EvidenceItem(
-            claim="c",
-            source_url="https://a.com/x",
-            date="2015-04-25",
-            snippet="old quake",
-        )
-    ]
-    prosecution = Argument(points=[])
-    defense = Argument(
-        points=[ArgPoint(text="it happened", source_url="https://a.com/x")]
+    verdict = judge_verdict(
+        ["c"], _old_evidence(), Argument(points=[]), _defense(), "en", True,
+        client=fake,
     )
-    verdict = judge_verdict(["c"], old, prosecution, defense, "en", client=fake)
     assert verdict.verdict == "Misleading"
     assert "recycled" in verdict.reason
 
 
-def test_judge_keeps_verdict_without_timeframe():
+def test_judge_skips_override_when_not_presented_as_recent():
+    fake = FakeClient(
+        parsed_by_model={
+            Verdict: _verdict(verdict="True", claim_timeframe="2026-10-27")
+        }
+    )
+    verdict = judge_verdict(
+        ["c"], _old_evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
+    )
+    assert verdict.verdict == "True"
+
+
+def test_judge_defaults_implied_date_to_today():
     fake = FakeClient(
         parsed_by_model={Verdict: _verdict(verdict="True", claim_timeframe=None)}
     )
-    old = [
-        EvidenceItem(
-            claim="c",
-            source_url="https://a.com/x",
-            date="2015-04-25",
-            snippet="old quake",
-        )
-    ]
-    defense = Argument(
-        points=[ArgPoint(text="it happened", source_url="https://a.com/x")]
+    verdict = judge_verdict(
+        ["c"], _old_evidence(), Argument(points=[]), _defense(), "en", True,
+        client=fake, today=date(2026, 10, 27),
+    )
+    assert verdict.verdict == "Misleading"
+
+
+@pytest.mark.parametrize(
+    "source_day, expected",
+    [("2026-09-27", "True"), ("2026-09-26", "Misleading")],
+)
+def test_override_threshold_is_30_days(source_day, expected):
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(verdict="True", claim_timeframe=None)}
     )
     verdict = judge_verdict(
-        ["c"], old, Argument(points=[]), defense, "en", client=fake
+        ["c"], _old_evidence(source_day), Argument(points=[]), _defense(),
+        "en", True, client=fake, today=date(2026, 10, 27),
+    )
+    assert verdict.verdict == expected
+
+
+def test_judge_keeps_verdict_without_source_dates():
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(verdict="True", claim_timeframe=None)}
+    )
+    dateless = [
+        EvidenceItem(claim="c", source_url="https://a.com/x", date=None, snippet="s")
+    ]
+    verdict = judge_verdict(
+        ["c"], dateless, Argument(points=[]), _defense(), "en", True,
+        client=fake, today=date(2026, 10, 27),
     )
     assert verdict.verdict == "True"

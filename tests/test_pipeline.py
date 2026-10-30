@@ -4,14 +4,18 @@ import main
 from court.models import Argument, ArgPoint, Verdict
 from evidence.grounder import GroundingError
 from intake.models import IntakeResult
-from tests.fakes import FakeClient, search_call
+from tests.fakes import FakeClient, dead_http_client, search_call
 
 SAMPLES = Path(__file__).parent / "samples"
 
 
 def _pipeline_client(**overrides):
     parsed = {
-        IntakeResult: IntakeResult(language="en", claims=["hot lemon water cures cancer"]),
+        IntakeResult: IntakeResult(
+            language="en",
+            claims=["hot lemon water cures cancer"],
+            presented_as_recent=False,
+        ),
         Argument: Argument(
             points=[ArgPoint(text="no evidence", source_url="https://debunk.com/x")]
         ),
@@ -37,7 +41,9 @@ def _pipeline_client(**overrides):
 
 def test_full_pipeline_offline():
     card, tracker = main.run_forward(
-        (SAMPLES / "english.txt").read_text(), client=_pipeline_client()
+        (SAMPLES / "english.txt").read_text(),
+        client=_pipeline_client(),
+        http_client=dead_http_client(),
     )
     assert "❌ *Forward Court Verdict: FALSE*" in card
     assert "🔗 Source: https://debunk.com/x" in card
@@ -47,7 +53,11 @@ def test_full_pipeline_offline():
 
 def test_no_claims_short_circuits():
     client = _pipeline_client(
-        parsed={IntakeResult: IntakeResult(language="en", claims=[])}
+        parsed={
+            IntakeResult: IntakeResult(
+                language="en", claims=[], presented_as_recent=False
+            )
+        }
     )
     card, _ = main.run_forward("good morning!", client=client)
     assert card == "No checkable claims found in this forward."
@@ -57,7 +67,9 @@ def test_no_claims_short_circuits():
 def test_grounding_error_propagates():
     client = FakeClient(
         parsed_by_model={
-            IntakeResult: IntakeResult(language="en", claims=["c"]),
+            IntakeResult: IntakeResult(
+                language="en", claims=["c"], presented_as_recent=False
+            ),
         },
         outputs=[[search_call([])], [search_call([])]],
     )

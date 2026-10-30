@@ -17,7 +17,7 @@ from evidence.grounder import GroundingError, gather_evidence
 from intake.extractor import extract_intake
 
 
-def run_forward(text: str, *, client=None) -> tuple[str, UsageTracker]:
+def run_forward(text: str, *, client=None, http_client=None) -> tuple[str, UsageTracker]:
     """Run the pipeline on forward text. Returns (card, usage)."""
     if client is None:
         client = get_client()
@@ -25,7 +25,9 @@ def run_forward(text: str, *, client=None) -> tuple[str, UsageTracker]:
     intake = extract_intake(text, client=client, tracker=tracker)
     if not intake.claims:
         return "No checkable claims found in this forward.", tracker
-    evidence = gather_evidence(intake.claims, client=client, tracker=tracker)
+    evidence = gather_evidence(
+        intake.claims, client=client, tracker=tracker, http_client=http_client
+    )
     prosecution = argue_false(intake.claims, evidence, client=client, tracker=tracker)
     defense = argue_true(intake.claims, evidence, client=client, tracker=tracker)
     verdict = judge_verdict(
@@ -34,6 +36,7 @@ def run_forward(text: str, *, client=None) -> tuple[str, UsageTracker]:
         prosecution,
         defense,
         intake.language,
+        intake.presented_as_recent,
         client=client,
         tracker=tracker,
     )

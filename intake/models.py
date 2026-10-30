@@ -9,3 +9,7 @@ class IntakeResult(BaseModel):
     claims: list[str] = Field(
         description="Checkable factual claims, most important first."
     )
+    presented_as_recent: bool = Field(
+        description="True when the forward presents events as breaking, "
+        "just-happened, or otherwise current."
+    )

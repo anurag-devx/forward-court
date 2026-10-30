@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+import httpx
+
 
 class FakeUsage:
     input_tokens = 100
@@ -45,3 +47,12 @@ class FakeResponses:
 class FakeClient:
     def __init__(self, parsed_by_model=None, outputs=None):
         self.responses = FakeResponses(parsed_by_model, outputs)
+
+
+def dead_http_client():
+    """HTTP client that fails every request: keeps page-fetch tests offline."""
+
+    def handler(request):
+        raise httpx.ConnectError("offline")
+
+    return httpx.Client(transport=httpx.MockTransport(handler))

@@ -6,8 +6,9 @@ Deterministic rules enforced here (never left to the model alone):
 - with zero cited points remaining, the verdict is Unverified/low;
 - key_source must come from the evidence list, else it falls back to the
   most-cited kept URL (then the first evidence URL);
-- when the claim's implied timeframe postdates the earliest source by more
-  than RECYCLED_DAYS, old content presented as new is Misleading.
+- when intake marks the forward presented-as-recent and the earliest source
+  is more than RECYCLED_DAYS older than the forward's implied date, old
+  content presented as new is Misleading.
 """
 from __future__ import annotations
 
@@ -19,7 +20,7 @@ from evidence.urls import normalize_url
 
 from .models import Argument, Verdict, evidence_brief
 
-RECYCLED_DAYS = 365
+RECYCLED_DAYS = 30
 
 RECYCLED_NOTES = {
     "en": "Note: the sources predate what the forward describes (recycled old content).",
@@ -77,9 +78,11 @@ def judge_verdict(
     prosecution: Argument,
     defense: Argument,
     language: str,
+    presented_as_recent: bool,
     *,
     client,
     tracker=None,
+    today: date | None = None,
 ) -> Verdict:
     evidence_urls = {normalize_url(item.source_url) for item in evidence}
     kept_prosecution = _keep_cited(prosecution, evidence_urls)
@@ -119,17 +122,19 @@ def judge_verdict(
             update={"verdict": "Unverified", "confidence": "low"}
         )
 
-    earliest = min(
-        (
-            parsed
-            for item in evidence
-            if (parsed := _parse_ymd(item.date)) is not None
-        ),
-        default=None,
-    )
-    claim_date = _parse_ymd(verdict.claim_timeframe)
-    if earliest is not None and claim_date is not None:
-        if (claim_date - earliest).days > RECYCLED_DAYS:
+    if presented_as_recent:
+        earliest = min(
+            (
+                parsed
+                for item in evidence
+                if (parsed := _parse_ymd(item.date)) is not None
+            ),
+            default=None,
+        )
+        claim_date = _parse_ymd(verdict.claim_timeframe) or (
+            today or date.today()
+        )
+        if earliest is not None and (claim_date - earliest).days > RECYCLED_DAYS:
             note = RECYCLED_NOTES.get(language, RECYCLED_NOTES["en"])
             return verdict.model_copy(
                 update={

@@ -8,20 +8,25 @@ def test_extract_intake_returns_language_and_claims():
     fake = FakeClient(
         parsed_by_model={
             IntakeResult: IntakeResult(
-                language="hi", claims=["WhatsApp will start charging users"]
+                language="hi",
+                claims=["WhatsApp will start charging users"],
+                presented_as_recent=True,
             )
         }
     )
     result = extract_intake("कल से WhatsApp पैसे लेगा", client=fake)
     assert result.language == "hi"
     assert result.claims == ["WhatsApp will start charging users"]
+    assert result.presented_as_recent is True
 
 
 def test_extract_intake_truncates_to_max_claims():
     fake = FakeClient(
         parsed_by_model={
             IntakeResult: IntakeResult(
-                language="en", claims=[f"claim {i}" for i in range(10)]
+                language="en",
+                claims=[f"claim {i}" for i in range(10)],
+                presented_as_recent=False,
             )
         }
     )
@@ -31,7 +36,11 @@ def test_extract_intake_truncates_to_max_claims():
 
 def test_extract_intake_tracks_usage():
     fake = FakeClient(
-        parsed_by_model={IntakeResult: IntakeResult(language="en", claims=[])}
+        parsed_by_model={
+            IntakeResult: IntakeResult(
+                language="en", claims=[], presented_as_recent=False
+            )
+        }
     )
     tracker = UsageTracker()
     extract_intake("hello", client=fake, tracker=tracker)
