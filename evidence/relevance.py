@@ -10,7 +10,7 @@ import json
 
 from pydantic import BaseModel, Field
 
-from config import agent_model
+from config import agent_model, reasoning_kwargs
 
 SNIPPET_CHARS = 300
 
@@ -54,6 +54,7 @@ def filter_evidence(
         instructions=INSTRUCTIONS,
         input=json.dumps(payload, ensure_ascii=False),
         text_format=RelevanceScores,
+        **reasoning_kwargs("relevance"),
     )
     if tracker is not None:
         tracker.add(response.usage, stage="relevance")

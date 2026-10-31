@@ -1,7 +1,7 @@
 """Prosecutor: argues the forward's claims are FALSE from shared evidence."""
 from __future__ import annotations
 
-from config import agent_model
+from config import agent_model, reasoning_kwargs
 
 from .models import Argument, evidence_brief
 
@@ -24,6 +24,7 @@ def argue_false(claims: list[str], evidence, *, client, tracker=None) -> Argumen
         instructions=INSTRUCTIONS,
         input=f"Claims:\n{claims}\n\nEvidence:\n{evidence_brief(evidence)}",
         text_format=Argument,
+        **reasoning_kwargs("prosecutor"),
     )
     if tracker is not None:
         tracker.add(response.usage, stage="prosecutor")

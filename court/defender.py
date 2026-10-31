@@ -1,7 +1,7 @@
 """Defender: argues the forward's claims are TRUE from shared evidence."""
 from __future__ import annotations
 
-from config import agent_model
+from config import agent_model, reasoning_kwargs
 
 from .models import Argument, evidence_brief
 
@@ -24,6 +24,7 @@ def argue_true(claims: list[str], evidence, *, client, tracker=None) -> Argument
         instructions=INSTRUCTIONS,
         input=f"Claims:\n{claims}\n\nEvidence:\n{evidence_brief(evidence)}",
         text_format=Argument,
+        **reasoning_kwargs("defender"),
     )
     if tracker is not None:
         tracker.add(response.usage, stage="defender")

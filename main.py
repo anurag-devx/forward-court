@@ -35,6 +35,7 @@ from evidence.grounder import (
     gather_evidence,
 )
 from evidence.relevance import filter_evidence
+from evidence.select import select_evidence
 from evidence.reverse_image import (
     ReverseSearchError,
     SerpApiLensProvider,
@@ -127,6 +128,9 @@ def run_forward(
                     evidence = lookup.result() + evidence
             else:
                 tracker.note("fact-check lookup disabled.")
+            evidence = select_evidence(
+                intake.claims, evidence, tracker=tracker
+            )
             with stage_timer(tracker, "relevance"):
                 evidence, bare_claims = filter_evidence(
                     intake.claims, evidence, client=client, tracker=tracker
@@ -287,6 +291,9 @@ def run_image_forward(
                     evidence = lookup.result() + evidence
             else:
                 tracker.note("fact-check lookup disabled.")
+            evidence = select_evidence(
+                claims, evidence, tracker=tracker
+            )
             with stage_timer(tracker, "relevance"):
                 evidence, bare_claims = filter_evidence(
                     claims, evidence, client=client, tracker=tracker
@@ -493,6 +500,9 @@ def run_video_forward(
                     evidence = lookup.result() + evidence
             else:
                 tracker.note("fact-check lookup disabled.")
+            evidence = select_evidence(
+                claims, evidence, tracker=tracker
+            )
             with stage_timer(tracker, "relevance"):
                 evidence, bare_claims = filter_evidence(
                     claims, evidence, client=client, tracker=tracker

@@ -85,6 +85,25 @@ def serpapi_key() -> str | None:
 CALL_TIMEOUT = 60.0
 CALL_MAX_RETRIES = 2
 
+REASONING_EFFORT = {
+    "intake": "low",
+    "relevance": "low",
+    "mismatch": "low",
+    "vision": "low",
+    "video": "medium",
+    "prosecutor": "medium",
+    "defender": "medium",
+    "judge": "medium",
+}
+
+
+def reasoning_kwargs(stage: str) -> dict:
+    """Reasoning kwarg for a stage; {} when the stage sets no effort."""
+    effort = REASONING_EFFORT.get(stage)
+    if effort is None:
+        return {}
+    return {"reasoning": {"effort": effort}}
+
 
 def get_client() -> OpenAI:
     """Build an OpenAI SDK client pointed at the Meta Model API."""

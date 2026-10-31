@@ -5,7 +5,7 @@ import base64
 from collections import Counter
 from pathlib import Path
 
-from config import agent_model
+from config import agent_model, reasoning_kwargs
 
 from .models import VisionResult
 
@@ -92,6 +92,7 @@ def _parse_image(client, tracker, prompt: str, data_url: str) -> VisionResult:
             }
         ],
         text_format=VisionResult,
+        **reasoning_kwargs("vision"),
     )
     if tracker is not None:
         tracker.add(response.usage, stage="vision")

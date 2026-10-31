@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from config import agent_model
+from config import agent_model, reasoning_kwargs
 
 from .models import VideoResult
 from .vision import CONSISTENCY_VOTES, majority_showing
@@ -86,6 +86,7 @@ def _parse_video(client, tracker, prompt: str, file_id: str) -> VideoResult:
             }
         ],
         text_format=VideoResult,
+        **reasoning_kwargs("video"),
     )
     if tracker is not None:
         tracker.add(response.usage, stage="video")

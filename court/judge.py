@@ -23,7 +23,7 @@ from __future__ import annotations
 from collections import Counter
 from datetime import date
 
-from config import agent_model
+from config import agent_model, reasoning_kwargs
 from evidence.grounder import EVIDENCE_WORKERS, DaemonPool
 from evidence.urls import normalize_url, split_host_path, tier_of
 
@@ -168,6 +168,7 @@ def _cast_vote(client, tracker, brief_input: str) -> Verdict:
         instructions=INSTRUCTIONS,
         input=brief_input,
         text_format=Verdict,
+        **reasoning_kwargs("judge"),
     )
     if tracker is not None:
         tracker.add(response.usage, stage="judge")
