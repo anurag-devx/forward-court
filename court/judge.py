@@ -24,6 +24,7 @@ from collections import Counter
 from datetime import date
 
 from config import agent_model
+from evidence.grounder import EVIDENCE_WORKERS, DaemonPool
 from evidence.urls import normalize_url, split_host_path, tier_of
 
 from .models import Argument, ImageContext, Verdict, evidence_brief
@@ -158,6 +159,19 @@ def _override_eligible(item, media: bool, exact_urls, media_claims) -> bool:
     return any(
         _review_matches_claim(item, claim) for claim in (media_claims or [])
     )
+
+
+def _cast_vote(client, tracker, brief_input: str) -> Verdict:
+    """Cast one judge vote. Ballots reassemble in submission order."""
+    response = client.responses.parse(
+        model=agent_model(),
+        instructions=INSTRUCTIONS,
+        input=brief_input,
+        text_format=Verdict,
+    )
+    if tracker is not None:
+        tracker.add(response.usage, stage="judge")
+    return response.output_parsed
 
 
 def _keep_cited(argument: Argument, evidence_urls: set[str]) -> list:
@@ -297,6 +311,7 @@ def judge_verdict(
     no_evidence_claims: list[str] | None = None,
     media_claims: list[str] | None = None,
     exact_urls: set[str] | None = None,
+    executor=None,
 ) -> Verdict:
     if tracker is not None:
         tracker.mark("judge")
@@ -330,17 +345,20 @@ def judge_verdict(
         f"{[p.model_dump() for p in kept_prosecution]}\n"
         f"Defense points kept: {[p.model_dump() for p in kept_defense]}"
     )
-    ballots: list[Verdict] = []
-    for _ in range(VOTES):
-        response = client.responses.parse(
-            model=agent_model(),
-            instructions=INSTRUCTIONS,
-            input=brief_input,
-            text_format=Verdict,
-        )
-        if tracker is not None:
-            tracker.add(response.usage, stage="judge")
-        ballots.append(response.output_parsed)
+    pool = executor if executor is not None else DaemonPool(
+        max_workers=EVIDENCE_WORKERS
+    )
+    try:
+        ballots: list[Verdict] = [
+            future.result()
+            for future in [
+                pool.submit(_cast_vote, client, tracker, brief_input)
+                for _ in range(VOTES)
+            ]
+        ]
+    finally:
+        if executor is None:
+            pool.shutdown()
     verdict = _majority(ballots)
     if tracker is not None:
         votes = ", ".join(ballot.verdict for ballot in ballots)

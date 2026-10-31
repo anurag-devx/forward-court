@@ -68,6 +68,9 @@ in the user's language.
   ("unclear"/"yes" continue; no claims short-circuits first).
 - Evidence: grounding + lookup searches and top-3 page fetches run on a
   shared max-6 daemon pool; results reassemble in submission order.
+- Debate: prosecutor + defender run concurrently, then the 3 judge votes
+  concurrently on the same pool; ballot order stays deterministic in logs.
+  Breakdown lines carry per-stage wall time.
 
 ## Rules
 - Evidence first: both debating agents get the same evidence list and may cite only from it.

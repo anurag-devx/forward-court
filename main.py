@@ -8,9 +8,16 @@ from __future__ import annotations
 import argparse
 import sys
 import threading
+import time
 
 from card.formatter import format_card
-from config import MAX_CLAIMS, UsageTracker, get_client, serpapi_key
+from config import (
+    MAX_CLAIMS,
+    UsageTracker,
+    get_client,
+    serpapi_key,
+    stage_timer,
+)
 from court.defender import argue_true
 from court.judge import (
     find_claim_review_verdict,
@@ -96,7 +103,8 @@ def run_forward(
         client = get_client()
     tracker = UsageTracker()
     def _go() -> tuple[str, UsageTracker]:
-        intake = extract_intake(text, client=client, tracker=tracker)
+        with stage_timer(tracker, "intake"):
+            intake = extract_intake(text, client=client, tracker=tracker)
         tracker.language = intake.language
         if not intake.claims:
             return "No checkable claims found in this forward.", tracker
@@ -112,40 +120,56 @@ def run_forward(
                     tracker=tracker, http_client=http_client,
                     language=intake.language, executor=pool,
                 )
-            evidence = grounding.result()
+            with stage_timer(tracker, "grounding"):
+                evidence = grounding.result()
             if lookup is not None:
-                evidence = lookup.result() + evidence
+                with stage_timer(tracker, "factcheck"):
+                    evidence = lookup.result() + evidence
             else:
                 tracker.note("fact-check lookup disabled.")
-        evidence, bare_claims = filter_evidence(
-            intake.claims, evidence, client=client, tracker=tracker
-        )
-        if not evidence:
-            tracker.note("no relevant evidence: verdict Unverified.")
-            return format_card(no_evidence_verdict(intake.language)), tracker
-        review_verdict = find_claim_review_verdict(
-            intake.claims, evidence, intake.language
-        )
-        if review_verdict is not None:
-            tracker.note(
-                f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
-                f"{review_verdict.verdict}."
+            with stage_timer(tracker, "relevance"):
+                evidence, bare_claims = filter_evidence(
+                    intake.claims, evidence, client=client, tracker=tracker
+                )
+            if not evidence:
+                tracker.note("no relevant evidence: verdict Unverified.")
+                return format_card(no_evidence_verdict(intake.language)), tracker
+            review_verdict = find_claim_review_verdict(
+                intake.claims, evidence, intake.language
             )
-            return format_card(review_verdict), tracker
-        prosecution = argue_false(intake.claims, evidence, client=client, tracker=tracker)
-        defense = argue_true(intake.claims, evidence, client=client, tracker=tracker)
-        verdict = judge_verdict(
-            intake.claims,
-            evidence,
-            prosecution,
-            defense,
-            intake.language,
-            intake.presented_as_recent,
-            client=client,
-            tracker=tracker,
-            no_evidence_claims=bare_claims,
-        )
-        return format_card(verdict), tracker
+            if review_verdict is not None:
+                tracker.note(
+                    f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
+                    f"{review_verdict.verdict}."
+                )
+                return format_card(review_verdict), tracker
+            prosecution_job = pool.submit(
+                argue_false, intake.claims, evidence, client=client,
+                tracker=tracker,
+            )
+            defense_job = pool.submit(
+                argue_true, intake.claims, evidence, client=client,
+                tracker=tracker,
+            )
+            debate_start = time.monotonic()
+            prosecution = prosecution_job.result()
+            tracker.add_time("prosecutor", time.monotonic() - debate_start)
+            defense = defense_job.result()
+            tracker.add_time("defender", time.monotonic() - debate_start)
+            with stage_timer(tracker, "judge"):
+                verdict = judge_verdict(
+                    intake.claims,
+                    evidence,
+                    prosecution,
+                    defense,
+                    intake.language,
+                    intake.presented_as_recent,
+                    client=client,
+                    tracker=tracker,
+                    no_evidence_claims=bare_claims,
+                    executor=pool,
+                )
+            return format_card(verdict), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
 
@@ -161,15 +185,17 @@ def run_image_forward(
     tracker = UsageTracker()
     def _go() -> tuple[str, UsageTracker]:
         image_bytes, mime = read_image(image_path)
-        vision = describe_image(
-            image_bytes, mime=mime, client=client, tracker=tracker,
-            context=caption,
-        )
+        with stage_timer(tracker, "vision"):
+            vision = describe_image(
+                image_bytes, mime=mime, client=client, tracker=tracker,
+                context=caption,
+            )
         caption_claims: list[str] = []
         caption_media: list[str] = []
         language = vision.language
         if caption:
-            intake = extract_intake(caption, client=client, tracker=tracker)
+            with stage_timer(tracker, "intake"):
+                intake = extract_intake(caption, client=client, tracker=tracker)
             caption_claims = intake.claims
             caption_media = intake.media_claims
             language = intake.language
@@ -206,15 +232,17 @@ def run_image_forward(
             tracker.note("reverse search skipped: SERPAPI_KEY not set.")
         else:
             try:
-                crops = segment_subjects(
-                    image_bytes, vision.people_places_objects, mime=mime,
-                    client=client, tracker=tracker,
-                )
+                with stage_timer(tracker, "segment"):
+                    crops = segment_subjects(
+                        image_bytes, vision.people_places_objects, mime=mime,
+                        client=client, tracker=tracker,
+                    )
                 tracker.mark("reverse")
-                matches = search_images(
-                    image_bytes, [crop.data for crop in crops],
-                    provider=active_provider,
-                )
+                with stage_timer(tracker, "reverse"):
+                    matches = search_images(
+                        image_bytes, [crop.data for crop in crops],
+                        provider=active_provider,
+                    )
                 reverse_items = matches_to_evidence(
                     matches, claims[0], http_client=http_client
                 )
@@ -252,46 +280,62 @@ def run_image_forward(
                     tracker=tracker, http_client=http_client,
                     language=language, executor=pool,
                 )
-            evidence = reverse_items + grounding.result()
+            with stage_timer(tracker, "grounding"):
+                evidence = reverse_items + grounding.result()
             if lookup is not None:
-                evidence = lookup.result() + evidence
+                with stage_timer(tracker, "factcheck"):
+                    evidence = lookup.result() + evidence
             else:
                 tracker.note("fact-check lookup disabled.")
-        evidence, bare_claims = filter_evidence(
-            claims, evidence, client=client, tracker=tracker
-        )
-        if not evidence:
-            tracker.note("no relevant evidence: verdict Unverified.")
-            return format_card(no_evidence_verdict(language)), tracker
-        review_verdict = find_claim_review_verdict(
-            claims, evidence, language, media=True, exact_urls=exact_urls
-        )
-        if review_verdict is not None:
-            tracker.note(
-                f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
-                f"{review_verdict.verdict}."
+            with stage_timer(tracker, "relevance"):
+                evidence, bare_claims = filter_evidence(
+                    claims, evidence, client=client, tracker=tracker
+                )
+            if not evidence:
+                tracker.note("no relevant evidence: verdict Unverified.")
+                return format_card(no_evidence_verdict(language)), tracker
+            review_verdict = find_claim_review_verdict(
+                claims, evidence, language, media=True, exact_urls=exact_urls
             )
-            return format_card(review_verdict), tracker
-        prosecution = argue_false(claims, evidence, client=client, tracker=tracker)
-        defense = argue_true(claims, evidence, client=client, tracker=tracker)
-        verdict = judge_verdict(
-            claims,
-            evidence,
-            prosecution,
-            defense,
-            language,
-            presented_as_recent,
-            client=client,
-            tracker=tracker,
-            image=ImageContext(
-                origin_only=not caption_claims,
-                reverse_evidence=reverse_evidence,
-            ),
-            no_evidence_claims=bare_claims,
-            media_claims=media_for_judge,
-            exact_urls=exact_urls,
-        )
-        return format_card(verdict), tracker
+            if review_verdict is not None:
+                tracker.note(
+                    f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
+                    f"{review_verdict.verdict}."
+                )
+                return format_card(review_verdict), tracker
+            prosecution_job = pool.submit(
+                argue_false, claims, evidence, client=client,
+                tracker=tracker,
+            )
+            defense_job = pool.submit(
+                argue_true, claims, evidence, client=client,
+                tracker=tracker,
+            )
+            debate_start = time.monotonic()
+            prosecution = prosecution_job.result()
+            tracker.add_time("prosecutor", time.monotonic() - debate_start)
+            defense = defense_job.result()
+            tracker.add_time("defender", time.monotonic() - debate_start)
+            with stage_timer(tracker, "judge"):
+                verdict = judge_verdict(
+                    claims,
+                    evidence,
+                    prosecution,
+                    defense,
+                    language,
+                    presented_as_recent,
+                    client=client,
+                    tracker=tracker,
+                    image=ImageContext(
+                        origin_only=not caption_claims,
+                        reverse_evidence=reverse_evidence,
+                    ),
+                    no_evidence_claims=bare_claims,
+                    executor=pool,
+                    media_claims=media_for_judge,
+                    exact_urls=exact_urls,
+                )
+            return format_card(verdict), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
 
@@ -318,14 +362,16 @@ def run_video_forward(
     tracker = UsageTracker()
     def _go() -> tuple[str, UsageTracker]:
         video_bytes, resolved = read_video(video_path)
-        video = describe_video(
-            video_bytes, client=client, tracker=tracker, context=caption
-        )
+        with stage_timer(tracker, "video"):
+            video = describe_video(
+                video_bytes, client=client, tracker=tracker, context=caption
+            )
         language = video.language
         caption_claims: list[str] = []
         caption_media: list[str] = []
         if caption:
-            intake = extract_intake(caption, client=client, tracker=tracker)
+            with stage_timer(tracker, "intake"):
+                intake = extract_intake(caption, client=client, tracker=tracker)
             caption_claims = intake.claims
             caption_media = intake.media_claims
             language = intake.language
@@ -336,14 +382,16 @@ def run_video_forward(
         audio = extract_audio(resolved)
         if audio is not None:
             try:
-                transcript = transcribe_audio(
-                    audio, http_client=http_client, tracker=tracker
-                )
+                with stage_timer(tracker, "transcribe"):
+                    transcript = transcribe_audio(
+                        audio, http_client=http_client, tracker=tracker
+                    )
             except TranscribeError as exc:
                 tracker.note(f"transcription unavailable: {exc}")
                 transcript = ""
             if transcript.strip():
-                spoken = extract_intake(transcript, client=client, tracker=tracker)
+                with stage_timer(tracker, "intake"):
+                    spoken = extract_intake(transcript, client=client, tracker=tracker)
                 transcript_claims = spoken.claims
                 transcript_media = spoken.media_claims
                 transcript_language = spoken.language
@@ -394,16 +442,18 @@ def run_video_forward(
             seen: set[str] = set()
             try:
                 for frame in frames:
-                    crops = segment_subjects(
-                        frame, video.people_places_objects,
-                        client=client, tracker=tracker,
-                    )
+                    with stage_timer(tracker, "segment"):
+                        crops = segment_subjects(
+                            frame, video.people_places_objects,
+                            client=client, tracker=tracker,
+                        )
                     try:
                         tracker.mark("reverse")
-                        matches = search_images(
-                            frame, [crop.data for crop in crops],
-                            provider=counting,
-                        )
+                        with stage_timer(tracker, "reverse"):
+                            matches = search_images(
+                                frame, [crop.data for crop in crops],
+                                provider=counting,
+                            )
                     except ReverseSearchError as exc:
                         tracker.note(f"reverse search unavailable: {exc}")
                         break
@@ -436,46 +486,62 @@ def run_video_forward(
                     tracker=tracker, http_client=http_client,
                     language=language, executor=pool,
                 )
-            evidence = reverse_items + grounding.result()
+            with stage_timer(tracker, "grounding"):
+                evidence = reverse_items + grounding.result()
             if lookup is not None:
-                evidence = lookup.result() + evidence
+                with stage_timer(tracker, "factcheck"):
+                    evidence = lookup.result() + evidence
             else:
                 tracker.note("fact-check lookup disabled.")
-        evidence, bare_claims = filter_evidence(
-            claims, evidence, client=client, tracker=tracker
-        )
-        if not evidence:
-            tracker.note("no relevant evidence: verdict Unverified.")
-            return format_card(no_evidence_verdict(language)), tracker
-        review_verdict = find_claim_review_verdict(
-            claims, evidence, language, media=True, exact_urls=exact_urls
-        )
-        if review_verdict is not None:
-            tracker.note(
-                f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
-                f"{review_verdict.verdict}."
+            with stage_timer(tracker, "relevance"):
+                evidence, bare_claims = filter_evidence(
+                    claims, evidence, client=client, tracker=tracker
+                )
+            if not evidence:
+                tracker.note("no relevant evidence: verdict Unverified.")
+                return format_card(no_evidence_verdict(language)), tracker
+            review_verdict = find_claim_review_verdict(
+                claims, evidence, language, media=True, exact_urls=exact_urls
             )
-            return format_card(review_verdict), tracker
-        prosecution = argue_false(claims, evidence, client=client, tracker=tracker)
-        defense = argue_true(claims, evidence, client=client, tracker=tracker)
-        verdict = judge_verdict(
-            claims,
-            evidence,
-            prosecution,
-            defense,
-            language,
-            presented_as_recent,
-            client=client,
-            tracker=tracker,
-            image=ImageContext(
-                origin_only=not caption_claims and not transcript_claims,
-                reverse_evidence=reverse_evidence,
-            ),
-            no_evidence_claims=bare_claims,
-            media_claims=media_for_judge,
-            exact_urls=exact_urls,
-        )
-        return format_card(verdict), tracker
+            if review_verdict is not None:
+                tracker.note(
+                    f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
+                    f"{review_verdict.verdict}."
+                )
+                return format_card(review_verdict), tracker
+            prosecution_job = pool.submit(
+                argue_false, claims, evidence, client=client,
+                tracker=tracker,
+            )
+            defense_job = pool.submit(
+                argue_true, claims, evidence, client=client,
+                tracker=tracker,
+            )
+            debate_start = time.monotonic()
+            prosecution = prosecution_job.result()
+            tracker.add_time("prosecutor", time.monotonic() - debate_start)
+            defense = defense_job.result()
+            tracker.add_time("defender", time.monotonic() - debate_start)
+            with stage_timer(tracker, "judge"):
+                verdict = judge_verdict(
+                    claims,
+                    evidence,
+                    prosecution,
+                    defense,
+                    language,
+                    presented_as_recent,
+                    client=client,
+                    tracker=tracker,
+                    image=ImageContext(
+                        origin_only=not caption_claims and not transcript_claims,
+                        reverse_evidence=reverse_evidence,
+                    ),
+                    no_evidence_claims=bare_claims,
+                    executor=pool,
+                    media_claims=media_for_judge,
+                    exact_urls=exact_urls,
+                )
+            return format_card(verdict), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
 

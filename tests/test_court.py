@@ -340,6 +340,8 @@ def test_judge_silent_without_fact_check_items():
 
 
 def test_majority_vote_sets_verdict_and_medium():
+    from tests.fakes import SyncExecutor
+
     fake = FakeClient(
         parse_queue=[
             _verdict(verdict="False", reason="first"),
@@ -350,12 +352,26 @@ def test_majority_vote_sets_verdict_and_medium():
     tracker = UsageTracker()
     verdict = judge_verdict(
         ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
-        client=fake, tracker=tracker,
+        client=fake, tracker=tracker, executor=SyncExecutor(),
     )
     assert verdict.verdict == "False"
     assert verdict.confidence == "medium"
     assert verdict.reason == "first"
     assert tracker.notes == ["judge agreement: 2/3 (False, Misleading, False)."]
+
+
+def test_concurrent_votes_keep_deterministic_log_order():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict()})
+    tracker = UsageTracker()
+    for _ in range(5):
+        tracker.notes.clear()
+        judge_verdict(
+            ["c"], _evidence(), Argument(points=[]), _defense(), "en",
+            False, client=fake, tracker=tracker,
+        )
+        assert tracker.notes == [
+            "judge agreement: 3/3 (False, False, False)."
+        ]
 
 
 def test_tie_vote_becomes_unverified_low():

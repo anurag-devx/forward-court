@@ -1,6 +1,15 @@
+import re
+
 import pytest
 
-from config import AGENT_MODEL, CONTRIBUTOR_MODEL, UsageTracker, agent_model, get_client
+from config import (
+    AGENT_MODEL,
+    CONTRIBUTOR_MODEL,
+    UsageTracker,
+    agent_model,
+    get_client,
+    stage_timer,
+)
 
 
 def test_tracker_accumulates_and_summarizes():
@@ -79,3 +88,25 @@ def test_tracker_marks_current_stage():
     assert tracker.current is None
     tracker.mark("grounding")
     assert tracker.current == "grounding"
+
+
+def test_timed_accumulates_and_breakdown_shows_seconds():
+    import time
+    from types import SimpleNamespace
+
+    tracker = UsageTracker()
+    with tracker.timed("judge"):
+        time.sleep(0.05)
+    with tracker.timed("judge"):
+        pass
+    assert tracker.times["judge"] >= 0.05
+    tracker.add(SimpleNamespace(input_tokens=10, output_tokens=5), stage="judge")
+    tracker.add(SimpleNamespace(input_tokens=1, output_tokens=1), stage="intake")
+    lines = tracker.breakdown()
+    assert re.search(r"total \(\d+\.\ds\)$", lines[0])
+    assert lines[1] == "  intake: 1 in / 1 out / 2 total"
+
+
+def test_stage_timer_tolerates_missing_tracker():
+    with stage_timer(None, "judge"):
+        pass

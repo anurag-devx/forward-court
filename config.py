@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import os
 import threading
+import time
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, field
 
 from dotenv import load_dotenv
@@ -113,6 +115,7 @@ class UsageTracker:
     lock: threading.Lock = field(
         default_factory=threading.Lock, repr=False, compare=False
     )
+    times: dict = field(default_factory=dict)
 
     def note(self, message: str) -> None:
         with self.lock:
@@ -122,6 +125,20 @@ class UsageTracker:
         """Record the currently executing stage (for timeout reports)."""
         with self.lock:
             self.current = stage
+
+    @contextmanager
+    def timed(self, stage: str):
+        """Accumulate wall-clock time spent in a stage."""
+        start = time.monotonic()
+        try:
+            yield
+        finally:
+            self.add_time(stage, time.monotonic() - start)
+
+    def add_time(self, stage: str, seconds: float) -> None:
+        """Accumulate an externally measured duration."""
+        with self.lock:
+            self.times[stage] = self.times.get(stage, 0.0) + seconds
 
     def add(self, usage, stage: str | None = None) -> None:
         if usage is None:
@@ -149,8 +166,21 @@ class UsageTracker:
 
     def breakdown(self) -> list[str]:
         """Per-stage token lines, in first-seen order."""
-        return [
-            f"  {stage}: {in_tokens} in / {out_tokens} out / "
-            f"{in_tokens + out_tokens} total"
-            for stage, (in_tokens, out_tokens) in self.stages.items()
-        ]
+        lines = []
+        for stage, (in_tokens, out_tokens) in self.stages.items():
+            line = (
+                f"  {stage}: {in_tokens} in / {out_tokens} out / "
+                f"{in_tokens + out_tokens} total"
+            )
+            base = stage.split(":")[0]
+            if base in self.times:
+                line += f" ({self.times[base]:.1f}s)"
+            lines.append(line)
+        return lines
+
+
+def stage_timer(tracker, stage: str):
+    """timed() context, tolerating a missing tracker."""
+    if tracker is None:
+        return nullcontext()
+    return tracker.timed(stage)
