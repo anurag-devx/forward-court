@@ -97,6 +97,7 @@ def _run_with_deadline(tracker, fn, deadline_s: float):
 
 def run_forward(
     text: str, *, client=None, http_client=None, factcheck=True,
+    claimreview=True,
     deadline_s: float = RUN_DEADLINE_S,
 ) -> tuple[str, UsageTracker]:
     """Run the pipeline on forward text. Returns (card, usage)."""
@@ -138,9 +139,13 @@ def run_forward(
             if not evidence:
                 tracker.note("no relevant evidence: verdict Unverified.")
                 return format_card(no_evidence_verdict(intake.language)), tracker
-            review_verdict = find_claim_review_verdict(
-                intake.claims, evidence, intake.language
-            )
+            review_verdict = None
+            if claimreview:
+                review_verdict = find_claim_review_verdict(
+                    intake.claims, evidence, intake.language
+                )
+            else:
+                tracker.note("ClaimReview short-circuit disabled.")
             if review_verdict is not None:
                 tracker.note(
                     f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
@@ -179,7 +184,7 @@ def run_forward(
 
 def run_image_forward(
     image_path: str, caption: str | None = None, *, client=None,
-    http_client=None, provider=None, factcheck=True,
+    http_client=None, provider=None, factcheck=True, claimreview=True,
     ground_truth: list[str] | None = None,
     deadline_s: float = RUN_DEADLINE_S,
 ) -> tuple[str, UsageTracker]:
@@ -301,9 +306,14 @@ def run_image_forward(
             if not evidence:
                 tracker.note("no relevant evidence: verdict Unverified.")
                 return format_card(no_evidence_verdict(language)), tracker
-            review_verdict = find_claim_review_verdict(
-                claims, evidence, language, media=True, exact_urls=exact_urls
-            )
+            review_verdict = None
+            if claimreview:
+                review_verdict = find_claim_review_verdict(
+                    claims, evidence, language, media=True,
+                    exact_urls=exact_urls,
+                )
+            else:
+                tracker.note("ClaimReview short-circuit disabled.")
             if review_verdict is not None:
                 tracker.note(
                     f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
@@ -360,7 +370,7 @@ class _CountingProvider:
 
 def run_video_forward(
     video_path: str, caption: str | None = None, *, client=None,
-    http_client=None, provider=None, factcheck=True,
+    http_client=None, provider=None, factcheck=True, claimreview=True,
     deadline_s: float = RUN_DEADLINE_S,
 ) -> tuple[str, UsageTracker]:
     """Run the pipeline on a video forward. Returns (card, usage)."""
@@ -510,9 +520,14 @@ def run_video_forward(
             if not evidence:
                 tracker.note("no relevant evidence: verdict Unverified.")
                 return format_card(no_evidence_verdict(language)), tracker
-            review_verdict = find_claim_review_verdict(
-                claims, evidence, language, media=True, exact_urls=exact_urls
-            )
+            review_verdict = None
+            if claimreview:
+                review_verdict = find_claim_review_verdict(
+                    claims, evidence, language, media=True,
+                    exact_urls=exact_urls,
+                )
+            else:
+                tracker.note("ClaimReview short-circuit disabled.")
             if review_verdict is not None:
                 tracker.note(
                     f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
@@ -567,6 +582,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--no-factcheck", action="store_true",
                         help="Skip the existing-fact-check lookup stage.")
+    parser.add_argument("--no-claimreview", action="store_true",
+                        help="Bench/debug only: disable the ClaimReview "
+                        "short-circuit so runs take the debate path.")
     args = parser.parse_args(argv)
     if sum(bool(part) for part in (args.text, args.image, args.video)) > 1:
         print("Error: pass forward text, --image, or --video — only one.",
@@ -576,14 +594,15 @@ def main(argv: list[str] | None = None) -> int:
         print("Error: --caption needs --image or --video.", file=sys.stderr)
         return 2
     use_factcheck = not args.no_factcheck
+    use_claimreview = not args.no_claimreview
     try:
         if args.image:
             card, tracker = run_image_forward(
-                args.image, args.caption, factcheck=use_factcheck
+                args.image, args.caption, factcheck=use_factcheck, claimreview=use_claimreview
             )
         elif args.video:
             card, tracker = run_video_forward(
-                args.video, args.caption, factcheck=use_factcheck
+                args.video, args.caption, factcheck=use_factcheck, claimreview=use_claimreview
             )
         else:
             text = args.text if args.text is not None else sys.stdin.read()
@@ -591,7 +610,7 @@ def main(argv: list[str] | None = None) -> int:
                 print("Error: provide forward text as an argument or via stdin.",
                       file=sys.stderr)
                 return 2
-            card, tracker = run_forward(text, factcheck=use_factcheck)
+            card, tracker = run_forward(text, factcheck=use_factcheck, claimreview=use_claimreview)
     except GroundingError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1

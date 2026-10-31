@@ -115,7 +115,7 @@ def test_no_factcheck_flag_plumbs_through(monkeypatch, capsys):
 
     monkeypatch.setattr(main, "run_forward", fake_run)
     assert main.main(["hello", "--no-factcheck"]) == 0
-    assert seen == {"factcheck": False}
+    assert seen == {"factcheck": False, "claimreview": True}
     assert "lookup disabled" not in capsys.readouterr().out
 
 
@@ -148,6 +148,39 @@ def test_claim_review_path_skips_debate_and_votes(monkeypatch):
     parses = [c for c in client.responses.calls if c[0] == "parse"]
     assert len(parses) == 2  # intake + relevance; no debate, no judge votes
     assert any("ClaimReview verdict" in note for note in tracker.notes)
+
+
+def test_no_claimreview_flag_forces_debate_path(monkeypatch):
+    import evidence.factcheck as factcheck_module
+    from evidence.models import ClaimReview
+
+    review = ClaimReview(
+        rating_raw="False",
+        verdict="False",
+        claim_text="hot lemon water cures cancer",
+    )
+    real_fetch = factcheck_module.fetch_page_unit
+
+    def patched(args):
+        url = args[0]
+        snippet, date, _ = real_fetch(args)
+        if "altnews" in url:
+            return snippet, date, review
+        return snippet, date, None
+
+    monkeypatch.setattr(factcheck_module, "fetch_page_unit", patched)
+    client = _pipeline_client()
+    card, tracker = main.run_forward(
+        "some claim",
+        client=client,
+        http_client=dead_http_client(),
+        claimreview=False,
+    )
+    assert "Already fact-checked" not in card
+    parses = [c for c in client.responses.calls if c[0] == "parse"]
+    # intake + relevance + prosecutor + defender + 3 judge votes
+    assert len(parses) == 7
+    assert "ClaimReview short-circuit disabled." in tracker.notes
 
 
 def test_all_filtered_evidence_yields_unverified_without_debate():
