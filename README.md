@@ -16,12 +16,13 @@ The main target is the most common kind of misinformation in India: **real photo
 flowchart TD
     A[Forward: text / image / video] --> B[Intake<br/>language, claims, recency cues]
     B --> M{Media?}
-    M -- image/video --> V[Vision / video understanding<br/>transcript, on-screen text, key frames]
+    M -- image/video --> V[Vision / video understanding<br/>transcript, on-screen text, key frames, SAM 3.1 crops]
     V --> G{Media shows the<br/>claimed event?}
     G -- no, 3-vote majority --> X[Misleading:<br/>media does not show the claim]
     G -- yes / unclear --> E
     M -- text --> E[Evidence<br/>search grounding, fact-check lookup,<br/>reverse image search, page fetch + publish dates]
-    E --> R[Relevance filter<br/>off-topic sources dropped]
+    E --> CAP[Evidence cap<br/>top 15 per claim, 2 per domain]
+    CAP --> R[Relevance filter<br/>off-topic sources dropped]
     R --> C{Trusted fact-check<br/>with ClaimReview rating?}
     C -- yes --> K[Verdict from the existing fact-check]
     C -- no --> D[Prosecutor vs Defender<br/>cite only from evidence]
@@ -31,16 +32,44 @@ flowchart TD
     X --> CARD
 ```
 
-## Sample verdict card
+## Sample verdict cards
+
+Real outputs from the demo set (`tests/samples/demo/DEMO.md`).
+
+Text — lemon-cancer forward:
 
 ```
-❌ MISLEADING (high confidence)
+❌ *Forward Court Verdict: FALSE*
+Confidence: high
+Already fact-checked by vishvasnews.com
 
-This photo is real, but it is from 2022, not this week's floods.
-The same image appeared in news reports two years before this forward.
+Already fact-checked by vishvasnews.com: rated False.
 
-Source: <earliest source URL>
-Already fact-checked by <outlet>
+🔗 Source: https://www.vishvasnews.com/english/health/fact-check-false-claims-of-curing-cancer-getting-viral/
+```
+
+Image — Pithoragarh bridge collapse (Hindi card):
+
+```
+⚠️ *फॉरवर्ड कोर्ट निर्णय: MISLEADING*
+विश्वास: high
+पहले से तथ्य-जांचित: english.factcrescendo.com
+
+वायरल वीडियो में पिथौरागढ़ में ओवरलोड ट्रक के कारण पुल ढहने की घटना वास्तव में पुरानी है, हाल की नहीं। फैक्ट-चेक के अनुसार यह 2020 का पुराना वीडियो है जिसे हाल की घटना बताकर वायरल किया जा रहा है, इसलिए इसे नया बताकर पेश करना भ्रामक है।
+
+🔗 स्रोत: https://english.factcrescendo.com/2026/10/27/old-video-of-a-bridge-collapse-in-pithoragarh-in-uttarakhand-goes-viral-as-recent/
+```
+
+Video — Cyclone Arnab old clip:
+
+```
+⚠️ *Forward Court Verdict: MISLEADING*
+Confidence: high
+Already fact-checked by english.factcrescendo.com
+
+The clip does show trees swaying amid powerful winds, but fact-checks identify it as an old video recycled as footage of Cyclone Arab/Arnab wreaking havoc in Visakhapatnam, Andhra Pradesh. The same tree-swaying clip was previously falsely linked to Cyclone Biparjoy. A severe Cyclone Arnab did make landfall on the Andhra Pradesh coast on 28 Oct 2026, but this video is not from that event.
+
+🔗 Source: https://english.factcrescendo.com/2026/10/28/old-video-goes-viral-linking-to-cyclone-arnab-in-visakhapatnam-ap/
 ```
 
 ## Design rules
@@ -51,6 +80,8 @@ Already fact-checked by <outlet>
 - **Provenance-only recycling.** An image or video is called "old" only from evidence about *that exact media* (exact reverse-image matches or a fact-check tied to it), never from articles about other events.
 - **Unverified when unsure.** True/False only on strong cited evidence. It never claims "deepfake" without strong grounds.
 - **Existing fact-checks first.** A rating published by a trusted fact-checker (ClaimReview markup) decides the verdict unless another trusted source contradicts it.
+- **Tier-3 sources never decide.** Social and user-generated sources add context but can never be the key source behind a verdict.
+- **Media–caption mismatch gate.** When the photo or video provably does not show the claimed event (3-vote majority), the verdict is Misleading without a debate.
 - **Stable verdicts.** The judge votes three times; ties become Unverified.
 
 ## Built with
@@ -62,7 +93,7 @@ Already fact-checked by <outlet>
 | Speech in videos and voice notes | Muse Voice Transcribe |
 | Development | Muse Code |
 | Reverse image search | SerpAPI (Google Lens) |
-| Delivery | WhatsApp Cloud API *(in progress)* |
+| Delivery | Twilio WhatsApp API (WhatsApp Cloud API stubbed) |
 
 ## Run it
 
@@ -81,6 +112,10 @@ Create `.env`:
 ```
 MODEL_API_KEY=...      # Meta Model API
 SERPAPI_KEY=...        # reverse image search (optional; image origin stays Unverified without it)
+TWILIO_ACCOUNT_SID=...
+TWILIO_AUTH_TOKEN=...
+TWILIO_WHATSAPP_FROM=...
+PUBLIC_BASE_URL=...        # public tunnel URL, for webhook signature validation
 ```
 
 Check a forward:
@@ -102,19 +137,36 @@ Run tests (offline, no API calls):
 python -m pytest tests/ -q
 ```
 
+305 tests. Bench media is collected locally with yt-dlp
+(`requirements-dev.txt`, testing only); no media files are committed.
+
+WhatsApp gateway:
+
+```bash
+python -m gateway   # uvicorn on :8000
+cloudflared tunnel --url http://127.0.0.1:8000
+```
+
+Set the Twilio number's incoming-message webhook to `<tunnel-url>/webhook`
+(POST). `PUBLIC_BASE_URL` must match the tunnel URL exactly, or signature
+validation fails.
+
 ## Status
 
 - Done - Text forwards
 - Done - Image forwards (vision, SAM crops, reverse search, earliest-copy check)
 - Done - Video forwards (video understanding, transcript, key frames, media–caption check)
 - Done - Fact-check lookup, ClaimReview verdicts, relevance filter, 3-vote judge
-- In Progress -  WhatsApp gateway — next
+- Done - WhatsApp gateway via Twilio
+- In Progress - Meta WhatsApp Cloud API sender (stubbed; developer access pending)
 - Out of Scope -  Video links (YouTube/Instagram) — out of scope for now
 
 ## Limitations
 
 - Cannot detect AI-generated or synthetic media on its own; such cases return Unverified unless a fact-check exists.
 - Image origin depends on reverse image search coverage.
+- Video originals rarely exact-match in reverse search, so recycled-video verdicts usually rest on fact-checks or the mismatch gate.
+- Full runs take about 1–3 minutes (text fastest, video slowest).
 - Sources behind paywalls or heavy JavaScript may be skipped.
 
 ## License
