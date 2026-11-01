@@ -8,20 +8,16 @@ oldest fitting upload per article as the demo original. Writes kept files
 plus manifest.json into out_dir (default tests/samples/demo/). Kept
 entries: {file, article_url, original_url, original_date, viral_claim}.
 Skips: {file: null, article_url, skipped: true, skip_reason}. Same yt-dlp
-limits as collect_video_samples.py (<=480p mp4, <=16MB, no auth)
-except duration, which the demo set leaves uncapped. Failures skip with
-a reason; never abort. Clips are
+limits as collect_video_samples.py (<=480p mp4, <=16MB, <=90s known
+duration, no auth). Failures skip with a reason; never abort. Clips are
 local testing only, never redistributed.
 """
 from __future__ import annotations
 
 import json
 import re
-import shutil
-import subprocess
 import sys
 from datetime import date
-from functools import partial
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -29,11 +25,7 @@ from urllib.parse import urljoin, urlparse
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from evidence.pages import extract_main_text, fetch_html
-from scripts.collect_video_samples import (
-    MAX_VIDEO_BYTES,
-    YTDLP_TIMEOUT,
-    download_embed,
-)
+from scripts.collect_video_samples import YTDLP_TIMEOUT, download_embed
 from scripts.fetch_samples import ArticleReading, read_article
 
 DEFAULT_URLS = Path("tests/samples/video_urls.txt")
@@ -41,18 +33,6 @@ DEFAULT_OUT = Path("tests/samples/demo")
 DEMO_STOP_AFTER_KEPT = 5
 MAX_YOUTUBE_CANDIDATES = 4
 MAX_DOWNLOAD_ATTEMPTS = 3
-TRIM_SECONDS = 60
-DEMO_FORMAT = (
-    # Portrait 720p first (width<=720 misses nothing: landscape falls
-    # through), then landscape 720p, then 480p, then smallest video-only.
-    # Single-file https only (no ffmpeg merge). Fallbacks trigger only on
-    # zero matches, so the 144p-catching height filter must come last.
-    "best[ext=mp4][width<=720][protocol=https][filesize<?16M]"
-    "/best[ext=mp4][height<=720][protocol=https][filesize<?16M]"
-    "/best[ext=mp4][height<=480][protocol=https]"
-    "/worstvideo[ext=mp4][protocol=https]"
-    "/worstvideo[protocol=https]"
-)
 OLD_KEYWORDS = ("old", "recycled", "purana", "पुराना")
 PAST_YEAR_RE = re.compile(r"\b(201[5-9]|202[0-5])\b")
 YOUTUBE_RE = re.compile(
@@ -136,73 +116,10 @@ def probe_video(url: str) -> dict | None:
     }
 
 
-def pick_demo_format(url: str) -> str | None:
-    """Best single-file mp4 format id: min-dimension <=720, <=16MB known.
-
-    Prefers progressive (audio+video), then larger min-dimension, then
-    known-small size. Unknown-size candidates rank below known fits.
-    """
-    import yt_dlp  # lazy: dev-only dependency, scripts use only
-
-    try:
-        with yt_dlp.YoutubeDL(
-            {
-                "quiet": True,
-                "no_warnings": True,
-                "noplaylist": True,
-                "socket_timeout": YTDLP_TIMEOUT,
-            }
-        ) as ydl:
-            info = ydl.extract_info(url, download=False)
-    except Exception:
-        return None
-    ranked = []
-    for fmt in (info or {}).get("formats", []):
-        if fmt.get("ext") != "mp4" or fmt.get("protocol") != "https":
-            continue
-        if not fmt.get("url") or fmt.get("vcodec") in (None, "none"):
-            continue
-        width, height = fmt.get("width") or 0, fmt.get("height") or 0
-        if min(width, height) > 720 or min(width, height) <= 0:
-            continue
-        size = fmt.get("filesize") or fmt.get("filesize_approx") or 0
-        has_audio = (fmt.get("acodec") or "none") != "none"
-        ranked.append((size <= MAX_VIDEO_BYTES and size > 0,
-                       has_audio, min(width, height), size,
-                       fmt["format_id"]))
-    if not ranked:
-        return None
-    ranked.sort()
-    return ranked[-1][4]
-
-
 def _to_iso(raw: str | None) -> str | None:
     if raw and re.fullmatch(r"\d{8}", raw):
         return date(int(raw[:4]), int(raw[4:6]), int(raw[6:])).isoformat()
     return None
-
-
-def _fits_or_trims(dest: Path) -> bool:
-    """True when dest fits 16MB, trimming to the first 60s if needed."""
-    if dest.stat().st_size <= MAX_VIDEO_BYTES:
-        return True
-    if shutil.which("ffmpeg") is None:
-        return False
-    trimmed = dest.with_suffix(".trim.mp4")
-    try:
-        subprocess.run(
-            ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-             "-i", str(dest), "-t", str(TRIM_SECONDS), "-c", "copy",
-             str(trimmed)],
-            check=True, timeout=120, capture_output=True,
-        )
-    except (subprocess.SubprocessError, OSError):
-        return False
-    if not trimmed.exists() or trimmed.stat().st_size > MAX_VIDEO_BYTES:
-        trimmed.unlink(missing_ok=True)
-        return False
-    trimmed.replace(dest)
-    return True
 
 
 def _slug(article_url: str, index: int) -> str:
@@ -237,12 +154,7 @@ def fetch_demo_samples(
     if probe is None:
         probe = probe_video
     if downloader is None:
-        # Demo is not a bench: 720p preferred, 16MB pipeline cap enforced
-        # after an optional trim, any length allowed.
-        downloader = partial(
-            download_embed, max_seconds=None, format=DEMO_FORMAT,
-            max_bytes=None,
-        )
+        downloader = download_embed
     manifest: list[dict] = []
     kept = 0
     for index, article_url in enumerate(urls):
@@ -283,13 +195,10 @@ def fetch_demo_samples(
         filename = _slug(article_url, index)
         chosen: tuple[str, dict] | None = None
         for _, info in probed[:MAX_DOWNLOAD_ATTEMPTS]:
-            dest = out_dir / filename
-            reason = downloader(info["webpage_url"], dest)
-            if reason is None and _fits_or_trims(dest):
+            reason = downloader(info["webpage_url"], out_dir / filename)
+            if reason is None:
                 chosen = (info["webpage_url"], info)
                 break
-            if dest.exists():
-                dest.unlink()
         if chosen is None:
             manifest.append(_skip(article_url, "no original within limits"))
             continue

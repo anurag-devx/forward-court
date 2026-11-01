@@ -303,20 +303,6 @@ def test_download_embed_options_and_auth_free(tmp_path, monkeypatch):
     assert "cookiefile" not in opts and "username" not in opts
 
 
-def test_download_embed_no_duration_cap_omits_filter(tmp_path, monkeypatch):
-    import types
-
-    stub = types.ModuleType("yt_dlp")
-    stub.YoutubeDL = _StubYoutubeDL
-    stub.utils = _StubUtils
-    monkeypatch.setitem(sys.modules, "yt_dlp", stub)
-    dest = tmp_path / "clip.mp4"
-    dest.write_bytes(MP4)
-    assert download_embed("https://www.youtube.com/watch?v=x", dest,
-                          max_seconds=None) is None
-    assert "match_filter" not in _StubYoutubeDL.seen_opts
-
-
 def test_download_embed_maps_errors(tmp_path, monkeypatch):
     import types
 

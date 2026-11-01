@@ -156,26 +156,3 @@ def test_no_youtube_link_skips(tmp_path):
         probe=lambda url: None, downloader=lambda url, dest: None,
     )
     assert manifest[0]["skip_reason"] == "no YouTube link found"
-
-
-def test_fits_or_trims_keeps_small_and_trims_big(tmp_path, monkeypatch):
-    import shutil
-    import subprocess
-
-    import scripts.collect_demo_samples as demo
-
-    if shutil.which("ffmpeg") is None:
-        import pytest
-
-        pytest.skip("ffmpeg missing")
-    clip = tmp_path / "big.mp4"
-    subprocess.run(
-        ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-         "-f", "lavfi", "-i", "testsrc=duration=3:size=320x240:rate=10",
-         "-pix_fmt", "yuv420p", str(clip)],
-        check=True, timeout=60, capture_output=True,
-    )
-    assert demo._fits_or_trims(clip) is True
-    monkeypatch.setattr(demo, "MAX_VIDEO_BYTES", 10)
-    assert demo._fits_or_trims(clip) is False
-    assert not list(tmp_path.glob("*.trim.mp4"))

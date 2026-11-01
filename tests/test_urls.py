@@ -1,6 +1,6 @@
 import pytest
 
-from evidence.urls import normalize_url, tier_of
+from evidence.urls import normalize_url, same_source, tier_of, youtube_video_id
 
 
 def test_strips_tracking_params_and_fragment():
@@ -45,3 +45,37 @@ def test_returns_garbage_unchanged():
 )
 def test_tier_of(url, expected):
     assert tier_of(url) == expected
+
+
+@pytest.mark.parametrize(
+    "url, expected",
+    [
+        ("https://www.youtube.com/watch?v=abc123XYZ_-", "abc123XYZ_-"),
+        ("https://youtube.com/watch?v=abc123XYZ_-&t=5s", "abc123XYZ_-"),
+        ("https://youtu.be/abc123XYZ_-", "abc123XYZ_-"),
+        ("https://www.youtube.com/embed/abc123XYZ_-", "abc123XYZ_-"),
+        ("https://www.youtube.com/shorts/abc123XYZ_-", "abc123XYZ_-"),
+        ("https://www.youtube.com/live/abc123XYZ_-", "abc123XYZ_-"),
+        ("https://www.youtube.com/playlist?list=x", None),
+        ("https://x.com/u/status/1", None),
+        ("not a url", None),
+    ],
+)
+def test_youtube_video_id(url, expected):
+    assert youtube_video_id(url) == expected
+
+
+def test_same_source_matches_across_youtube_forms():
+    watch = "https://www.youtube.com/watch?v=abc123XYZ_-"
+    assert same_source(watch, "https://youtu.be/abc123XYZ_-")
+    assert same_source(watch, "https://www.youtube.com/embed/abc123XYZ_-")
+    assert same_source(watch, "https://www.youtube.com/shorts/abc123XYZ_-")
+    assert not same_source(watch, "https://www.youtube.com/watch?v=other_id1")
+    assert not same_source(watch, "https://x.com/u/status/1")
+
+
+def test_same_source_falls_back_to_normalized_equality():
+    assert same_source(
+        "https://orig.com/pic?utm_s=1", "https://orig.com/pic"
+    )
+    assert not same_source("https://a.com/x", "https://b.com/x")

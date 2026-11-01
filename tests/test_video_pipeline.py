@@ -116,6 +116,48 @@ def test_full_video_pipeline_offline(tmp_path, monkeypatch):
     assert "segment" in stages
 
 
+def test_video_ground_truth_matches_youtube_id_forms(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        main, "extract_key_frames", lambda path: [_frame_bytes()]
+    )
+    monkeypatch.setattr(main, "extract_audio", lambda path: b"fake-wav")
+    monkeypatch.setattr(
+        main, "transcribe_audio", lambda audio, **kwargs: "the river flooded"
+    )
+    provider = _FakeProvider(
+        [ReverseMatch(source_url="https://youtu.be/abc123XYZ_-",
+                      page_title="old", exact=True)]
+    )
+    _, tracker = main.run_video_forward(
+        _clip(tmp_path),
+        "floods today",
+        client=_client(frames=1),
+        http_client=dead_http_client(),
+        provider=provider,
+        ground_truth=["https://www.youtube.com/watch?v=abc123XYZ_-"],
+    )
+    assert "found ground truth: yes." in tracker.notes
+
+
+def test_video_ground_truth_miss_reported(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        main, "extract_key_frames", lambda path: [_frame_bytes()]
+    )
+    monkeypatch.setattr(main, "extract_audio", lambda path: b"fake-wav")
+    monkeypatch.setattr(
+        main, "transcribe_audio", lambda audio, **kwargs: "the river flooded"
+    )
+    _, tracker = main.run_video_forward(
+        _clip(tmp_path),
+        "floods today",
+        client=_client(frames=1),
+        http_client=dead_http_client(),
+        provider=_FakeProvider([]),
+        ground_truth=["https://www.youtube.com/watch?v=abc123XYZ_-"],
+    )
+    assert "found ground truth: no." in tracker.notes
+
+
 def test_claims_merge_video_first_truncated_to_3(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "extract_key_frames", lambda path: [])
     monkeypatch.setattr(main, "extract_audio", lambda path: b"fake-wav")

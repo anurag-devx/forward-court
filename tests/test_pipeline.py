@@ -119,6 +119,18 @@ def test_no_factcheck_flag_plumbs_through(monkeypatch, capsys):
     assert "lookup disabled" not in capsys.readouterr().out
 
 
+def test_card_out_writes_card_file(monkeypatch, tmp_path):
+    from config import UsageTracker
+
+    def fake_run(text, **kwargs):
+        return ("CARD TEXT", UsageTracker())
+
+    monkeypatch.setattr(main, "run_forward", fake_run)
+    out = tmp_path / "card.txt"
+    assert main.main(["hello", "--card-out", str(out)]) == 0
+    assert out.read_text() == "CARD TEXT\n"
+
+
 def test_claim_review_path_skips_debate_and_votes(monkeypatch):
     import evidence.factcheck as factcheck_module
     from evidence.models import ClaimReview

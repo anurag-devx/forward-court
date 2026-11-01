@@ -60,6 +60,41 @@ def normalize_url(url: str) -> str:
     return urlunsplit((scheme, host, path, urlencode(query), ""))
 
 
+def youtube_video_id(url: str) -> str | None:
+    """YouTube video ID from watch/embed/shorts/live/youtu.be URLs."""
+    try:
+        parts = urlsplit(url.strip())
+    except ValueError:
+        return None
+    host = (parts.hostname or "").lower()
+    if host.endswith("youtu.be"):
+        ident = parts.path.strip("/").split("/")[0]
+        return ident or None
+    if not host.endswith("youtube.com"):
+        return None
+    path = parts.path
+    if path == "/watch":
+        params = dict(parse_qsl(parts.query, keep_blank_values=True))
+        return params.get("v") or None
+    for prefix in ("/embed/", "/shorts/", "/live/", "/v/"):
+        if path.startswith(prefix):
+            ident = path[len(prefix):].split("/")[0]
+            return ident or None
+    return None
+
+
+def same_source(first: str, second: str) -> bool:
+    """True when two URLs identify the same source page or video.
+
+    Normalized-URL equality, or the same YouTube video ID across
+    watch/embed/shorts/youtu.be forms.
+    """
+    if normalize_url(first) == normalize_url(second):
+        return True
+    first_id = youtube_video_id(first)
+    return first_id is not None and first_id == youtube_video_id(second)
+
+
 def split_host_path(url: str) -> tuple[str | None, str]:
     """Return (lowercased host without www, path) or (None, '') if invalid."""
     try:

@@ -6,3 +6,5 @@ tests/samples/images/*.jpeg
 tests/samples/images/*.png
 tests/samples/images/*.webp
 tests/samples/images/*.gif
+tests/samples/videos/*.mp4
+tests/samples/demo/*.mp4

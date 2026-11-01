@@ -9,6 +9,7 @@ import argparse
 import sys
 import threading
 import time
+from pathlib import Path
 
 from card.formatter import format_card
 from config import (
@@ -42,7 +43,7 @@ from evidence.reverse_image import (
     matches_to_evidence,
     search_images,
 )
-from evidence.urls import normalize_url
+from evidence.urls import normalize_url, same_source
 from intake.extractor import extract_intake
 from intake.recency import is_presented_as_recent
 from media.audio import TranscribeError, extract_audio, transcribe_audio
@@ -371,6 +372,7 @@ class _CountingProvider:
 def run_video_forward(
     video_path: str, caption: str | None = None, *, client=None,
     http_client=None, provider=None, factcheck=True, claimreview=True,
+    ground_truth: list[str] | None = None,
     deadline_s: float = RUN_DEADLINE_S,
 ) -> tuple[str, UsageTracker]:
     """Run the pipeline on a video forward. Returns (card, usage)."""
@@ -491,6 +493,14 @@ def run_video_forward(
                         reverse_items.append(item)
             finally:
                 tracker.note(f"SerpAPI image searches: {counting.searches}.")
+            if ground_truth:
+                found = any(
+                    same_source(known, exact)
+                    for known in ground_truth
+                    for exact in exact_urls
+                )
+                tracker.note(
+                    f"found ground truth: {'yes' if found else 'no'}.")
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
             grounding = pool.submit(
                 gather_evidence, claims, client=client,
@@ -585,6 +595,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-claimreview", action="store_true",
                         help="Bench/debug only: disable the ClaimReview "
                         "short-circuit so runs take the debate path.")
+    parser.add_argument("--card-out", default=None, metavar="PATH",
+                        help="Also write the final card text to PATH.")
     args = parser.parse_args(argv)
     if sum(bool(part) for part in (args.text, args.image, args.video)) > 1:
         print("Error: pass forward text, --image, or --video — only one.",
@@ -618,6 +630,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Error: {exc}", file=sys.stderr)
         return 2
     print(card)
+    if args.card_out:
+        Path(args.card_out).write_text(card + "\n")
     print()
     for line in tracker.breakdown():
         print(line)

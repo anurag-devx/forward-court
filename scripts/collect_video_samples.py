@@ -35,16 +35,7 @@ URLS_OUT = Path("tests/samples/video_urls.txt")
 MAX_VIDEO_BYTES = 16 * 1024 * 1024
 MAX_SECONDS = 90
 STOP_AFTER_KEPT = 5
-# Single-file only (no ffmpeg merge): https-DASH has direct URLs while the
-# throttled m3u8 manifests fail at download time, and bare `worst` can select
-# undownloadable storyboards. The 8MB preference keeps downloads ahead of
-# throttling (144p video-only worst case, never audio-only); the 16MB
-# max_filesize + post-download check still enforce the pipeline cap.
-YTDLP_FORMAT = (
-    "best[ext=mp4][height<=480][protocol=https][filesize<?8M]"
-    "/worstvideo[ext=mp4][protocol=https]"
-    "/worstvideo[protocol=https]"
-)
+YTDLP_FORMAT = "best[ext=mp4][height<=480]/worst[ext=mp4]/worst"
 YTDLP_TIMEOUT = 30
 YTDLP_RETRIES = 2
 SECONDS_PER_EMBED_ESTIMATE = 90
@@ -181,57 +172,35 @@ def _is_mp4(data: bytes) -> bool:
     return len(data) > 12 and data[4:8] == b"ftyp"
 
 
-def download_embed(
-    url: str,
-    dest: Path,
-    *,
-    max_seconds: int | None = MAX_SECONDS,
-    format: str | None = None,
-    max_bytes: int | None = MAX_VIDEO_BYTES,
-) -> str | None:
+def download_embed(url: str, dest: Path) -> str | None:
     """Fetch a YouTube/X embed via yt-dlp. None on success, else a reason.
 
-    YTDLP_FORMAT (overridable) capped at max_bytes (None skips the size
-    cap) and ≤max_seconds known duration (None skips the duration check);
-    unknown duration/size is allowed (the post-download check still
-    applies when max_bytes is set). No login or cookies, ever.
+    Lowest ≤480p mp4, ≤16MB, ≤90s known duration; unknown duration is
+    allowed (the size cap still applies). No login or cookies, ever.
     """
     import yt_dlp  # lazy: dev-only dependency, scripts use only
 
     opts = {
-        "format": format or YTDLP_FORMAT,
+        "format": YTDLP_FORMAT,
         "outtmpl": str(dest),
         "noplaylist": True,
         "quiet": True,
         "no_warnings": True,
+        "max_filesize": MAX_VIDEO_BYTES,
+        "match_filter": yt_dlp.utils.match_filter_func(
+            f"duration <=? {MAX_SECONDS}"
+        ),
         "socket_timeout": YTDLP_TIMEOUT,
         "retries": YTDLP_RETRIES,
     }
-    if max_bytes is not None:
-        opts["max_filesize"] = max_bytes
-    if max_seconds is not None:
-        opts["match_filter"] = yt_dlp.utils.match_filter_func(
-            f"duration <=? {max_seconds}"
-        )
-    opts["socket_timeout"] = max(YTDLP_TIMEOUT, 60)
-    reason: str | None = None
-    for _ in range(3):  # outer retries for throttled fragment streams
-        try:
-            with yt_dlp.YoutubeDL(opts) as ydl:
-                ydl.extract_info(url, download=True)
-            reason = None
-            break
-        except Exception as exc:
-            message = str(exc).strip().splitlines()
-            first = message[0] if message else ""
-            first = first.removeprefix("ERROR: ").strip() or "failed"
-            reason = f"yt-dlp: {first[:120]}"
-    if reason is not None:
-        return reason
-    if not dest.exists():
-        return "video download produced no file"
-    if max_bytes is not None and dest.stat().st_size > max_bytes:
-        dest.unlink()
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            ydl.extract_info(url, download=True)
+    except Exception as exc:
+        return f"yt-dlp: {str(exc).splitlines()[0][:120] if str(exc) else 'failed'}"
+    if not dest.exists() or dest.stat().st_size > MAX_VIDEO_BYTES:
+        if dest.exists():
+            dest.unlink()
         return "video over 16MB"
     if not _is_mp4(dest.read_bytes()[:16]):
         dest.unlink()
