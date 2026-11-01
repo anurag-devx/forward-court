@@ -32,11 +32,11 @@ def ack_language(text: str) -> str:
 
 def download_media(
     url: str,
-    auth: tuple[str, str],
+    auth: tuple[str, str] | None = None,
     *,
     client: httpx.Client | None = None,
 ) -> bytes | None:
-    """GET Twilio-hosted media with basic auth. None on failure/over cap."""
+    """GET provider-hosted media (basic auth when given). None on failure."""
     if client is None:
         with httpx.Client() as owned:
             return _download(owned, url, auth)
@@ -103,7 +103,7 @@ def handle_message(
     body: str,
     media_url: str | None,
     media_type: str,
-    media_auth: tuple[str, str],
+    media_auth: tuple[str, str] | None = None,
 ) -> None:
     """Ack, verify the forward, and reply with the verdict card."""
     language = ack_language(body)

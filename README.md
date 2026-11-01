@@ -151,6 +151,15 @@ Set the Twilio number's incoming-message webhook to `<tunnel-url>/webhook`
 (POST). `PUBLIC_BASE_URL` must match the tunnel URL exactly, or signature
 validation fails.
 
+Vonage Messages API Sandbox instead of Twilio: allow-list your number on the
+sandbox page, set `WHATSAPP_PROVIDER=vonage` plus `VONAGE_API_KEY`,
+`VONAGE_API_SECRET`, `VONAGE_WHATSAPP_NUMBER`, and either
+`VONAGE_SIGNATURE_SECRET` (signed webhooks) or `VONAGE_WEBHOOK_TOKEN`
+(`?t=` gate) in `.env`. Point the sandbox inbound webhook at
+`<tunnel-url>/webhook/vonage` and the status webhook at
+`<tunnel-url>/webhook/vonage/status`. Sandbox limits: 100 msgs/month, 24h
+messaging window, no templates.
+
 ## Status
 
 - Done - Text forwards
