@@ -19,6 +19,7 @@ from config import (
     reverse_search_enabled,
     serpapi_key,
     stage_timer,
+    zoom_enabled,
 )
 from court.defender import argue_true
 from court.judge import (
@@ -55,9 +56,26 @@ from links.check import check_links
 from intake.extractor import extract_intake
 from intake.recency import is_presented_as_recent
 from media.audio import TranscribeError, extract_audio, transcribe_audio
-from media.segment import segment_subjects
-from media.video import describe_video, extract_key_frames, read_video
-from media.vision import describe_image, read_image
+from media.segment import (
+    TEXT_PROMPTS,
+    RankedRegion,
+    rank_regions,
+    tight_crops,
+    zoom_crops,
+)
+from media.video import (
+    ZOOM_FRAMES,
+    describe_video,
+    extract_key_frames,
+    merge_video_zoom,
+    read_video,
+)
+from media.vision import (
+    describe_image,
+    merge_zoom,
+    read_image,
+    zoom_views,
+)
 
 
 RUN_DEADLINE_S = 240.0
@@ -79,6 +97,59 @@ def _impersonated_domain(visible_domain: str | None, tracker) -> str | None:
         tracker.note(f"impersonated domain: {visible_domain}.")
         return visible_domain
     return None
+
+
+def _reverse_provider(provider, http_client):
+    """Explicit provider, or SerpAPI from env when enabled; else None."""
+    if provider is not None:
+        return provider
+    if reverse_search_enabled() and serpapi_key() is not None:
+        return SerpApiLensProvider(
+            serpapi_key(), http_client=http_client
+        )
+    return None
+
+
+def _rank_media(
+    image_bytes: bytes, subjects: list[str], mime: str,
+    has_content_claims: bool, *, client, tracker,
+) -> list[RankedRegion]:
+    """One SAM ranking for zoom + reverse; text prompts on screenshots."""
+    extra = list(TEXT_PROMPTS) if (
+        zoom_enabled() and has_content_claims
+    ) else []
+    with stage_timer(tracker, "segment"):
+        return rank_regions(
+            image_bytes, subjects, extra, mime=mime, client=client,
+            tracker=tracker,
+        )
+
+
+def _apply_zoom(
+    image_bytes: bytes, base, ranked: list[RankedRegion], merge, *,
+    mime: str, client, tracker,
+):
+    """Zoom pass over SAM crops. Returns (merged result, domain conflict).
+
+    Never raises for zoom problems: failures keep the pass-1 result.
+    """
+    if not zoom_enabled():
+        tracker.note("zoom disabled (ZOOM=off).")
+        return base, False
+    crops = zoom_crops(image_bytes, ranked)
+    if not crops:
+        tracker.note("zoom skipped (SAM found no regions).")
+        return base, False
+    reading = zoom_views(
+        image_bytes, [crop.data for crop in crops], mime=mime,
+        client=client, tracker=tracker,
+    )
+    if reading is None:
+        tracker.note("zoom skipped (zoom call failed).")
+        return base, False
+    merged, conflicted = merge(base, reading)
+    tracker.note(f"zoom merged {len(crops)} crop(s).")
+    return merged, conflicted
 
 
 def _run_with_deadline(tracker, fn, deadline_s: float):
@@ -277,7 +348,6 @@ def run_image_forward(
             + ["content_claim"] * len(caption_claims)
         )[:MAX_CLAIMS]
         has_content_claims = "content_claim" in kept_kinds
-        spoofed = _impersonated_domain(vision.visible_domain, tracker)
         if not claims:
             return "No checkable claims found in this forward.", tracker
         if vision.shows_claimed_event == "no":
@@ -291,6 +361,24 @@ def run_image_forward(
                 ),
                 tracker,
             )
+        active_provider = _reverse_provider(provider, http_client)
+        ranked: list[RankedRegion] = []
+        if zoom_enabled() or active_provider is not None:
+            ranked = _rank_media(
+                image_bytes, vision.people_places_objects, mime,
+                has_content_claims, client=client, tracker=tracker,
+            )
+        vision, domain_conflicted = _apply_zoom(
+            image_bytes, vision, ranked, merge_zoom, mime=mime,
+            client=client, tracker=tracker,
+        )
+        if domain_conflicted:
+            tracker.note(
+                "visible-domain conflict: impersonation check skipped."
+            )
+            spoofed = None
+        else:
+            spoofed = _impersonated_domain(vision.visible_domain, tracker)
         presented_as_recent = is_presented_as_recent(
             [vision.visible_text, caption or ""]
         )
@@ -300,15 +388,6 @@ def run_image_forward(
         ]
         reverse_items, reverse_evidence = [], False
         exact_urls: set[str] = set()
-        active_provider = provider
-        if (
-            active_provider is None
-            and reverse_search_enabled()
-            and serpapi_key() is not None
-        ):
-            active_provider = SerpApiLensProvider(
-                serpapi_key(), http_client=http_client
-            )
         if active_provider is None:
             if not reverse_search_enabled():
                 tracker.note("reverse search disabled (REVERSE_SEARCH=off).")
@@ -316,11 +395,7 @@ def run_image_forward(
                 tracker.note("reverse search skipped: SERPAPI_KEY not set.")
         else:
             try:
-                with stage_timer(tracker, "segment"):
-                    crops = segment_subjects(
-                        image_bytes, vision.people_places_objects, mime=mime,
-                        client=client, tracker=tracker,
-                    )
+                crops = tight_crops(image_bytes, ranked)
                 tracker.mark("reverse")
                 with stage_timer(tracker, "reverse"):
                     matches = search_images(
@@ -514,7 +589,6 @@ def run_video_forward(
             + ["content_claim"] * (len(transcript_claims) + len(caption_claims))
         )[:MAX_CLAIMS]
         has_content_claims = "content_claim" in kept_kinds
-        spoofed = _impersonated_domain(video.visible_domain, tracker)
         if not claims:
             return "No checkable claims found in this forward.", tracker
         if video.shows_claimed_event == "no":
@@ -528,6 +602,38 @@ def run_video_forward(
                 ),
                 tracker,
             )
+        active_provider = _reverse_provider(provider, http_client)
+        frames: list[bytes] = []
+        if zoom_enabled() or active_provider is not None:
+            frames = extract_key_frames(resolved)
+            tracker.note(f"key frames extracted: {len(frames)}.")
+        ranked_frames: list[list[RankedRegion]] = []
+        for frame in frames:
+            ranked_frames.append(
+                _rank_media(
+                    frame, video.people_places_objects, "image/jpeg",
+                    has_content_claims, client=client, tracker=tracker,
+                )
+            )
+        zoom_targets = frames[:ZOOM_FRAMES]
+        if zoom_targets:
+            video, domain_conflicted = _apply_zoom(
+                zoom_targets[0], video, ranked_frames[0], merge_video_zoom,
+                mime="image/jpeg", client=client, tracker=tracker,
+            )
+        else:
+            domain_conflicted = False
+            if zoom_enabled():
+                tracker.note("zoom skipped (no key frames).")
+            else:
+                tracker.note("zoom disabled (ZOOM=off).")
+        if domain_conflicted:
+            tracker.note(
+                "visible-domain conflict: impersonation check skipped."
+            )
+            spoofed = None
+        else:
+            spoofed = _impersonated_domain(video.visible_domain, tracker)
         presented_as_recent = is_presented_as_recent(
             [video.visible_text, transcript, caption or ""]
         )
@@ -540,15 +646,6 @@ def run_video_forward(
         reverse_items = []
         reverse_evidence = False
         exact_urls: set[str] = set()
-        active_provider = provider
-        if (
-            active_provider is None
-            and reverse_search_enabled()
-            and serpapi_key() is not None
-        ):
-            active_provider = SerpApiLensProvider(
-                serpapi_key(), http_client=http_client
-            )
         if active_provider is None:
             if not reverse_search_enabled():
                 tracker.note("reverse search disabled (REVERSE_SEARCH=off).")
@@ -556,16 +653,10 @@ def run_video_forward(
                 tracker.note("reverse search skipped: SERPAPI_KEY not set.")
         else:
             counting = _CountingProvider(active_provider)
-            frames = extract_key_frames(resolved)
-            tracker.note(f"key frames extracted: {len(frames)}.")
             seen: set[str] = set()
             try:
-                for frame in frames:
-                    with stage_timer(tracker, "segment"):
-                        crops = segment_subjects(
-                            frame, video.people_places_objects,
-                            client=client, tracker=tracker,
-                        )
+                for frame, ranked in zip(frames, ranked_frames):
+                    crops = tight_crops(frame, ranked)
                     try:
                         tracker.mark("reverse")
                         with stage_timer(tracker, "reverse"):

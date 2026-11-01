@@ -113,6 +113,7 @@ CONTRIBUTOR_ENV = "FC_CONTRIBUTOR"
 CONTRIBUTOR_OFF = frozenset({"0", "false", "no", "off"})
 REVERSE_SEARCH_ENV = "REVERSE_SEARCH"
 GSB_ENV = "GSB"
+ZOOM_ENV = "ZOOM"
 FEATURE_ON = frozenset({"1", "true", "yes", "on"})
 
 MAX_CLAIMS = 3
@@ -148,6 +149,14 @@ def gsb_api_key() -> str:
     if not gsb_enabled():
         return ""
     return os.environ.get("GSB_API_KEY", "")
+
+
+def zoom_enabled() -> bool:
+    """SAM zoom is opt-out; ZOOM=off (or 0/false/no) disables it."""
+    return (
+        os.environ.get(ZOOM_ENV, "on").strip().lower()
+        not in CONTRIBUTOR_OFF
+    )
 
 
 CALL_TIMEOUT = 60.0

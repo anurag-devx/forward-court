@@ -54,6 +54,26 @@ class VisionResult(BaseModel):
     )
 
 
+class ZoomReading(BaseModel):
+    visible_text: str = Field(
+        description="Text visible across the full view plus zoomed views, "
+        "verbatim; empty string if none."
+    )
+    visible_domain: str | None = Field(
+        default=None,
+        description="Domain name visible in any view; None when none shown.",
+    )
+    domain_from_text_crop: bool = Field(
+        default=False,
+        description="True when the domain was read from a zoomed text, "
+        "logo, or url-bar view rather than the full view.",
+    )
+    people_places_objects: list[str] = Field(
+        default_factory=list,
+        description="Main depicted subjects as short noun phrases.",
+    )
+
+
 class VideoResult(BaseModel):
     scene_summary: str
     visible_text: str = Field(

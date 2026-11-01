@@ -17,11 +17,12 @@ from PIL import Image, ImageFilter
 
 from config import agent_model, reasoning_kwargs
 
-from .models import VideoResult
-from .vision import CONSISTENCY_VOTES, majority_showing
+from .models import VideoResult, ZoomReading
+from .vision import CONSISTENCY_VOTES, majority_showing, merge_zoom_fields
 
 MAX_VIDEO_BYTES = 16 * 1024 * 1024
 MAX_FRAMES = 3
+ZOOM_FRAMES = 1
 SCENE_THRESHOLD = 0.4
 UPLOAD_PURPOSE = "user_data"
 FFMPEG_TIMEOUT = 120
@@ -136,6 +137,26 @@ def describe_video(
             "mismatch_reason": reason,
             "consistency_agreement": agreement,
         }
+    )
+
+
+def merge_video_zoom(
+    video: VideoResult, zoom: ZoomReading | None
+) -> tuple[VideoResult, bool]:
+    """Merge a zoom reading into a VideoResult. Returns (merged, conflict)."""
+    text, domain, subjects, conflicted = merge_zoom_fields(
+        video.visible_text, video.visible_domain,
+        video.people_places_objects, zoom,
+    )
+    return (
+        video.model_copy(
+            update={
+                "visible_text": text,
+                "visible_domain": domain,
+                "people_places_objects": subjects,
+            }
+        ),
+        conflicted,
     )
 
 

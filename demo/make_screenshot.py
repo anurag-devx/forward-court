@@ -2,6 +2,7 @@
 
 The outlet is invented ("The Daily Clarion"); the headline is a known,
 already fact-checked false claim so the run reaches FALSE via lookup.
+The browser bar shows a fictional .example domain for the zoom read.
 No real outlet branding, no copyrighted images.
 """
 from __future__ import annotations
@@ -9,6 +10,7 @@ from __future__ import annotations
 from PIL import Image, ImageDraw, ImageFont
 
 MASTHEAD = "The Daily Clarion"
+URL_BAR = "dailyclarion.example/wellness/lemon-water-cancer"
 HEADLINE = "Hot lemon water cures cancer, doctors confirm"
 STANDFIRST = (
     "Health experts say a glass of hot lemon water every morning "
@@ -47,15 +49,22 @@ def make_screenshot(path: str) -> str:
     image = Image.new("RGB", (WIDTH, HEIGHT), "white")
     draw = ImageDraw.Draw(image)
     margin = 48
-    draw.rectangle([0, 0, WIDTH, 110], fill=(20, 40, 90))
-    draw.text(
-        (margin, 28), MASTHEAD, font=_font(44), fill="white"
+    draw.rectangle([0, 0, WIDTH, 44], fill=(230, 230, 230))
+    draw.rounded_rectangle(
+        [margin, 8, WIDTH - margin, 36], radius=10, fill="white"
     )
     draw.text(
-        (margin, 132), "WELLNESS  -  MORNING EDITION",
+        (margin + 12, 11), URL_BAR, font=_font(16), fill=(40, 40, 40)
+    )
+    draw.rectangle([0, 44, WIDTH, 154], fill=(20, 40, 90))
+    draw.text(
+        (margin, 72), MASTHEAD, font=_font(44), fill="white"
+    )
+    draw.text(
+        (margin, 176), "WELLNESS  -  MORNING EDITION",
         font=_font(20), fill=(120, 120, 120),
     )
-    y = 175
+    y = 219
     for line in _wrapped(draw, HEADLINE, _font(40), WIDTH - 2 * margin):
         draw.text((margin, y), line, font=_font(40), fill="black")
         y += 52

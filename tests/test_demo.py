@@ -31,10 +31,11 @@ def test_screenshot_generates_png(tmp_path):
 
 
 def test_screenshot_uses_fictional_masthead():
-    from demo.make_screenshot import HEADLINE, MASTHEAD
+    from demo.make_screenshot import HEADLINE, MASTHEAD, URL_BAR
 
     assert MASTHEAD == "The Daily Clarion"
     assert "lemon" in HEADLINE and "cancer" in HEADLINE
+    assert URL_BAR.startswith("dailyclarion.example/")
 
 
 def test_demo_scam_sample_is_dangerous_offline(monkeypatch):
@@ -142,6 +143,7 @@ def test_env_example_documents_every_variable():
     assert {
         "MODEL_API_KEY",
         "FC_CONTRIBUTOR",
+        "ZOOM",
         "REVERSE_SEARCH",
         "SERPAPI_KEY",
         "GSB",

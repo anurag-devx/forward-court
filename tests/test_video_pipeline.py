@@ -1,6 +1,7 @@
 import io
 from types import SimpleNamespace
 
+import pytest
 from PIL import Image
 
 import main
@@ -11,6 +12,11 @@ from intake.models import IntakeResult
 from links.scamtext import ScamReading
 from media.models import VideoResult
 from tests.fakes import FakeClient, dead_http_client, search_call
+
+
+@pytest.fixture(autouse=True)
+def _zoom_off(monkeypatch):
+    monkeypatch.setenv("ZOOM", "off")
 
 
 def _frame_bytes():

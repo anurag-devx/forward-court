@@ -138,6 +138,8 @@ The clip does show trees swaying amid powerful winds, but fact-checks identify i
 | Speech in videos and voice notes | Muse Voice Transcribe |
 | Development | Muse Code |
 
+SAM 3.1 crops feed Muse Spark zoomed views to read small text (URL bars, dates, watermarks).
+
 Two non-model services are built but **disabled for the hackathon** per the runtime-model rule (SerpAPI Google Lens is not an allowed runtime model; Safe Browsing use could not be confirmed). They are not judging options — leave them off:
 
 - SerpAPI reverse image search — media provenance is therefore limited; photo-origin claims stay Unverified without it.
@@ -166,7 +168,7 @@ Run tests (offline, no API calls):
 python -m pytest tests/ -q
 ```
 
-405 tests. Bench media is collected locally with yt-dlp
+434 tests. Bench media is collected locally with yt-dlp
 (`requirements-dev.txt`, testing only); no media files are committed.
 
 ### WhatsApp gateway (optional)

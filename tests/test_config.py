@@ -12,6 +12,7 @@ from config import (
     gsb_enabled,
     reverse_search_enabled,
     stage_timer,
+    zoom_enabled,
 )
 
 
@@ -136,6 +137,19 @@ def test_feature_flags_unset_default_off(monkeypatch):
     monkeypatch.delenv("GSB", raising=False)
     assert reverse_search_enabled() is False
     assert gsb_enabled() is False
+
+
+def test_zoom_defaults_on(monkeypatch):
+    monkeypatch.delenv("ZOOM", raising=False)
+    assert zoom_enabled() is True
+    monkeypatch.setenv("ZOOM", "on")
+    assert zoom_enabled() is True
+
+
+@pytest.mark.parametrize("value", ["off", "0", "false", "no", "OFF"])
+def test_zoom_off_values(monkeypatch, value):
+    monkeypatch.setenv("ZOOM", value)
+    assert zoom_enabled() is False
 
 
 def test_gsb_api_key_gated_by_flag(monkeypatch):
