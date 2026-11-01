@@ -8,7 +8,8 @@ from fastapi import BackgroundTasks, FastAPI, Request, Response
 
 from gateway.security import valid_signature, valid_vonage_jwt
 from gateway.senders import Sender, TwilioSender, VonageSender
-from gateway.worker import handle_message
+from gateway.worker import handle_message, handle_risky_file
+from links.heuristics import RISKY_EXTENSIONS
 
 load_dotenv()
 
@@ -93,11 +94,17 @@ def _vonage_authorized(request: Request, raw_body: bytes) -> bool:
     return False
 
 
+def _vonage_sender_number(payload: dict) -> str:
+    sender = payload.get("from") or {}
+    if isinstance(sender, dict):
+        return sender.get("number", "")
+    return sender
+
+
 def _vonage_parts(payload: dict) -> tuple[str, str, str | None, str]:
     """(sender, text, media_url, media_type) from an inbound payload."""
     kind = payload.get("message_type", "")
-    sender = (payload.get("from") or {})
-    sender = sender.get("number", "") if isinstance(sender, dict) else sender
+    sender = _vonage_sender_number(payload)
     if kind == "text":
         return sender, (payload.get("text") or ""), None, ""
     if kind in ("image", "video"):
@@ -126,6 +133,19 @@ async def webhook_vonage(
     if not uuid or uuid in seen_sids:
         return Response(status_code=200)
     seen_sids.add(uuid)
+    if payload.get("message_type") == "file":
+        file = payload.get("file") or {}
+        name = str(file.get("name") or file.get("url") or "")
+        if name.lower().endswith(RISKY_EXTENSIONS):
+            sender = _vonage_sender_number(payload)
+            tasks.add_task(
+                handle_risky_file,
+                _sender(),
+                to=sender,
+                filename=name.rsplit("/", 1)[-1],
+                caption=str(file.get("caption", "")),
+            )
+            return Response(status_code=200)
     sender, text, media_url, media_type = _vonage_parts(payload)
     tasks.add_task(
         handle_message,

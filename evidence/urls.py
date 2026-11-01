@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from config import TIER1_OUTLETS, TIER3_UGC
+from config import SPOOFED_OUTLETS, TIER1_OUTLETS, TIER3_UGC
 
 _TRACKING_PREFIXES = ("utm_", "pk_", "piwik_", "matomo_")
 _TRACKING_PARAMS = frozenset(
@@ -121,6 +121,43 @@ def matches_entries(host: str, path: str, entries) -> bool:
         elif host == entry or host.endswith("." + entry):
             return True
     return False
+
+
+def _outlet_hosts() -> set[str]:
+    hosts = set()
+    for entry in SPOOFED_OUTLETS + TIER1_OUTLETS:
+        host = entry.split("/")[0].lower()
+        if host.startswith("www."):
+            host = host[4:]
+        hosts.add(host)
+    return hosts
+
+
+def impersonates_outlet(domain: str | None) -> bool:
+    """True when a visible domain spoofs a known outlet's name.
+
+    Genuine outlet hosts (exact or subdomain) return False; a domain that
+    merely carries an outlet name as a label (abcnews.com.co) returns True.
+    """
+    if not domain:
+        return False
+    text = domain.strip().lower()
+    if "://" in text:
+        text = text.split("://", 1)[1]
+    host = text.split("/")[0].split(":")[0]
+    if host.startswith("www."):
+        host = host[4:]
+    if not host or "." not in host:
+        return False
+    known = _outlet_hosts()
+    if host in known or any(host.endswith("." + outlet) for outlet in known):
+        return False
+    names = set()
+    for outlet in known:
+        labels = outlet.split(".")
+        name = labels[0] if labels[0] not in ("english", "www") else labels[1]
+        names.add(name)
+    return any(label in names for label in host.split("."))
 
 
 def tier_of(url: str) -> int:

@@ -9,6 +9,7 @@ from pathlib import Path
 import httpx
 
 from gateway.senders import Sender, SenderError
+from links.decide import decide
 
 ROOT = Path(__file__).resolve().parent.parent
 RUN_TIMEOUT_S = 240
@@ -22,6 +23,10 @@ ACK = {
 COULD_NOT_VERIFY = {
     "en": "Couldn't verify this right now. Please try again later.",
     "hi": "अभी इसकी जाँच नहीं हो सकी। कृपया बाद में पुनः प्रयास करें।",
+}
+RISKY_FILE_TYPE = {
+    "en": "Dangerous file attachment",
+    "hi": "खतरनाक फाइल अटैचमेंट",
 }
 
 
@@ -94,6 +99,22 @@ def _send(sender: Sender, to: str, body: str) -> None:
         sender.send(to, body)
     except SenderError as exc:
         print(f"warning: {exc}", file=sys.stderr)
+
+
+def handle_risky_file(
+    sender: Sender, *, to: str, filename: str, caption: str = ""
+) -> None:
+    """Reply DANGEROUS for a risky attachment without downloading it."""
+    from card.formatter import format_card
+
+    language = ack_language(caption)
+    _send(sender, to, ACK[language])
+    verdict = decide(
+        {"risky_download": filename}, [], RISKY_FILE_TYPE[language],
+        language,
+    )
+    assert verdict is not None
+    _send(sender, to, format_card(verdict))
 
 
 def handle_message(

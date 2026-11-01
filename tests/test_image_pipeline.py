@@ -8,6 +8,7 @@ from court.models import Argument, ArgPoint, Verdict
 from evidence.relevance import RelevanceScore, RelevanceScores
 from evidence.reverse_image import ReverseMatch
 from intake.models import IntakeResult
+from links.scamtext import ScamReading
 from media.models import VisionResult
 from tests.fakes import FakeClient, dead_http_client, search_call
 
@@ -61,6 +62,7 @@ def _client():
             Argument: Argument(
                 points=[ArgPoint(text="p", source_url="https://g.com/0")]
             ),
+            ScamReading: ScamReading(scam_type="", signals=[]),
             RelevanceScores: _all_relevant(),
             Verdict: Verdict(
                 verdict="False",
@@ -118,6 +120,47 @@ def test_full_image_pipeline_offline(tmp_path):
     assert "segment" in stages
 
 
+def test_content_claim_lifts_cap_and_notes_spoof(tmp_path):
+    by_model = dict(_client().responses.parsed_by_model)
+    by_model[VisionResult] = VisionResult(
+        scene_description="A news screenshot.",
+        visible_text="Hoax headline here",
+        people_places_objects=["screenshot"],
+        claims_from_image=["hoax headline here", "photo shows a protest"],
+        claim_kinds=["content_claim", "origin_claim"],
+        visible_domain="abcnews.com.co",
+        language="en",
+        image_role="viral_claim",
+    )
+    fake = FakeClient(
+        parsed_by_model=by_model,
+        outputs=_client().responses.outputs,
+        lookup_outputs=[[search_call([])]] * 3,
+    )
+    card, tracker = main.run_image_forward(
+        _image_file(tmp_path),
+        client=fake,
+        http_client=dead_http_client(),
+        provider=_FakeProvider([]),
+    )
+    assert "FALSE" in card.splitlines()[0]
+    assert "impersonated domain: abcnews.com.co." in tracker.notes
+    judge_inputs = [
+        kwargs["input"]
+        for _, kwargs in fake.responses.calls
+        if "input" in kwargs and "Image forward:" in kwargs["input"]
+    ]
+    assert judge_inputs and all(
+        "impersonated domain" in text for text in judge_inputs
+    )
+
+
+def test_missing_kinds_default_to_capped_origin(tmp_path):
+    kinds = main._media_claim_kinds(["a", "b"], ["content_claim"])
+    assert kinds == ["content_claim", "origin_claim"]
+    assert main._media_claim_kinds(["a"], []) == ["origin_claim"]
+
+
 def test_claims_merge_image_first_truncated_to_3(tmp_path):
     client = _client()
     main.run_image_forward(
@@ -167,6 +210,7 @@ def test_no_provider_skips_reverse_and_caps_verdict(tmp_path, monkeypatch):
             Argument: Argument(
                 points=[ArgPoint(text="p", source_url="https://g.com/x")]
             ),
+            ScamReading: ScamReading(scam_type="", signals=[]),
             RelevanceScores: _all_relevant(),
             Verdict: Verdict(
                 verdict="True",

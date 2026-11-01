@@ -1,6 +1,12 @@
 import pytest
 
-from evidence.urls import normalize_url, same_source, tier_of, youtube_video_id
+from evidence.urls import (
+    impersonates_outlet,
+    normalize_url,
+    same_source,
+    tier_of,
+    youtube_video_id,
+)
 
 
 def test_strips_tracking_params_and_fragment():
@@ -79,3 +85,26 @@ def test_same_source_falls_back_to_normalized_equality():
         "https://orig.com/pic?utm_s=1", "https://orig.com/pic"
     )
     assert not same_source("https://a.com/x", "https://b.com/x")
+
+
+@pytest.mark.parametrize(
+    "domain, expected",
+    [
+        ("abcnews.com.co", True),
+        ("https://abcnews.com.co/story", True),
+        ("www.cnn-news.com", False),  # hyphen label, not an outlet label
+        ("abcnews.go.com", False),
+        ("https://www.abcnews.go.com/x", False),
+        ("sub.bbc.com", False),
+        ("bbc.co.uk", False),
+        ("randomblog.com", False),
+        ("reutersinstitute.example.com", False),
+        ("english.something.com", False),
+        ("factcrescendo-scam.com", False),  # hyphen label, not exact
+        (None, False),
+        ("", False),
+        ("notaurl", False),
+    ],
+)
+def test_impersonates_outlet(domain, expected):
+    assert impersonates_outlet(domain) == expected

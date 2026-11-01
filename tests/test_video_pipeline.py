@@ -8,6 +8,7 @@ from court.models import Argument, ArgPoint, Verdict
 from evidence.relevance import RelevanceScore, RelevanceScores
 from evidence.reverse_image import ReverseMatch
 from intake.models import IntakeResult
+from links.scamtext import ScamReading
 from media.models import VideoResult
 from tests.fakes import FakeClient, dead_http_client, search_call
 
@@ -55,6 +56,7 @@ def _client(frames=2):
             Argument: Argument(
                 points=[ArgPoint(text="p", source_url="https://g.com/0")]
             ),
+            ScamReading: ScamReading(scam_type="", signals=[]),
             RelevanceScores: RelevanceScores(
                 scores=[RelevanceScore(index=i, score=2) for i in range(12)]
             ),

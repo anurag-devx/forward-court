@@ -15,6 +15,18 @@ class VisionResult(BaseModel):
     claims_from_image: list[str] = Field(
         description="Checkable claims the image itself makes (what/where/when)."
     )
+    claim_kinds: list[Literal["origin_claim", "content_claim"]] = Field(
+        default_factory=list,
+        description="Kind per claims_from_image entry, aligned by index: "
+        "'origin_claim' for where/when/who the photo shows, "
+        "'content_claim' for statements/headlines/text visible in "
+        "screenshots, posters, articles, or chats.",
+    )
+    visible_domain: str | None = Field(
+        default=None,
+        description="Domain name visible in a screenshot/poster/article "
+        "(e.g. 'abcnews.com.co'); None when no domain is shown.",
+    )
     language: str = Field(
         description="ISO 639-1 language of visible text, or 'en' if none."
     )
@@ -55,6 +67,17 @@ class VideoResult(BaseModel):
     )
     claims_from_video: list[str] = Field(
         description="Checkable claims the video itself makes (what/where/when)."
+    )
+    claim_kinds: list[Literal["origin_claim", "content_claim"]] = Field(
+        default_factory=list,
+        description="Kind per claims_from_video entry, aligned by index: "
+        "'origin_claim' for where/when/who the video shows, "
+        "'content_claim' for statements/headlines/text visible on screen.",
+    )
+    visible_domain: str | None = Field(
+        default=None,
+        description="Domain name visible on screen (e.g. 'abcnews.com.co'); "
+        "None when no domain is shown.",
     )
     language: str = Field(
         description="ISO 639-1 language of visible text, or 'en' if none."

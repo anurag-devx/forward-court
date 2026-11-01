@@ -104,9 +104,15 @@ def _search_lookup(client, tracker, stage: str, query: str) -> list:
     return results if searched else []
 
 
+def _blocked(url: str, blocked_hosts: frozenset) -> bool:
+    host, _ = split_host_path(url)
+    return host is not None and host in blocked_hosts
+
+
 def lookup_factchecks(
     claims: list[str], *, client, tracker=None, http_client=None,
     language: str = "en", executor=None,
+    blocked_hosts: frozenset = frozenset(),
 ) -> list[EvidenceItem]:
     """Find existing fact-checks per claim. Never raises for empty results.
 
@@ -122,6 +128,7 @@ def lookup_factchecks(
         return _lookup(
             claims, pool, client=client, tracker=tracker,
             http_client=http_client, language=language,
+            blocked_hosts=blocked_hosts,
         )
     finally:
         if executor is None:
@@ -129,7 +136,7 @@ def lookup_factchecks(
 
 
 def _lookup(
-    claims, pool, *, client, tracker, http_client, language
+    claims, pool, *, client, tracker, http_client, language, blocked_hosts
 ) -> list[EvidenceItem]:
     jobs: list[tuple] = []
     for number, claim in enumerate(claims, start=1):
@@ -169,7 +176,17 @@ def _lookup(
                     (url, field(result, "title") or "",
                      field(result, "snippet") or "")
                 )
-        selected = kept[:ENRICH_MATCHES]
+        candidates = kept[:ENRICH_MATCHES]
+        selected = [
+            triple
+            for triple in candidates
+            if not _blocked(triple[0], blocked_hosts)
+        ]
+        if len(selected) < len(candidates) and tracker is not None:
+            tracker.note(
+                f"skipped {len(candidates) - len(selected)} "
+                "flagged URL(s) (unsafe)."
+            )
         fetched = [
             future.result()
             for future in [
@@ -184,6 +201,8 @@ def _lookup(
             for (url, _, _), triple in zip(selected, fetched)
         }
         for url, title, search_snippet in kept:
+            if _blocked(url, blocked_hosts):
+                continue
             if normalize_url(url) in enriched:
                 snippet, date, review = enriched[normalize_url(url)]
             else:

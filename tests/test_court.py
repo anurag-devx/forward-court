@@ -258,6 +258,52 @@ def test_origin_cap_without_reverse_evidence(
     assert verdict.confidence == confidence
 
 
+@pytest.mark.parametrize("model_verdict", ["True", "False"])
+def test_content_claims_lift_origin_cap(model_verdict):
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(verdict=model_verdict)}
+    )
+    verdict = judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
+        image=ImageContext(
+            origin_only=True, reverse_evidence=False,
+            has_content_claims=True,
+        ),
+    )
+    assert verdict.verdict == model_verdict
+    assert verdict.confidence == "high"
+
+
+def test_no_content_claims_keeps_origin_cap():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict(verdict="False")})
+    verdict = judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
+        image=ImageContext(
+            origin_only=True, reverse_evidence=False,
+            has_content_claims=False,
+        ),
+    )
+    assert verdict.verdict == "Unverified"
+
+
+def test_brief_notes_impersonated_domain():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict(verdict="False")})
+    judge_verdict(
+        ["c"], _evidence(), Argument(points=[]), _defense(), "en", False,
+        client=fake,
+        image=ImageContext(
+            origin_only=True, reverse_evidence=False,
+            has_content_claims=True,
+            impersonated_domain="abcnews.com.co",
+        ),
+    )
+    sent = fake.responses.calls[0][1]["input"]
+    assert "impersonated domain" in sent
+    assert "abcnews.com.co" in sent
+
+
 def test_unverified_confidence_capped_at_medium():
     fake = FakeClient(
         parsed_by_model={

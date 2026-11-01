@@ -110,13 +110,16 @@ def enrich_from_page(
 
 
 class _MetaParser(HTMLParser):
-    """Collects article:published_time and JSON-LD script bodies."""
+    """Collects article:published_time, og:title, <title>, JSON-LD bodies."""
 
     def __init__(self) -> None:
         super().__init__()
         self.published_time: str | None = None
+        self.og_title: str | None = None
+        self.title_text: list[str] = []
         self.ld_json_blocks: list[str] = []
         self._in_ld_json = False
+        self._in_title = False
         self._current: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list) -> None:
@@ -128,19 +131,46 @@ class _MetaParser(HTMLParser):
                 and self.published_time is None
             ):
                 self.published_time = fields["content"]
+            if (
+                fields.get("property") == "og:title"
+                and fields.get("content")
+                and self.og_title is None
+            ):
+                self.og_title = fields["content"].strip()
         elif tag == "script":
             if dict(attrs).get("type") == "application/ld+json":
                 self._in_ld_json = True
                 self._current = []
+        elif tag == "title":
+            self._in_title = True
 
     def handle_data(self, data: str) -> None:
         if self._in_ld_json:
             self._current.append(data)
+        if self._in_title:
+            self.title_text.append(data)
 
     def handle_endtag(self, tag: str) -> None:
         if tag == "script" and self._in_ld_json:
             self._in_ld_json = False
             self.ld_json_blocks.append("".join(self._current))
+        if tag == "title":
+            self._in_title = False
+
+
+def extract_title(html: str) -> str | None:
+    """og:title, else <title> text, else None."""
+    if not html:
+        return None
+    parser = _MetaParser()
+    try:
+        parser.feed(html)
+    except Exception:
+        return None
+    if parser.og_title:
+        return parser.og_title
+    title = "".join(parser.title_text).strip()
+    return title or None
 
 
 def _day(value) -> str | None:

@@ -19,7 +19,12 @@ from dates import extract_date
 from .models import EvidenceItem
 from .pages import enrich_from_page
 from .responses import field, web_search_results
-from .urls import normalize_url
+from .urls import normalize_url, split_host_path
+
+
+def _blocked(url: str, blocked_hosts: frozenset) -> bool:
+    host, _ = split_host_path(url)
+    return host is not None and host in blocked_hosts
 
 SEARCH_TOOL = {"type": "web_search", "search_context_size": "low"}
 INCLUDE_RESULTS = ["web_search_call.results"]
@@ -129,7 +134,7 @@ def _ordered_unique(per_query: list[list], seen: set[str]) -> list[tuple]:
 
 def gather_evidence(
     claims: list[str], *, client, tracker=None, http_client=None,
-    executor=None,
+    executor=None, blocked_hosts: frozenset = frozenset(),
 ) -> list[EvidenceItem]:
     """Collect grounded evidence for each claim (supporting + refuting queries).
 
@@ -148,14 +153,14 @@ def gather_evidence(
     try:
         return _gather(
             claims, pool, client=client, tracker=tracker,
-            http_client=http_client,
+            http_client=http_client, blocked_hosts=blocked_hosts,
         )
     finally:
         if executor is None:
             pool.shutdown()
 
 
-def _gather(claims, pool, *, client, tracker, http_client) -> list[EvidenceItem]:
+def _gather(claims, pool, *, client, tracker, http_client, blocked_hosts) -> list[EvidenceItem]:
     jobs: list[tuple] = []
     for number, claim in enumerate(claims, start=1):
         jobs.append(
@@ -190,7 +195,17 @@ def _gather(claims, pool, *, client, tracker, http_client) -> list[EvidenceItem]
             raise GroundingError(
                 f"No grounded evidence found for claim {claim!r}; stopping."
             )
-        selected = ordered[:TOP_FETCH_PER_CLAIM]
+        candidates = ordered[:TOP_FETCH_PER_CLAIM]
+        selected = [
+            triple
+            for triple in candidates
+            if not _blocked(triple[0], blocked_hosts)
+        ]
+        if len(selected) < len(candidates) and tracker is not None:
+            tracker.note(
+                f"skipped {len(candidates) - len(selected)} "
+                "flagged URL(s) (unsafe)."
+            )
         fetched = [
             future.result()
             for future in [
@@ -203,6 +218,8 @@ def _gather(claims, pool, *, client, tracker, http_client) -> list[EvidenceItem]
             for (url, _, _), triple in zip(selected, fetched)
         }
         for url, title, search_snippet in ordered:
+            if _blocked(url, blocked_hosts):
+                continue
             if normalize_url(url) in enriched:
                 snippet, date, review = enriched[normalize_url(url)]
             else:

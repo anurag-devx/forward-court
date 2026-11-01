@@ -5,6 +5,7 @@ from court.models import Argument, ArgPoint, Verdict
 from evidence.grounder import GroundingError
 from evidence.relevance import RelevanceScore, RelevanceScores
 from intake.models import IntakeResult
+from links.scamtext import ScamReading
 from tests.fakes import FakeClient, dead_http_client, search_call
 
 SAMPLES = Path(__file__).parent / "samples"
@@ -24,6 +25,7 @@ def _pipeline_client(**overrides):
             presented_as_recent=False,
         ),
         RelevanceScores: _all_relevant(),
+        ScamReading: ScamReading(scam_type="", signals=[]),
         Argument: Argument(
             points=[ArgPoint(text="no evidence", source_url="https://debunk.com/x")]
         ),
@@ -63,7 +65,7 @@ def test_full_pipeline_offline():
     assert "❌ *Forward Court Verdict: FALSE*" in card
     assert "🔗 Source: https://debunk.com/x" in card
     # intake + 2 searches + lookup + relevance + prosecutor + defender + 3 votes
-    assert tracker.total_tokens == 10 * 150
+    assert tracker.total_tokens == 11 * 150
 
 
 def test_pipeline_records_per_stage_breakdown():
@@ -76,6 +78,7 @@ def test_pipeline_records_per_stage_breakdown():
     # concurrent grounding/lookup interleave; compare order-free
     assert Counter(stages) == Counter(
         [
+            "scamtext",
             "intake",
             "grounding",
             "grounding",
@@ -158,7 +161,7 @@ def test_claim_review_path_skips_debate_and_votes(monkeypatch):
     assert "Already fact-checked by altnews.in" in card
     assert "🔗 Source: https://www.altnews.in/y" in card
     parses = [c for c in client.responses.calls if c[0] == "parse"]
-    assert len(parses) == 2  # intake + relevance; no debate, no judge votes
+    assert len(parses) == 3  # scamtext + intake + relevance; no debate, no votes
     assert any("ClaimReview verdict" in note for note in tracker.notes)
 
 
@@ -191,7 +194,7 @@ def test_no_claimreview_flag_forces_debate_path(monkeypatch):
     assert "Already fact-checked" not in card
     parses = [c for c in client.responses.calls if c[0] == "parse"]
     # intake + relevance + prosecutor + defender + 3 judge votes
-    assert len(parses) == 7
+    assert len(parses) == 8  # scamtext + intake + relevance + 2 agents + 3 votes
     assert "ClaimReview short-circuit disabled." in tracker.notes
 
 
@@ -213,7 +216,7 @@ def test_all_filtered_evidence_yields_unverified_without_debate():
     assert "🔗" not in card
     assert "no relevant evidence: verdict Unverified." in tracker.notes
     parses = [c for c in client.responses.calls if c[0] == "parse"]
-    assert len(parses) == 2  # intake + relevance only
+    assert len(parses) == 3  # scamtext + intake + relevance only
 
 
 def test_deadline_returns_timeout_card_naming_stalled_stage():
@@ -249,7 +252,13 @@ def test_deadline_card_uses_detected_language():
 
     class HangingGrounding:
         def parse(self, **kwargs):
-            return SimpleNamespace(output_parsed=intake, usage=FakeUsage())
+            from links.scamtext import ScamReading
+
+            if kwargs.get("text_format") is ScamReading:
+                parsed = ScamReading(scam_type="", signals=[])
+            else:
+                parsed = intake
+            return SimpleNamespace(output_parsed=parsed, usage=FakeUsage())
 
         def create(self, **kwargs):
             threading.Event().wait(30)
@@ -262,8 +271,8 @@ def test_deadline_card_uses_detected_language():
     )
     assert "अभी सत्यापित नहीं हो सका" in card
     # grounding and lookup race; either may hold the last mark
-    assert len(tracker.notes) == 1
-    assert tracker.notes[0] in (
+    assert any("run timed out during stage" in n for n in tracker.notes)
+    assert tracker.notes[-1] in (
         "run timed out during stage: grounding.",
         "run timed out during stage: lookup.",
     )
@@ -279,7 +288,7 @@ def test_no_claims_short_circuits():
     )
     card, _ = main.run_forward("good morning!", client=client)
     assert card == "No checkable claims found in this forward."
-    assert len(client.responses.calls) == 1  # intake only
+    assert len(client.responses.calls) == 2  # scamtext + intake only
 
 
 def test_grounding_error_propagates():
@@ -288,6 +297,7 @@ def test_grounding_error_propagates():
             IntakeResult: IntakeResult(
                 language="en", claims=["c"], presented_as_recent=False
             ),
+            ScamReading: ScamReading(scam_type="", signals=[]),
         },
         outputs=[[search_call([])], [search_call([])]],
     )

@@ -46,3 +46,8 @@ class EvidenceItem(BaseModel):
         default=False,
         description="Exact reverse-search hit: media-provenance evidence.",
     )
+    shared_article: bool = Field(
+        default=False,
+        description="The article the forward itself shared: cannot be its "
+        "own key_source for True without independent corroboration.",
+    )

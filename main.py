@@ -43,7 +43,14 @@ from evidence.reverse_image import (
     matches_to_evidence,
     search_images,
 )
-from evidence.urls import normalize_url, same_source
+from evidence.urls import impersonates_outlet, normalize_url, same_source
+from links.article import (
+    article_tier_note,
+    fetch_article,
+    is_bare_link,
+    to_evidence as article_evidence,
+)
+from links.check import check_links
 from intake.extractor import extract_intake
 from intake.recency import is_presented_as_recent
 from media.audio import TranscribeError, extract_audio, transcribe_audio
@@ -58,6 +65,19 @@ TIMEOUT_REASONS = {
     "en": "Couldn't verify right now, please try again.",
     "hi": "अभी सत्यापित नहीं हो सका, कृपया पुनः प्रयास करें।",
 }
+
+
+def _media_claim_kinds(media_claims: list[str], kinds: list[str]) -> list[str]:
+    """Kind per media claim; missing tags default to origin_claim (capped)."""
+    padded = list(kinds) + ["origin_claim"] * len(media_claims)
+    return padded[: len(media_claims)]
+
+
+def _impersonated_domain(visible_domain: str | None, tracker) -> str | None:
+    if visible_domain and impersonates_outlet(visible_domain):
+        tracker.note(f"impersonated domain: {visible_domain}.")
+        return visible_domain
+    return None
 
 
 def _run_with_deadline(tracker, fn, deadline_s: float):
@@ -109,19 +129,45 @@ def run_forward(
         with stage_timer(tracker, "intake"):
             intake = extract_intake(text, client=client, tracker=tracker)
         tracker.language = intake.language
-        if not intake.claims:
+        link_verdict, link_info = check_links(
+            text, intake.language, client=client, http_client=http_client,
+            tracker=tracker,
+        )
+        if link_verdict is not None:
+            return format_card(link_verdict), tracker
+        blocked = frozenset(link_info["flagged_hosts"])
+        article = None
+        if link_info["safe_urls"]:
+            with stage_timer(tracker, "article"):
+                article = fetch_article(
+                    link_info["safe_urls"][0], http_client
+                )
+        article_bare = bool(article) and is_bare_link(text, link_info["urls"])
+        if article is not None:
+            note = article_tier_note(article)
+            if note is not None:
+                tracker.note(note)
+        claims = list(intake.claims)
+        if article is not None and article.headline:
+            claims = [article.headline] + [
+                claim for claim in claims if claim != article.headline
+            ]
+        claims = claims[:MAX_CLAIMS]
+        if not claims:
             return "No checkable claims found in this forward.", tracker
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
             grounding = pool.submit(
-                gather_evidence, intake.claims, client=client,
+                gather_evidence, claims, client=client,
                 tracker=tracker, http_client=http_client, executor=pool,
+                blocked_hosts=blocked,
             )
             lookup = None
             if factcheck:
                 lookup = pool.submit(
-                    lookup_factchecks, intake.claims, client=client,
+                    lookup_factchecks, claims, client=client,
                     tracker=tracker, http_client=http_client,
                     language=intake.language, executor=pool,
+                    blocked_hosts=blocked,
                 )
             with stage_timer(tracker, "grounding"):
                 evidence = grounding.result()
@@ -131,19 +177,21 @@ def run_forward(
             else:
                 tracker.note("fact-check lookup disabled.")
             evidence = select_evidence(
-                intake.claims, evidence, tracker=tracker
+                claims, evidence, tracker=tracker
             )
             with stage_timer(tracker, "relevance"):
                 evidence, bare_claims = filter_evidence(
-                    intake.claims, evidence, client=client, tracker=tracker
+                    claims, evidence, client=client, tracker=tracker
                 )
+            if article is not None:
+                evidence.append(article_evidence(article, claims[0]))
             if not evidence:
                 tracker.note("no relevant evidence: verdict Unverified.")
                 return format_card(no_evidence_verdict(intake.language)), tracker
             review_verdict = None
             if claimreview:
                 review_verdict = find_claim_review_verdict(
-                    intake.claims, evidence, intake.language
+                    claims, evidence, intake.language
                 )
             else:
                 tracker.note("ClaimReview short-circuit disabled.")
@@ -154,11 +202,11 @@ def run_forward(
                 )
                 return format_card(review_verdict), tracker
             prosecution_job = pool.submit(
-                argue_false, intake.claims, evidence, client=client,
+                argue_false, claims, evidence, client=client,
                 tracker=tracker,
             )
             defense_job = pool.submit(
-                argue_true, intake.claims, evidence, client=client,
+                argue_true, claims, evidence, client=client,
                 tracker=tracker,
             )
             debate_start = time.monotonic()
@@ -168,7 +216,7 @@ def run_forward(
             tracker.add_time("defender", time.monotonic() - debate_start)
             with stage_timer(tracker, "judge"):
                 verdict = judge_verdict(
-                    intake.claims,
+                    claims,
                     evidence,
                     prosecution,
                     defense,
@@ -177,6 +225,9 @@ def run_forward(
                     client=client,
                     tracker=tracker,
                     no_evidence_claims=bare_claims,
+                    article_url=article.url if article else None,
+                    article_date=article.date if article else None,
+                    article_bare=article_bare,
                     executor=pool,
                 )
             return format_card(verdict), tracker
@@ -210,7 +261,22 @@ def run_image_forward(
             caption_media = intake.media_claims
             language = intake.language
         tracker.language = language
+        link_blocked: frozenset = frozenset()
+        if caption:
+            link_verdict, link_info = check_links(
+                caption, language, client=client, http_client=http_client,
+                tracker=tracker,
+            )
+            if link_verdict is not None:
+                return format_card(link_verdict), tracker
+            link_blocked = frozenset(link_info["flagged_hosts"])
         claims = (vision.claims_from_image + caption_claims)[:MAX_CLAIMS]
+        kept_kinds = (
+            _media_claim_kinds(vision.claims_from_image, vision.claim_kinds)
+            + ["content_claim"] * len(caption_claims)
+        )[:MAX_CLAIMS]
+        has_content_claims = "content_claim" in kept_kinds
+        spoofed = _impersonated_domain(vision.visible_domain, tracker)
         if not claims:
             return "No checkable claims found in this forward.", tracker
         if vision.shows_claimed_event == "no":
@@ -282,6 +348,7 @@ def run_image_forward(
             grounding = pool.submit(
                 gather_evidence, claims, client=client,
                 tracker=tracker, http_client=http_client, executor=pool,
+                blocked_hosts=link_blocked,
             )
             lookup = None
             if factcheck:
@@ -289,6 +356,7 @@ def run_image_forward(
                     lookup_factchecks, claims, client=client,
                     tracker=tracker, http_client=http_client,
                     language=language, executor=pool,
+                    blocked_hosts=link_blocked,
                 )
             with stage_timer(tracker, "grounding"):
                 evidence = reverse_items + grounding.result()
@@ -347,6 +415,8 @@ def run_image_forward(
                     image=ImageContext(
                         origin_only=not caption_claims,
                         reverse_evidence=reverse_evidence,
+                        has_content_claims=has_content_claims,
+                        impersonated_domain=spoofed,
                     ),
                     no_evidence_claims=bare_claims,
                     executor=pool,
@@ -419,9 +489,24 @@ def run_video_forward(
         if not caption and transcript_language is not None:
             language = transcript_language
         tracker.language = language
+        link_blocked: frozenset = frozenset()
+        if caption:
+            link_verdict, link_info = check_links(
+                caption, language, client=client, http_client=http_client,
+                tracker=tracker,
+            )
+            if link_verdict is not None:
+                return format_card(link_verdict), tracker
+            link_blocked = frozenset(link_info["flagged_hosts"])
         claims = (
             video.claims_from_video + transcript_claims + caption_claims
         )[:MAX_CLAIMS]
+        kept_kinds = (
+            _media_claim_kinds(video.claims_from_video, video.claim_kinds)
+            + ["content_claim"] * (len(transcript_claims) + len(caption_claims))
+        )[:MAX_CLAIMS]
+        has_content_claims = "content_claim" in kept_kinds
+        spoofed = _impersonated_domain(video.visible_domain, tracker)
         if not claims:
             return "No checkable claims found in this forward.", tracker
         if video.shows_claimed_event == "no":
@@ -505,6 +590,7 @@ def run_video_forward(
             grounding = pool.submit(
                 gather_evidence, claims, client=client,
                 tracker=tracker, http_client=http_client, executor=pool,
+                blocked_hosts=link_blocked,
             )
             lookup = None
             if factcheck:
@@ -512,6 +598,7 @@ def run_video_forward(
                     lookup_factchecks, claims, client=client,
                     tracker=tracker, http_client=http_client,
                     language=language, executor=pool,
+                    blocked_hosts=link_blocked,
                 )
             with stage_timer(tracker, "grounding"):
                 evidence = reverse_items + grounding.result()
@@ -570,6 +657,8 @@ def run_video_forward(
                     image=ImageContext(
                         origin_only=not caption_claims and not transcript_claims,
                         reverse_evidence=reverse_evidence,
+                        has_content_claims=has_content_claims,
+                        impersonated_domain=spoofed,
                     ),
                     no_evidence_claims=bare_claims,
                     executor=pool,

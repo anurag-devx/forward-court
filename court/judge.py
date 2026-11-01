@@ -37,6 +37,10 @@ RECYCLED_NOTES = {
     "en": "Note: the sources predate what the forward describes (recycled old content).",
     "hi": "नोट: स्रोत उस घटना से पुराने हैं जिसका वर्णन फ़ॉरवर्ड में है (पुरानी खबर दोबारा)।",
 }
+ARTICLE_RECYCLED_NOTES = {
+    "en": "Old article shared as new.",
+    "hi": "पुराना लेख नया बताकर साझा किया गया।",
+}
 
 NO_EVIDENCE_REASONS = {
     "en": "No relevant evidence was found for these claims.",
@@ -312,6 +316,9 @@ def judge_verdict(
     no_evidence_claims: list[str] | None = None,
     media_claims: list[str] | None = None,
     exact_urls: set[str] | None = None,
+    article_url: str | None = None,
+    article_date: str | None = None,
+    article_bare: bool = False,
     executor=None,
 ) -> Verdict:
     if tracker is not None:
@@ -328,6 +335,11 @@ def judge_verdict(
             f"claims are "
             f"{'all from the image' if image.origin_only else 'image plus caption'}.\n"
         )
+        if image.impersonated_domain:
+            image_line += (
+                f"Note: impersonated domain: the media visibly shows "
+                f"{image.impersonated_domain}, which spoofs a known outlet.\n"
+            )
     no_evidence_line = ""
     if no_evidence_claims:
         no_evidence_line = (
@@ -398,7 +410,59 @@ def judge_verdict(
                     "key_source": dated[0][1],
                 }
             )
-    if image is not None and not image.reverse_evidence:
+    parsed_article = _parse_ymd(article_date) if article_date else None
+    if parsed_article is not None and article_url:
+        claim_date = _parse_ymd(verdict.claim_timeframe) or (
+            today or date.today()
+        )
+        if (claim_date - parsed_article).days > RECYCLED_DAYS:
+            if presented_as_recent and not article_bare:
+                note = ARTICLE_RECYCLED_NOTES.get(
+                    language, ARTICLE_RECYCLED_NOTES["en"]
+                )
+                verdict = verdict.model_copy(
+                    update={
+                        "verdict": "Misleading",
+                        "reason": f"{verdict.reason} {note}",
+                        "key_source": article_url,
+                    }
+                )
+            elif article_bare:
+                verdict = verdict.model_copy(
+                    update={"article_date": article_date}
+                )
+    if verdict.verdict == "True":
+        shared = {
+            normalize_url(item.source_url)
+            for item in evidence
+            if getattr(item, "shared_article", False)
+        }
+        if shared and normalize_url(verdict.key_source) in shared:
+            independent = next(
+                (
+                    item.source_url
+                    for item in evidence
+                    if not getattr(item, "shared_article", False)
+                ),
+                None,
+            )
+            if independent is not None:
+                verdict = verdict.model_copy(
+                    update={"key_source": independent}
+                )
+                if tracker is not None:
+                    tracker.note("key_source moved off shared article.")
+            else:
+                verdict = verdict.model_copy(
+                    update={"verdict": "Unverified", "confidence": "medium"}
+                )
+                if tracker is not None:
+                    tracker.note("True needs independent corroboration.")
+    if (
+        image is not None
+        and not image.reverse_evidence
+        and not image.has_content_claims
+    ):
         if verdict.verdict == "True" or (
             image.origin_only and verdict.verdict == "False"
         ):

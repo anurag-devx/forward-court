@@ -106,6 +106,32 @@ def test_jwt_accepts_valid_text_message(client, sender, use_jwt, monkeypatch):
     assert seen == [["hello forward"]]
 
 
+def test_risky_file_attachment_replies_dangerous(client, sender, use_jwt):
+    payload = _text_payload(uuid="uuid-file")
+    payload["message_type"] = "file"
+    payload["file"] = {"name": "update.apk", "caption": "install this"}
+    response = _post_jwt(client, payload)
+    assert response.status_code == 200
+    assert len(sender.sent) == 2
+    assert sender.sent[0][1] == "Checking this forward…"
+    assert "DANGEROUS LINK" in sender.sent[1][1].splitlines()[0]
+
+
+def test_safe_file_attachment_falls_through(client, sender, use_jwt, monkeypatch):
+    import gateway.worker as worker_module
+
+    seen: list = []
+    monkeypatch.setattr(
+        worker_module, "run_pipeline",
+        lambda args, path: seen.append(args) or "CARD")
+    payload = _text_payload(uuid="uuid-file-ok")
+    payload["message_type"] = "file"
+    payload["file"] = {"name": "notes.pdf"}
+    response = _post_jwt(client, payload)
+    assert response.status_code == 200
+    assert "DANGEROUS" not in "".join(body for _, body in sender.sent)
+
+
 def test_jwt_rejects_tampered_payload(client, sender, use_jwt):
     payload = _text_payload(uuid="uuid-tamper")
     raw = json.dumps(payload).encode()

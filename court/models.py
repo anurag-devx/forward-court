@@ -19,7 +19,7 @@ class Argument(BaseModel):
 
 
 class Verdict(BaseModel):
-    verdict: Literal["True", "False", "Misleading", "Unverified"]
+    verdict: Literal["True", "False", "Misleading", "Unverified", "DANGEROUS"]
     reason: str
     key_source: str
     language: str
@@ -32,6 +32,14 @@ class Verdict(BaseModel):
         default=None,
         description="Outlet host when a ClaimReview rating decided the verdict.",
     )
+    scam_type: str | None = Field(
+        default=None,
+        description="Plain-words scam kind for DANGEROUS verdicts, localized.",
+    )
+    article_date: str | None = Field(
+        default=None,
+        description="Publish date of a bare shared old article, for the card.",
+    )
 
 
 class ImageContext(BaseModel):
@@ -40,6 +48,15 @@ class ImageContext(BaseModel):
     )
     reverse_evidence: bool = Field(
         description="Reverse search produced exact-match origin evidence."
+    )
+    has_content_claims: bool = Field(
+        default=False,
+        description="At least one kept claim is a content_claim (visible "
+        "text/headlines), which lifts the no-exact-match origin cap.",
+    )
+    impersonated_domain: str | None = Field(
+        default=None,
+        description="Visible domain spoofing a known outlet, if any.",
     )
 
 

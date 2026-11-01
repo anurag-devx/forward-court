@@ -57,6 +57,52 @@ TIER3_UGC = (
     "blogspot.com",
     "wordpress.com",
 )
+SPOOFED_OUTLETS = (
+    "abcnews.go.com",
+    "bbc.com",
+    "bbc.co.uk",
+    "cnn.com",
+    "reuters.com",
+    "apnews.com",
+    "nytimes.com",
+    "ndtv.com",
+    "thehindu.com",
+    "timesofindia.indiatimes.com",
+    "indiatoday.in",
+    "hindustantimes.com",
+)
+BRAND_TARGETS = (
+    "sbi",
+    "hdfcbank",
+    "icicibank",
+    "axisbank",
+    "paytm",
+    "phonepe",
+    "gpay",
+    "irctc",
+    "incometax",
+    "uidai",
+    "epfo",
+    "indiapost",
+    "amazon",
+    "flipkart",
+    "whatsapp",
+    "meta",
+    "instagram",
+)
+LINK_SHORTENERS = (
+    "bit.ly",
+    "tinyurl.com",
+    "t.co",
+    "goo.gl",
+    "ow.ly",
+    "is.gd",
+    "buff.ly",
+    "cutt.ly",
+    "rb.gy",
+    "surl.li",
+    "shorturl.at",
+)
 
 AGENT_MODEL = "muse-spark-1.3"
 CONTRIBUTOR_MODEL = "muse-spark-1.3-contributor"
@@ -90,6 +136,7 @@ REASONING_EFFORT = {
     "relevance": "low",
     "mismatch": "low",
     "vision": "low",
+    "scamtext": "low",
     "video": "medium",
     "prosecutor": "medium",
     "defender": "medium",
