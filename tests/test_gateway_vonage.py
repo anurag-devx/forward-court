@@ -268,6 +268,39 @@ def test_vonage_sender_error_raises():
         sender.send("91222", "hi")
 
 
+def test_status_webhook_logs_uuid_and_status_only(client, capsys):
+    response = client.post(
+        "/webhook/vonage/status",
+        json={
+            "message_uuid": "uuid-status-1",
+            "status": "delivered",
+            "to": {"number": "919999999999"},
+            "from": {"number": "918888888888"},
+        },
+    )
+    assert response.status_code == 200
+    out = capsys.readouterr().out
+    assert "uuid-status-1" in out and "delivered" in out
+    assert "919999999999" not in out
+    assert "918888888888" not in out
+
+
+def test_status_webhook_tolerates_bad_payload(client, capsys):
+    assert client.post("/webhook/vonage/status", content=b"nope").status_code == 200
+    assert "vonage status: ? ?" in capsys.readouterr().out
+
+
+def test_mask_phones_keeps_last_four():
+    from gateway.worker import mask_phones
+
+    assert mask_phones("919999999999") == "********9999"
+    assert mask_phones("to whatsapp:+919999999999 ok") == (
+        "to whatsapp:+********9999 ok"
+    )
+    assert mask_phones("short 12345") == "short 12345"
+    assert mask_phones("") == ""
+
+
 def test_provider_switch_selects_vonage(monkeypatch):
     monkeypatch.setattr(app_module, "PROVIDER", "vonage")
     monkeypatch.setattr(app_module, "VONAGE_API_KEY", "k")

@@ -16,6 +16,7 @@ from config import (
     MAX_CLAIMS,
     UsageTracker,
     get_client,
+    reverse_search_enabled,
     serpapi_key,
     stage_timer,
 )
@@ -300,12 +301,19 @@ def run_image_forward(
         reverse_items, reverse_evidence = [], False
         exact_urls: set[str] = set()
         active_provider = provider
-        if active_provider is None and serpapi_key() is not None:
+        if (
+            active_provider is None
+            and reverse_search_enabled()
+            and serpapi_key() is not None
+        ):
             active_provider = SerpApiLensProvider(
                 serpapi_key(), http_client=http_client
             )
         if active_provider is None:
-            tracker.note("reverse search skipped: SERPAPI_KEY not set.")
+            if not reverse_search_enabled():
+                tracker.note("reverse search disabled (REVERSE_SEARCH=off).")
+            else:
+                tracker.note("reverse search skipped: SERPAPI_KEY not set.")
         else:
             try:
                 with stage_timer(tracker, "segment"):
@@ -533,12 +541,19 @@ def run_video_forward(
         reverse_evidence = False
         exact_urls: set[str] = set()
         active_provider = provider
-        if active_provider is None and serpapi_key() is not None:
+        if (
+            active_provider is None
+            and reverse_search_enabled()
+            and serpapi_key() is not None
+        ):
             active_provider = SerpApiLensProvider(
                 serpapi_key(), http_client=http_client
             )
         if active_provider is None:
-            tracker.note("reverse search skipped: SERPAPI_KEY not set.")
+            if not reverse_search_enabled():
+                tracker.note("reverse search disabled (REVERSE_SEARCH=off).")
+            else:
+                tracker.note("reverse search skipped: SERPAPI_KEY not set.")
         else:
             counting = _CountingProvider(active_provider)
             frames = extract_key_frames(resolved)
@@ -669,11 +684,77 @@ def run_video_forward(
     return _run_with_deadline(tracker, _go, deadline_s)
 
 
+def run_demo() -> int:
+    """Run the 4 bundled demo samples in sequence. Returns exit code."""
+    import os
+    import tempfile
+
+    from demo import SAMPLES, make_screenshot
+
+    demo_dir = Path(__file__).resolve().parent / "demo"
+    failures = 0
+    total_start = time.monotonic()
+    # The demo never depends on non-Meta services, whatever .env says.
+    saved = {
+        key: os.environ.get(key) for key in ("REVERSE_SEARCH", "GSB")
+    }
+    os.environ["REVERSE_SEARCH"] = "off"
+    os.environ["GSB"] = "off"
+    try:
+        with tempfile.TemporaryDirectory(
+            prefix="forwardcourt-demo-"
+        ) as tmp:
+            for number, name in enumerate(SAMPLES, start=1):
+                print(f"=== Demo {number}/{len(SAMPLES)}: {name} ===")
+                start = time.monotonic()
+                try:
+                    if name == "text":
+                        text = (demo_dir / "text.txt").read_text().strip()
+                        print(f"input: {text}")
+                        card, _ = run_forward(text)
+                    elif name == "screenshot":
+                        shot = make_screenshot(
+                            str(Path(tmp) / "demo_shot.png")
+                        )
+                        print(f"input: generated screenshot {shot}")
+                        card, _ = run_image_forward(shot)
+                    elif name == "link":
+                        text = (demo_dir / "link.txt").read_text().strip()
+                        print(f"input: {text}")
+                        card, _ = run_forward(text)
+                    elif name == "scam":
+                        text = (demo_dir / "scam.txt").read_text().strip()
+                        print(f"input: {text}")
+                        card, _ = run_forward(text)
+                    else:  # pragma: no cover - SAMPLES is fixed
+                        raise ValueError(f"unknown demo sample: {name}")
+                except (GroundingError, RuntimeError, ValueError) as exc:
+                    print(f"sample {name} failed: {exc}")
+                    failures += 1
+                else:
+                    print(card)
+                print(
+                    f"--- {name} took "
+                    f"{time.monotonic() - start:.0f}s ---\n"
+                )
+    finally:
+        for key, value in saved.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+    print(f"demo total: {time.monotonic() - total_start:.0f}s, "
+          f"{len(SAMPLES) - failures}/{len(SAMPLES)} samples ok.")
+    return 1 if failures else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Fact-check a WhatsApp forward with a debating court."
     )
     parser.add_argument("text", nargs="?", help="Forward text (else read stdin).")
+    parser.add_argument("--demo", action="store_true",
+                        help="Run the 4 bundled demo samples in sequence.")
     parser.add_argument("--image", default=None, help="Image forward file path.")
     parser.add_argument("--video", default=None, help="Video forward file path.")
     parser.add_argument(
@@ -687,6 +768,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--card-out", default=None, metavar="PATH",
                         help="Also write the final card text to PATH.")
     args = parser.parse_args(argv)
+    if args.demo:
+        if args.text or args.image or args.video or args.caption:
+            print("Error: --demo takes no other arguments.", file=sys.stderr)
+            return 2
+        try:
+            return run_demo()
+        except RuntimeError as exc:  # e.g. MODEL_API_KEY missing
+            print(f"Error: {exc}", file=sys.stderr)
+            return 2
     if sum(bool(part) for part in (args.text, args.image, args.video)) > 1:
         print("Error: pass forward text, --image, or --video — only one.",
               file=sys.stderr)

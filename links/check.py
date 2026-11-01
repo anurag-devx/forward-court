@@ -1,11 +1,11 @@
 """Link-safety orchestration: GSB before any contact with the host."""
 from __future__ import annotations
 
-import os
 from urllib.parse import urlsplit
 
 import httpx
 
+from config import gsb_api_key, gsb_enabled
 from court.models import Verdict
 from links import decide as decide_module
 from links import scamtext as scamtext_module
@@ -49,9 +49,7 @@ def check_links(
     expanded = expand_shorteners(urls, http_client)
     info["expanded"] = expanded
     candidates = list(dict.fromkeys(urls + list(expanded.values())))
-    hits = check_urls(
-        candidates, os.environ.get("GSB_API_KEY", ""), http_client
-    )
+    hits = check_urls(candidates, gsb_api_key(), http_client)
     flagged = {_host(url) for url in hits} if hits else set()
     info["flagged_hosts"] = flagged
     if tracker is not None:
@@ -60,7 +58,9 @@ def check_links(
             tracker.note(f"GSB hits: {len(hits)} URL(s).")
         elif hits is None:
             tracker.note("GSB unavailable (error); heuristics only.")
-        elif candidates and os.environ.get("GSB_API_KEY", ""):
+        elif not gsb_enabled():
+            tracker.note("GSB disabled (GSB=off).")
+        elif candidates and gsb_api_key():
             tracker.note("GSB clear.")
         else:
             tracker.note("GSB skipped (no key).")

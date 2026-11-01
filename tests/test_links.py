@@ -141,6 +141,7 @@ def test_gsb_error_noted_as_unavailable(monkeypatch):
     from config import UsageTracker
 
     monkeypatch.setenv("GSB_API_KEY", "k")
+    monkeypatch.setenv("GSB", "on")
     tracker = UsageTracker()
     verdict, _ = check_links(
         "See https://example.com/x",
@@ -303,6 +304,7 @@ def _gsb_hit_client(seen: list):
 
 def test_gsb_hit_host_never_contacted(monkeypatch):
     monkeypatch.setenv("GSB_API_KEY", "k")
+    monkeypatch.setenv("GSB", "on")
     seen: list = []
     verdict, info = check_links(
         "Get it here http://evil.example/app.apk",
@@ -320,6 +322,7 @@ def test_gsb_hit_host_never_contacted(monkeypatch):
 
 def test_gsb_runs_before_final_host_contact(monkeypatch):
     monkeypatch.setenv("GSB_API_KEY", "k")
+    monkeypatch.setenv("GSB", "on")
     order: list[str] = []
 
     def handler(request):
@@ -374,6 +377,33 @@ def test_no_key_runs_heuristics_only(monkeypatch):
     )
     assert verdict is None
     assert info["safe_urls"] == ["https://example.com/x"]
+
+
+def test_gsb_flag_off_skips_lookup_even_with_key(monkeypatch):
+    from config import UsageTracker
+
+    monkeypatch.setenv("GSB_API_KEY", "k")
+    monkeypatch.setenv("GSB", "off")
+    seen: list = []
+
+    def handler(request):
+        seen.append(request.url.host)
+        return httpx.Response(
+            200, headers={"content-type": "text/html"}, text="<p>x</p>"
+        )
+
+    tracker = UsageTracker()
+    verdict, info = check_links(
+        "See https://example.com/x",
+        "en",
+        client=_scam_client(),
+        http_client=httpx.Client(transport=httpx.MockTransport(handler)),
+        tracker=tracker,
+    )
+    assert verdict is None
+    assert "safebrowsing.googleapis.com" not in seen
+    assert "GSB disabled (GSB=off)." in tracker.notes
+    assert info["flagged_hosts"] == set()
 
 
 # --- article ---
@@ -765,6 +795,7 @@ def test_safebrowsing_key_never_logged(monkeypatch):
     from config import UsageTracker
 
     monkeypatch.setenv("GSB_API_KEY", "secret-key-123")
+    monkeypatch.setenv("GSB", "on")
     seen: list = []
     tracker = UsageTracker()
     verdict, _ = check_links(

@@ -197,6 +197,7 @@ def test_ground_truth_note_reports_exact_hit(tmp_path):
 
 def test_no_provider_skips_reverse_and_caps_verdict(tmp_path, monkeypatch):
     monkeypatch.delenv("SERPAPI_KEY", raising=False)
+    monkeypatch.delenv("REVERSE_SEARCH", raising=False)
     client = FakeClient(
         parsed_by_model={
             VisionResult: VisionResult(
@@ -229,7 +230,7 @@ def test_no_provider_skips_reverse_and_caps_verdict(tmp_path, monkeypatch):
         http_client=dead_http_client(),
     )
     assert "UNVERIFIED" in card.splitlines()[0]
-    assert "reverse search skipped: SERPAPI_KEY not set." in tracker.notes
+    assert "reverse search disabled (REVERSE_SEARCH=off)." in tracker.notes
 
 
 def test_cli_rejects_text_plus_image(capsys):

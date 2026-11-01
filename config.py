@@ -111,6 +111,9 @@ TRANSCRIBE_MODEL = "muse-voice-transcribe-1.0"
 
 CONTRIBUTOR_ENV = "FC_CONTRIBUTOR"
 CONTRIBUTOR_OFF = frozenset({"0", "false", "no", "off"})
+REVERSE_SEARCH_ENV = "REVERSE_SEARCH"
+GSB_ENV = "GSB"
+FEATURE_ON = frozenset({"1", "true", "yes", "on"})
 
 MAX_CLAIMS = 3
 
@@ -126,6 +129,25 @@ def agent_model() -> str:
 def serpapi_key() -> str | None:
     """SerpAPI key for reverse image search, or None when not configured."""
     return os.environ.get(SERPAPI_KEY_ENV) or None
+
+
+def reverse_search_enabled() -> bool:
+    """Reverse image search is opt-in; REVERSE_SEARCH=on to enable."""
+    return (
+        os.environ.get(REVERSE_SEARCH_ENV, "off").strip().lower() in FEATURE_ON
+    )
+
+
+def gsb_enabled() -> bool:
+    """Google Safe Browsing lookup is opt-in; GSB=on to enable."""
+    return os.environ.get(GSB_ENV, "off").strip().lower() in FEATURE_ON
+
+
+def gsb_api_key() -> str:
+    """GSB key only when the GSB feature is enabled, else ''."""
+    if not gsb_enabled():
+        return ""
+    return os.environ.get("GSB_API_KEY", "")
 
 
 CALL_TIMEOUT = 60.0

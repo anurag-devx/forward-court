@@ -8,6 +8,9 @@ from config import (
     UsageTracker,
     agent_model,
     get_client,
+    gsb_api_key,
+    gsb_enabled,
+    reverse_search_enabled,
     stage_timer,
 )
 
@@ -110,3 +113,34 @@ def test_timed_accumulates_and_breakdown_shows_seconds():
 def test_stage_timer_tolerates_missing_tracker():
     with stage_timer(None, "judge"):
         pass
+
+
+@pytest.mark.parametrize("value", ["on", "1", "true", "yes", "ON"])
+def test_feature_flags_on_values(monkeypatch, value):
+    monkeypatch.setenv("REVERSE_SEARCH", value)
+    monkeypatch.setenv("GSB", value)
+    assert reverse_search_enabled() is True
+    assert gsb_enabled() is True
+
+
+@pytest.mark.parametrize("value", ["off", "0", "false", "no", "", "maybe"])
+def test_feature_flags_default_off(monkeypatch, value):
+    monkeypatch.setenv("REVERSE_SEARCH", value)
+    monkeypatch.setenv("GSB", value)
+    assert reverse_search_enabled() is False
+    assert gsb_enabled() is False
+
+
+def test_feature_flags_unset_default_off(monkeypatch):
+    monkeypatch.delenv("REVERSE_SEARCH", raising=False)
+    monkeypatch.delenv("GSB", raising=False)
+    assert reverse_search_enabled() is False
+    assert gsb_enabled() is False
+
+
+def test_gsb_api_key_gated_by_flag(monkeypatch):
+    monkeypatch.setenv("GSB_API_KEY", "k")
+    monkeypatch.setenv("GSB", "off")
+    assert gsb_api_key() == ""
+    monkeypatch.setenv("GSB", "on")
+    assert gsb_api_key() == "k"

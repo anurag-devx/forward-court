@@ -1,6 +1,7 @@
 """Webhook job: ack fast, run the pipeline in a subprocess, reply."""
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 import tempfile
@@ -94,11 +95,20 @@ def run_pipeline(args: list[str], card_path: Path) -> str | None:
     return card_path.read_text()
 
 
+def mask_phones(text: str) -> str:
+    """Mask phone-like digit runs, keeping the last 4 digits."""
+    return re.sub(
+        r"\d{8,}",
+        lambda match: "*" * (len(match.group(0)) - 4) + match.group(0)[-4:],
+        text,
+    )
+
+
 def _send(sender: Sender, to: str, body: str) -> None:
     try:
         sender.send(to, body)
     except SenderError as exc:
-        print(f"warning: {exc}", file=sys.stderr)
+        print(f"warning: {mask_phones(str(exc))}", file=sys.stderr)
 
 
 def handle_risky_file(

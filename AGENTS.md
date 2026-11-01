@@ -26,9 +26,12 @@ in the user's language.
 ## Structure
 - main.py    CLI entry: `python main.py "<forward text>"` or
              `python main.py --image path.jpg [--caption "text"]` or
-             `python main.py --video path.mp4 [--caption "text"]` (gateway later)
-- config.py  model names, API client, token-usage tracking
-- gateway/   WhatsApp webhook in/out (later)
+             `python main.py --video path.mp4 [--caption "text"]` or
+             `python main.py --demo` (4 bundled samples)
+- config.py  model names, API client, token-usage tracking, feature flags
+             (REVERSE_SEARCH / GSB, off by default)
+- demo/      bundled judge-demo samples (text files + screenshot generator)
+- gateway/   WhatsApp webhook in/out (Twilio + Vonage senders)
 - intake/    language detection + claim extraction
 - media/     image/video understanding + SAM crops + audio transcription
 - evidence/  search grounding, reverse image search, page fetching

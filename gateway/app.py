@@ -160,5 +160,14 @@ async def webhook_vonage(
 
 @app.post("/webhook/vonage/status")
 async def webhook_vonage_status(request: Request) -> Response:
-    print(f"vonage status: {(await request.body()).decode()[:300]}")
+    try:
+        payload = await request.json()
+    except ValueError:
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+    print(
+        f"vonage status: {payload.get('message_uuid', '?')} "
+        f"{payload.get('status', '?')}"
+    )
     return Response(status_code=200)
