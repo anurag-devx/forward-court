@@ -7,10 +7,13 @@ Key frames come from local ffmpeg scene-change detection (max MAX_FRAMES).
 """
 from __future__ import annotations
 
+import io
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+
+from PIL import Image, ImageFilter
 
 from config import agent_model, reasoning_kwargs
 
@@ -133,8 +136,29 @@ def describe_video(
     )
 
 
+FRAME_CANDIDATES = 9
+SHARPNESS_SIZE = 320
+
+
+def sharpness(jpeg: bytes) -> float:
+    """Variance of Laplacian over a downscaled grayscale copy."""
+    with Image.open(io.BytesIO(jpeg)) as img:
+        gray = img.convert("L")
+        gray.thumbnail((SHARPNESS_SIZE, SHARPNESS_SIZE))
+        lap = gray.filter(
+            ImageFilter.Kernel((3, 3), (0, 1, 0, 1, -4, 1, 0, 1, 0))
+        )
+        pixels = list(lap.getdata())
+    mean = sum(pixels) / len(pixels)
+    return sum((pixel - mean) ** 2 for pixel in pixels) / len(pixels)
+
+
 def extract_key_frames(path: str | Path, max_frames: int = MAX_FRAMES) -> list[bytes]:
-    """Scene-change key frames as JPEG bytes. [] when ffmpeg is missing/fails."""
+    """Sharpest scene-change key frames as JPEG bytes at native resolution.
+
+    Extracts scene candidates, ranks by Laplacian-variance sharpness, and
+    returns the top max_frames. [] when ffmpeg is missing/fails.
+    """
     if shutil.which("ffmpeg") is None:
         return []
     try:
@@ -145,7 +169,7 @@ def extract_key_frames(path: str | Path, max_frames: int = MAX_FRAMES) -> list[b
                     "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
                     "-i", str(path),
                     "-vf", f"select='gt(scene,{SCENE_THRESHOLD})'",
-                    "-frames:v", str(max_frames),
+                    "-frames:v", str(max(FRAME_CANDIDATES, max_frames)),
                     "-q:v", "3",
                     pattern,
                 ],
@@ -153,9 +177,11 @@ def extract_key_frames(path: str | Path, max_frames: int = MAX_FRAMES) -> list[b
                 timeout=FFMPEG_TIMEOUT,
                 capture_output=True,
             )
-            frames = []
-            for frame_path in sorted(Path(tmp).glob("frame-*.jpg")):
-                frames.append(frame_path.read_bytes())
-            return frames
+            frames = [
+                frame_path.read_bytes()
+                for frame_path in sorted(Path(tmp).glob("frame-*.jpg"))
+            ]
+            frames.sort(key=sharpness, reverse=True)
+            return frames[:max_frames]
     except (subprocess.SubprocessError, OSError):
         return []

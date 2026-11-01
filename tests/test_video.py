@@ -113,3 +113,27 @@ def test_key_frames_from_changing_clip_capped(tmp_path):
 @ffmpeg
 def test_key_frames_missing_file_returns_empty(tmp_path):
     assert extract_key_frames(tmp_path / "nope.mp4") == []
+
+
+def test_sharpness_prefers_detailed_over_blurred():
+    import io
+
+    from PIL import Image, ImageFilter
+
+    from media.video import sharpness
+
+    img = Image.new("RGB", (200, 200), "white")
+    pixels = img.load()
+    for x in range(200):
+        for y in range(200):
+            if (x // 8 + y // 8) % 2:
+                pixels[x, y] = (0, 0, 0)
+
+    def jpeg(image):
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG", quality=90)
+        return buffer.getvalue()
+
+    assert sharpness(jpeg(img)) > sharpness(
+        jpeg(img.filter(ImageFilter.GaussianBlur(5)))
+    )

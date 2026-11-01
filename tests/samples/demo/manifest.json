@@ -1,0 +1,68 @@
+[
+  {
+    "file": "demo00-www.altnews.in.mp4",
+    "article_url": "https://www.altnews.in/college-dance-performance-videos-falsely-linked-to-cjp-protests-against-gyanesh-kumar/",
+    "original_url": "https://www.youtube.com/watch?v=aVb08tlathM",
+    "original_date": "2026-10-04",
+    "viral_claim": "This dance performance was part of the CJP protest at Mumbai’s Shivaji Park and was a scene from one of the recent protests demanding Kumar’s resignation."
+  },
+  {
+    "file": "demo01-www.altnews.in.mp4",
+    "article_url": "https://www.altnews.in/ips-officer-bushara-bano-transferred-after-right-wing-outrage-over-use-of-arabic-words-in-video-address-to-students/",
+    "original_url": "https://www.youtube.com/watch?v=vXJYJtTt2D0",
+    "original_date": "2026-10-29",
+    "viral_claim": "She began with Assalamualaikum, used Inshallah, ended with Jazakallah — and did not use Vande Mataram or Jai Hind."
+  },
+  {
+    "file": "demo02-newschecker.in.mp4",
+    "article_url": "https://newschecker.in/fact-check/does-this-video-show-nirmala-sitharamans-husband-parakala-prabhakar-criticising-her/",
+    "original_url": "https://www.youtube.com/watch?v=rPliWkUG9z0",
+    "original_date": "2026-10-24",
+    "viral_claim": "A viral video purportedly shows Union Finance Minister Nirmala Sitharaman’s husband, Parakala Prabhakar, saying that she should be ashamed and criticising her for prioritising her position in the government over the struggle to save democracy."
+  },
+  {
+    "file": "demo03-newschecker.in.mp4",
+    "article_url": "https://newschecker.in/fact-check/old-video-falsely-shared-as-showing-impact-of-cyclone-arnab-in-andhra-pradesh/",
+    "original_url": "https://www.youtube.com/watch?v=tOKF7OXaKro",
+    "original_date": "2026-03-16",
+    "viral_claim": "A video showing powerful winds battering what appears to be a small roadside kiosk is going viral on social media, with users claiming it shows the impact of Cyclone Arnab in Andhra Pradesh."
+  },
+  {
+    "file": "demo04-newschecker.in.mp4",
+    "article_url": "https://newschecker.in/fact-check/old-video-shared-as-cyclone-arnab-wreaking-havoc-in-visakhapatnam/",
+    "original_url": "https://www.youtube.com/watch?v=6YpYoP71-F4",
+    "original_date": "2026-07-06",
+    "viral_claim": "A video showing trees swaying amid powerful winds is being shared on social media as footage of Cyclone Arab wreaking havoc in Visakhapatnam, Andhra Pradesh."
+  },
+  {
+    "file": null,
+    "article_url": "https://newschecker.in/fact-check/old-video-from-patna-shared-as-tiranga-march-in-delhi-on-october-16/",
+    "skipped": true,
+    "skip_reason": "unattempted: keep target reached"
+  },
+  {
+    "file": null,
+    "article_url": "https://newschecker.in/fact-check/anti-cec-stir-this-video-of-pm-modi-lashing-out-at-congress-is-old/",
+    "skipped": true,
+    "skip_reason": "unattempted: keep target reached"
+  },
+  {
+    "file": null,
+    "article_url": "https://newschecker.in/fact-check/old-video-from-jharkhand-hc-falsely-shared-as-heated-exchange-between-cji-and-sc-lawyer/",
+    "skipped": true,
+    "skip_reason": "unattempted: keep target reached"
+  },
+  {
+    "file": null,
+    "article_url": "https://newschecker.in/fact-check/old-video-shared-as-delhi-police-firing-at-rahul-gandhi-led-march-against-cec/",
+    "skipped": true,
+    "skip_reason": "unattempted: keep target reached"
+  },
+  {
+    "file": "demo05-newschecker.in.mp4",
+    "article_url": "https://newschecker.in/fact-check/old-video-shared-as-delhi-police-firing-at-rahul-gandhi-led-march-against-cec/",
+    "original_url": "https://www.youtube.com/watch?v=TtX0Dn-g3Jk",
+    "original_date": "2020-03-05",
+    "viral_claim": "A video is being shared with the claim that the Delhi Police opened fire at the participants of the LoP and Congress leader Rahul Gandhi-led march against Chief Election Commissioner Gyanesh Kumar, killing five people, on Monday (October 12)."
+  }
+]
