@@ -20,12 +20,18 @@ Deterministic rules enforced here (never left to the model alone):
 """
 from __future__ import annotations
 
+import re
 from collections import Counter
 from datetime import date
 
 from config import agent_model, reasoning_kwargs
 from evidence.grounder import EVIDENCE_WORKERS, DaemonPool
-from evidence.urls import normalize_url, split_host_path, tier_of
+from evidence.urls import (
+    is_factcheck_url,
+    normalize_url,
+    split_host_path,
+    tier_of,
+)
 
 from .models import Argument, ImageContext, Verdict, evidence_brief
 
@@ -136,6 +142,80 @@ def _resolve_key_source(key_source: str, evidence, kept_points) -> str:
         top = cited.most_common(1)[0][0]
         return next(url for url in pool if normalize_url(url) == top)
     return pool[0]
+
+
+def _snippet_states_claim(snippet: str | None, claim: str) -> bool:
+    """True when the snippet's lead sentence is about the claim."""
+    first = re.split(r"[.!?…]\s*", snippet or "", maxsplit=1)[0]
+    shared = _significant_tokens(first) & _significant_tokens(claim)
+    return len(shared) >= CLAIM_MATCH_TOKENS
+
+
+def _key_mismatched(item, claims: list[str]) -> bool:
+    """True when a fact-check item is about a different claim.
+
+    Direct reports are always key-eligible; only fact-checks are vetted,
+    against their ClaimReview text or (without one) their snippet's lead.
+    Outlet URL counts too: grounding hits from fact-check sites arrive
+    without the lookup flag.
+    """
+    if not (
+        getattr(item, "fact_check", False)
+        or item.claim_review is not None
+        or is_factcheck_url(item.source_url)
+    ):
+        return False
+    return not any(
+        _review_matches_claim(item, claim)
+        or _snippet_states_claim(item.snippet, claim)
+        for claim in claims
+    )
+
+
+def _best_key(items, kept_points) -> str | None:
+    """Most-cited, then first; None when empty."""
+    if not items:
+        return None
+    cited = Counter(normalize_url(point.source_url) for point in kept_points)
+    ranked = sorted(
+        range(len(items)),
+        key=lambda i: (
+            -cited.get(normalize_url(items[i].source_url), 0),
+            i,
+        ),
+    )
+    return items[ranked[0]].source_url
+
+
+def _select_true_key(claims, evidence, resolved_key, kept_points) -> str:
+    """True-verdict key: veto mismatched fact-checks, prefer major outlets.
+
+    A fact-check about another claim stays as context but can't be
+    key_source. Among eligible items, tier-1 reports win, then most-cited,
+    then first. Falls back to the resolved key when nothing better
+    qualifies.
+    """
+    pool = [e for e in evidence if tier_of(e.source_url) != 3]
+    pool = pool or list(evidence)
+    eligible = [e for e in pool if not _key_mismatched(e, claims)]
+    current = normalize_url(resolved_key)
+    current_ok = any(
+        normalize_url(e.source_url) == current for e in eligible
+    )
+    if not eligible or (current_ok and tier_of(resolved_key) == 1):
+        return resolved_key
+    if current_ok:
+        upgraded = _best_key(
+            [e for e in eligible if tier_of(e.source_url) == 1],
+            kept_points,
+        )
+        return upgraded if upgraded is not None else resolved_key
+    tier1 = _best_key(
+        [e for e in eligible if tier_of(e.source_url) == 1], kept_points
+    )
+    if tier1 is not None:
+        return tier1
+    return _best_key(eligible, kept_points) or resolved_key
 
 
 def _override_eligible(item, media: bool, exact_urls, media_claims) -> bool:
@@ -403,6 +483,15 @@ def judge_verdict(
     )
     if key_source != verdict.key_source:
         verdict = verdict.model_copy(update={"key_source": key_source})
+    if verdict.verdict == "True":
+        true_key = _select_true_key(
+            claims, evidence, verdict.key_source,
+            kept_prosecution + kept_defense,
+        )
+        if true_key != verdict.key_source:
+            verdict = verdict.model_copy(update={"key_source": true_key})
+            if tracker is not None:
+                tracker.note("key_source moved to an on-claim report.")
 
     if not kept_prosecution and not kept_defense:
         return verdict.model_copy(

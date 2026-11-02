@@ -2,6 +2,7 @@ import pytest
 
 from evidence.urls import (
     impersonates_outlet,
+    is_factcheck_url,
     normalize_url,
     same_source,
     tier_of,
@@ -108,3 +109,19 @@ def test_same_source_falls_back_to_normalized_equality():
 )
 def test_impersonates_outlet(domain, expected):
     assert impersonates_outlet(domain) == expected
+
+
+@pytest.mark.parametrize(
+    "url, expected",
+    [
+        ("https://www.altnews.in/x", True),
+        ("https://english.factcrescendo.com/x", True),
+        ("https://www.vishvasnews.com/english/x", True),
+        ("https://indiatoday.in/fact-check/x", True),
+        ("https://indiatoday.in/sports/x", False),
+        ("https://www.thehindu.com/x", False),
+        ("notaurl", False),
+    ],
+)
+def test_is_factcheck_url(url, expected):
+    assert is_factcheck_url(url) == expected

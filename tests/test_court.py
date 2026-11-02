@@ -493,6 +493,126 @@ def test_all_tier3_keeps_most_cited():
     assert verdict.key_source == "https://x.com/b"
 
 
+def test_true_key_vetoes_mismatched_factcheck():
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(
+            verdict="True",
+            key_source="https://factcheck.example/miller",
+            claim_timeframe=None,
+        )}
+    )
+    evidence = [
+        EvidenceItem(
+            claim="India beat South Africa in the final",
+            source_url="https://factcheck.example/miller",
+            date="2024-07-04",
+            snippet=(
+                "David Miller clarified that he has not retired. "
+                "South Africa lost to India in the final."
+            ),
+            fact_check=True,
+        ),
+        EvidenceItem(
+            claim="India beat South Africa in the final",
+            source_url="https://sports.example/final-report",
+            date="2024-06-29",
+            snippet="India beat South Africa in the T20 final in Barbados",
+        ),
+    ]
+    defense = Argument(
+        points=[
+            ArgPoint(
+                text="confirmed",
+                source_url="https://factcheck.example/miller",
+            ),
+            ArgPoint(
+                text="confirmed",
+                source_url="https://sports.example/final-report",
+            ),
+        ]
+    )
+    verdict = judge_verdict(
+        ["India beat South Africa in the final"], evidence,
+        Argument(points=[]), defense, "en", False, client=fake,
+    )
+    assert verdict.verdict == "True"
+    assert verdict.key_source == "https://sports.example/final-report"
+
+
+def test_true_key_vetoes_unflagged_factcheck_url():
+    """Grounding hits from fact-check outlets lack the lookup flag."""
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(
+            verdict="True",
+            key_source="https://www.vishvasnews.com/english/x",
+            claim_timeframe=None,
+        )}
+    )
+    evidence = [
+        EvidenceItem(
+            claim="India beat South Africa in the final",
+            source_url="https://www.vishvasnews.com/english/x",
+            date="2025-03-01",
+            snippet=(
+                "An old video of players dancing is shared as new. "
+                "South Africa lost to India in the final."
+            ),
+        ),
+        EvidenceItem(
+            claim="India beat South Africa in the final",
+            source_url="https://sports.example/final-report",
+            date="2024-06-29",
+            snippet="India beat South Africa in the T20 final in Barbados",
+        ),
+    ]
+    defense = Argument(
+        points=[
+            ArgPoint(
+                text="confirmed",
+                source_url="https://www.vishvasnews.com/english/x",
+            ),
+            ArgPoint(
+                text="confirmed",
+                source_url="https://sports.example/final-report",
+            ),
+        ]
+    )
+    verdict = judge_verdict(
+        ["India beat South Africa in the final"], evidence,
+        Argument(points=[]), defense, "en", False, client=fake,
+    )
+    assert verdict.verdict == "True"
+    assert verdict.key_source == "https://sports.example/final-report"
+
+
+def test_true_key_keeps_matched_factcheck():
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(
+            verdict="True",
+            key_source="https://www.altnews.in/check",
+            claim_timeframe=None,
+        )}
+    )
+    item = _review_item(
+        "https://www.altnews.in/check", "Vaccines contain microchips",
+        "True", "Vaccines contain microchips, the viral claim says",
+    )
+    defense = Argument(
+        points=[
+            ArgPoint(
+                text="confirmed",
+                source_url="https://www.altnews.in/check",
+            )
+        ]
+    )
+    verdict = judge_verdict(
+        ["Vaccines contain microchips"], [item], Argument(points=[]),
+        defense, "en", False, client=fake,
+    )
+    assert verdict.verdict == "True"
+    assert verdict.key_source == "https://www.altnews.in/check"
+
+
 def test_judge_keeps_verdict_without_source_dates():
     fake = FakeClient(
         parsed_by_model={Verdict: _verdict(verdict="True", claim_timeframe=None)}

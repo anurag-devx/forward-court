@@ -10,7 +10,7 @@
       "url_path": "sports/t20-world-cup-final"
     }
   },
-  "card": "✅ *Forward Court Verdict: TRUE*\nConfidence: high\n\nMultiple sources confirm India beat South Africa by 7 runs in the T20 World Cup 2024 final at Kensington Oval in Barbados on 29 June 2024 to win the title.\n\n🔗 Source: https://english.factcrescendo.com/2024/07/04/david-miller-has-announced-his-retirement-from-t20-viral-claim-is-false/",
+  "card": "✅ *Forward Court Verdict: TRUE*\nConfidence: high\n\nBoth image claims are historically accurate: India beat South Africa by seven runs in Barbados in the final on 29 June 2024 to win the 2024 Men's T20 World Cup for a second time. Multiple sources confirm winner, margin, venue and date. No separate event claim to assess.\n\n🔗 Source: https://www.skysports.com/cricket/news/13042693/mens-t20-world-cup-2024-full-results-after-india-beat-south-africa-in-barbados-final-to-win-second-title",
   "claims": [
     {
       "text": "India wins 2024 T20 World Cup, beats South Africa in final",
@@ -26,6 +26,18 @@
   "evidence": [
     {
       "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
+      "source_url": "https://english.factcrescendo.com/2024/07/04/david-miller-has-announced-his-retirement-from-t20-viral-claim-is-false/",
+      "outlet": "english.factcrescendo.com",
+      "tier": 1,
+      "date": null,
+      "snippet": "David Miller has announced his retirement from T20 international cricket - viral claim is false |",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
       "source_url": "https://en.wikipedia.org/wiki/2024_Men%27s_T20_World_Cup_final",
       "outlet": "en.wikipedia.org",
       "tier": 2,
@@ -38,11 +50,35 @@
     },
     {
       "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
+      "source_url": "https://testbook.com/question-answer/which-team-won-the-icc-mens-120-world-cup-202--69969f8c710d3a2dc0c6820a",
+      "outlet": "testbook.com",
+      "tier": 2,
+      "date": "2024-06-29",
+      "snippet": "Question Which team won the ICC Men's t20 World Cup 2024? Answer (Detailed Solution Below) Detailed Solution The correct answer is India. Key Points - India won the ICC Men's T20 World Cup 2024 by def",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
       "source_url": "https://www.skysports.com/cricket/news/13042693/mens-t20-world-cup-2024-full-results-after-india-beat-south-africa-in-barbados-final-to-win-second-title",
       "outlet": "skysports.com",
       "tier": 2,
       "date": "2024-04-26",
       "snippet": "Men's T20 World Cup 2024: Full results after India beat South Africa in Barbados final to win second title India beat South Africa by seven runs in Barbados to win Men's T20 World Cup for a second tim",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
+      "source_url": "https://testbook.com/question-answer/india-won-the-title-in-the-icc-mens-t20-cricket-w--69a9545d06b50704506f137e",
+      "outlet": "testbook.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "[Solved] India won the title in the ICC Men’s T20 Cricket World",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -98,6 +134,18 @@
     },
     {
       "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
+      "source_url": "https://www.icc-cricket.com/tournaments/t20cricketworldcup/news/live-india-and-south-africa-face-off-in-t20-world-cup-final?utm_",
+      "outlet": "icc-cricket.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "India seal T20 World Cup glory after epic duel against South Africa | ICC Men's T20 World Cup, 2024 | ICC",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
       "source_url": "https://www.wncw.org/2024-06-29/india-wins-the-t20-world-cup-defeating-south-africa-for-the-cricket-title",
       "outlet": "wncw.org",
       "tier": 2,
@@ -122,6 +170,18 @@
     },
     {
       "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
+      "source_url": "https://www.crictracker.com/cricket-news/t20-world-cup-2024-india-vs-south-africa-finals-who-said-what/?utm_source=g&utm_medium=x&gpid&sdkv=%24BUILD_VERSION&gl_imp_id=gl_%24IMP_ID%3Aglance-experience%3AYYd1Z8wO%3A%24IMP_TS&=1",
+      "outlet": "crictracker.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "T20 World Cup 2024: India vs South Africa, Finals - Who Said What?",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
       "source_url": "https://www.tbsnews.net/sports/india-edge-south-africa-become-unbeaten-t20-world-cup-champions-887706",
       "outlet": "tbsnews.net",
       "tier": 2,
@@ -134,84 +194,12 @@
     },
     {
       "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
-      "source_url": "https://www.ksut.org/2024-06-29/india-wins-the-t20-world-cup-defeating-south-africa-for-the-cricket-title?_amp=true",
-      "outlet": "ksut.org",
+      "source_url": "http://crictracker.com/cricket-news/t20-world-cup-2024-india-vs-south-africa-finals-who-said-what/?amp=1",
+      "outlet": "crictracker.com",
       "tier": 2,
       "date": null,
-      "snippet": "India wins the T20 World Cup, defeating South Africa for the cricket title",
+      "snippet": "T20 World Cup 2024: India vs South Africa, Finals - Who Said What?",
       "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
-      "source_url": "https://www.icc-cricket.com/tournaments/t20cricketworldcup/news/live-india-and-south-africa-face-off-in-t20-world-cup-final?utm_",
-      "outlet": "icc-cricket.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "India seal T20 World Cup glory after epic duel against South Africa | ICC Men's T20 World Cup, 2024 | ICC",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
-      "source_url": "https://www.iplbetonline.in/explained-fact-checking-the-arshdeep-singh-icc-penalty-rumors-and-indias-t20-world-cup-record/",
-      "outlet": "iplbetonline.in",
-      "tier": 2,
-      "date": null,
-      "snippet": "Fact Check: Arshdeep Singh ICC Penalty Rumors Debunked",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
-      "source_url": "https://testbook.com/question-answer/who-won-the-icc-mens-t20-world-cup-2024--667e8ede4664a41ba06a736e",
-      "outlet": "testbook.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "Who won the ICC Men's T20 World Cup 2024?",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
-      "source_url": "https://testbook.com/question-answer/which-country-won-the-2024-icc-mens-t20-world--67e12682ed71c6d8e749709d",
-      "outlet": "testbook.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "[Solved] Which country won the 2024 ICC Men's T20 World Cup final",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India wins 2024 T20 World Cup, beats South Africa in final",
-      "source_url": "https://www.iplbetonline.in/fact-check-the-truth-behind-suryakumar-yadav-axar-patel-and-t20-world-cup-apology-rumors/",
-      "outlet": "iplbetonline.in",
-      "tier": 2,
-      "date": null,
-      "snippet": "Fact Check: Suryakumar Yadav, Axar Patel & T20 World Cup Rumors",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://english.factcrescendo.com/2024/07/04/david-miller-has-announced-his-retirement-from-t20-viral-claim-is-false/",
-      "outlet": "english.factcrescendo.com",
-      "tier": 1,
-      "date": "2024-07-04",
-      "snippet": "David Miller clarified on Instagram that he has not retired from T20 international cricket. South Africa lost heartbreakingly to India in the T20 World Cup 2024 final at the Kensington Oval in Barbado",
-      "fact_check": true,
       "exact_match": false,
       "shared_article": false,
       "claim_review": null
@@ -230,11 +218,11 @@
     },
     {
       "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://www.thehindubusinessline.com/news/sports/t20-world-cup-india-beat-south-africa-by-seven-runs-to-end-their-11-year-global-trophy-drought/article68349694.ece",
-      "outlet": "thehindubusinessline.com",
+      "source_url": "https://www.skysports.com/amp/cricket/news/12123/13042693/icc-mens-t20-cricket-world-cup-2024-fixtures-schedule-and-start-times-with-all-matches-live-on-sky-sports",
+      "outlet": "skysports.com",
       "tier": 2,
-      "date": "2024-06-29",
-      "snippet": "India’s agonising 11-year wait for a global title was brought to an end by Virat Kohli’s ingenuity and Rohit Sharma’s inspirational captaincy as the star-studded team outwitted eternal bridesmaids Sou",
+      "date": "2024-04-26",
+      "snippet": "Men's T20 World Cup 2024: Full results after India beat South Africa in Barbados final to win second title India beat South Africa by seven runs in Barbados to win Men's T20 World Cup for a second tim",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -245,44 +233,8 @@
       "source_url": "https://www.sportskeeda.com/cricket/news-we-wanted-really-bad-rohit-sharma-india-beat-south-africa-clinch-2024-t20-world-cup-trophy",
       "outlet": "sportskeeda.com",
       "tier": 2,
-      "date": null,
-      "snippet": "“We wanted this really bad” – Rohit Sharma after India beat South Africa to clinch 2024 T20 World Cup trophy",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://www.skysports.com/amp/cricket/news/12123/13042693/icc-mens-t20-cricket-world-cup-2024-fixtures-schedule-and-start-times-with-all-matches-live-on-sky-sports",
-      "outlet": "skysports.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "Men's T20 World Cup 2024: Full results after India beat South Africa in Barbados final to win second title",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://www.crictracker.com/social-tracker-cricket/t20-world-cup-2024-top-10-memes-from-ind-vs-rsa-finals/?utm_source=g&utm_medium=x&gpid=&sdkv=$BUILD_VERSION&gl_imp_id=gl_$IMP_ID:glance-experience:YYd1Z8wO:$IMP_TS",
-      "outlet": "crictracker.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "T20 World Cup 2024: Top 10 Memes from IND vs RSA, Finals",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "http://srnnews.com/cricket-india-beat-south-africa-by-seven-runs-to-win-t20-world-cup-title/",
-      "outlet": "srnnews.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "Cricket-Indian joy, US make mark at biggest T20 World Cup - SRN News",
+      "date": "2024-06-30",
+      "snippet": "India captain Rohit Sharma got emotional after they beat South Africa by seven runs in the 2024 T20 World Cup final in Barbados on Saturday, June 29. The 37-year-old credited his team for their hard w",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -302,18 +254,6 @@
     },
     {
       "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://www.livemint.com/sports/cricket-news/india-vs-south-africa-live-score-updates-match-today-t20-world-cup-2024-final-ind-vs-sa-scorecard-29-june-kohli-rohit-11719645957330-page-15.html",
-      "outlet": "livemint.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "India vs South Africa Highlights: India lift second T20 World Cup | Mint",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
       "source_url": "https://www.mumbaiindians.com/news/29th-june-2024---india-became-t20-world-champions-after-17-years",
       "outlet": "mumbaiindians.com",
       "tier": 2,
@@ -326,11 +266,11 @@
     },
     {
       "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://www.onearabia.me/cricket/india-wins-t20-world-cup-2024-against-south-africa-barbados-011-48559.html",
-      "outlet": "onearabia.me",
+      "source_url": "http://srnnews.com/cricket-india-beat-south-africa-by-seven-runs-to-win-t20-world-cup-title/",
+      "outlet": "srnnews.com",
       "tier": 2,
       "date": null,
-      "snippet": "India Clinches T20 World Cup 2024 Title In Thrilling Finale Against South Africa - OneArabia",
+      "snippet": "Cricket-Indian joy, US make mark at biggest T20 World Cup - SRN News",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -338,11 +278,11 @@
     },
     {
       "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "http://espn.ph/espn/story/_/id/40452684/indian-sports-live-june-29-2024-news-updates-scores-results-commentary-india-south-africa-t20-world-cup-final",
-      "outlet": "espn.ph",
+      "source_url": "https://www.iplbetonline.in/shivam-dube-honors-father-following-indias-2024-t20-world-cup-triumph-fact-checking-his-final-innings-and-travel-rumors/",
+      "outlet": "iplbetonline.in",
       "tier": 2,
       "date": null,
-      "snippet": "Indian sports, June 29: India beat South Africa to win T20 World Cup",
+      "snippet": "Shivam Dube's Viral T20 World Cup Post & Fact Check",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -350,73 +290,100 @@
     },
     {
       "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://madhyamamonline.com/sports/cricket/9-editions-no-home-winners-the-strange-t20-world-cup-history-1492120",
-      "outlet": "madhyamamonline.com",
+      "source_url": "https://www.livemint.com/sports/cricket-news/india-vs-south-africa-live-score-updates-match-today-t20-world-cup-2024-final-ind-vs-sa-scorecard-29-june-kohli-rohit-11719645957330-page-9.html",
+      "outlet": "livemint.com",
       "tier": 2,
       "date": null,
-      "snippet": "9 editions, no home winners: The strange T20 World Cup history",
+      "snippet": "India vs South Africa Highlights: India lift second T20 World Cup | Mint",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
+      "source_url": "https://circleofcricket.com/amp/category/social_scoop/92960/watch-rahul-dravid-talks-about-his-wild-celebration-after-indias-t20-world-cup-2024-win",
+      "outlet": "circleofcricket.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "WATCH- Rahul Dravid talks about his wild celebration after India’s T20 World Cup 2024 win",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
+      "source_url": "https://www.crictracker.com/cricket-news/i-couldnt-feel-my-legs-rohit-sharma-revisits-indias-t20-world-cup-2024-win/",
+      "outlet": "crictracker.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "'I couldn’t feel my legs' - Rohit Sharma revisits India’s T20 World Cup 2024 win",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
+      "source_url": "https://cricwiki.in/list-of-icc-trophies-won-by-india/?noamp=mobile",
+      "outlet": "cricwiki.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "List of ICC Trophies won by India (2025) - CricWiki",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
       "claim_review": null
     }
   ],
-  "relevance_drops": [
-    {
-      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://english.factcrescendo.com/tag/cricket/"
-    },
-    {
-      "claim": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs",
-      "source_url": "https://www.pib.gov.in/newsite/erelcontent.aspx?relid=66544&reg=3&lang=2"
-    }
-  ],
+  "relevance_drops": [],
   "claimreview_hits": [],
   "debate": {
     "prosecution": [],
     "defense": [
       {
-        "text": "India beat South Africa by seven runs in Barbados to win Men's T20 World Cup for a second time, recorded Saturday 29 June 2024.",
+        "text": "India won the ICC Men's T20 World Cup 2024 by defeating South Africa in the final.",
+        "source_url": "https://testbook.com/question-answer/which-team-won-the-icc-mens-120-world-cup-202--69969f8c710d3a2dc0c6820a"
+      },
+      {
+        "text": "India beat South Africa by seven runs in Barbados to win Men's T20 World Cup for a second time, with full results dated Saturday 29 June 2024.",
         "source_url": "https://www.skysports.com/cricket/news/13042693/mens-t20-world-cup-2024-full-results-after-india-beat-south-africa-in-barbados-final-to-win-second-title"
+      },
+      {
+        "text": "India beat South Africa by seven runs in the 2024 T20 World Cup final in Barbados on Saturday, June 29.",
+        "source_url": "https://www.sportskeeda.com/cricket/news-we-wanted-really-bad-rohit-sharma-india-beat-south-africa-clinch-2024-t20-world-cup-trophy"
       },
       {
         "text": "In the ICC Men's T20 World Cup 2024 Final South Africa vs India, Kohli leads the way as India win T20 World Cup by 7 runs.",
         "source_url": "https://www.cricketworld.com/icc-mens-t20-world-cup-2024-final-south-africa-vs-india-kohli-leads-the-way-as-india-win-t20-world-cup-by-7-runs/95362.htm"
-      },
-      {
-        "text": "South Africa lost to India in the T20 World Cup 2024 final at the Kensington Oval in Barbados on Saturday, 29 June, losing by 7 runs after failing to chase down the target of 177 runs.",
-        "source_url": "https://english.factcrescendo.com/2024/07/04/david-miller-has-announced-his-retirement-from-t20-viral-claim-is-false/"
-      },
-      {
-        "text": "India seal T20 World Cup glory after epic duel against South Africa in the ICC Men's T20 World Cup 2024.",
-        "source_url": "https://www.icc-cricket.com/tournaments/t20cricketworldcup/news/live-india-and-south-africa-face-off-in-t20-world-cup-final?utm_"
       }
     ]
   },
   "votes": [
     {
       "verdict": "True",
-      "reason": "Multiple sources confirm India beat South Africa by 7 runs in the T20 World Cup 2024 final at Kensington Oval in Barbados on 29 June 2024 to win the title.",
-      "key_source": "https://english.factcrescendo.com/2024/07/04/david-miller-has-announced-his-retirement-from-t20-viral-claim-is-false/",
-      "confidence": "high"
-    },
-    {
-      "verdict": "True",
-      "reason": "Multiple independent sources confirm both media claims: India beat South Africa by seven runs in the Barbados final on 29 June 2024 to win the 2024 Men's T20 World Cup for a second time.",
+      "reason": "Both image claims are historically accurate: India beat South Africa by seven runs in Barbados in the final on 29 June 2024 to win the 2024 Men's T20 World Cup for a second time. Multiple sources confirm winner, margin, venue and date. No separate event claim to assess.",
       "key_source": "https://www.skysports.com/cricket/news/13042693/mens-t20-world-cup-2024-full-results-after-india-beat-south-africa-in-barbados-final-to-win-second-title",
       "confidence": "high"
     },
     {
       "verdict": "True",
-      "reason": "Multiple independent reports confirm India beat South Africa by seven runs in the Barbados final on 29 June 2024 to win the 2024 Men's T20 World Cup.",
-      "key_source": "https://www.skysports.com/cricket/news/13042693/mens-t20-world-cup-2024-full-results-after-india-beat-south-africa-in-barbados-final-to-win-second-title",
+      "reason": "Multiple sources confirm both media claims: India won the 2024 Men's T20 World Cup final against South Africa on 29 June 2024 at Kensington Oval, Barbados by 7 runs (176/7 vs 169/8).",
+      "key_source": "https://testbook.com/question-answer/which-team-won-the-icc-mens-120-world-cup-202--69969f8c710d3a2dc0c6820a",
+      "confidence": "high"
+    },
+    {
+      "verdict": "True",
+      "reason": "Both image claims are confirmed: India won the ICC Men's T20 World Cup 2024 by defeating South Africa in the final played on 29 June 2024 at Kensington Oval, Barbados, by 7 runs (176/7 vs 169/8 for a 7-run victory).",
+      "key_source": "https://testbook.com/question-answer/which-team-won-the-icc-mens-120-world-cup-202--69969f8c710d3a2dc0c6820a",
       "confidence": "high"
     }
   ],
   "verdict": {
     "verdict": "True",
-    "reason": "Multiple sources confirm India beat South Africa by 7 runs in the T20 World Cup 2024 final at Kensington Oval in Barbados on 29 June 2024 to win the title.",
-    "key_source": "https://english.factcrescendo.com/2024/07/04/david-miller-has-announced-his-retirement-from-t20-viral-claim-is-false/",
+    "reason": "Both image claims are historically accurate: India beat South Africa by seven runs in Barbados in the final on 29 June 2024 to win the 2024 Men's T20 World Cup for a second time. Multiple sources confirm winner, margin, venue and date. No separate event claim to assess.",
+    "key_source": "https://www.skysports.com/cricket/news/13042693/mens-t20-world-cup-2024-full-results-after-india-beat-south-africa-in-barbados-final-to-win-second-title",
     "language": "en",
     "confidence": "high",
     "fact_checked_by": null,
@@ -429,11 +396,11 @@
     "transcribe": "muse-voice-transcribe-1.0"
   },
   "tokens": {
-    "total": 88169,
+    "total": 87869,
     "stages": {
       "vision": {
         "in": 1598,
-        "out": 869
+        "out": 1035
       },
       "segment": {
         "in": 0,
@@ -441,69 +408,68 @@
       },
       "zoom": {
         "in": 9667,
-        "out": 1077
-      },
-      "factcheck:claim1": {
-        "in": 4749,
-        "out": 2059
+        "out": 1247
       },
       "grounding:claim1:support": {
-        "in": 5563,
-        "out": 1901
+        "in": 9512,
+        "out": 1955
       },
-      "grounding:claim2:support": {
-        "in": 6222,
-        "out": 1988
-      },
-      "grounding:claim1:refute": {
-        "in": 5894,
-        "out": 2542
+      "factcheck:claim1": {
+        "in": 4690,
+        "out": 2279
       },
       "factcheck:claim2": {
-        "in": 5841,
-        "out": 2225
+        "in": 4565,
+        "out": 2288
+      },
+      "grounding:claim1:refute": {
+        "in": 3865,
+        "out": 2858
       },
       "grounding:claim2:refute": {
-        "in": 3232,
-        "out": 3013
+        "in": 3085,
+        "out": 2175
+      },
+      "grounding:claim2:support": {
+        "in": 5820,
+        "out": 2823
       },
       "relevance": {
-        "in": 3347,
-        "out": 1887
+        "in": 2950,
+        "out": 2257
       },
       "prosecutor": {
-        "in": 3140,
-        "out": 451
+        "in": 3084,
+        "out": 317
       },
       "defender": {
-        "in": 3140,
-        "out": 1510
+        "in": 3084,
+        "out": 1668
       },
       "judge": {
-        "in": 11472,
-        "out": 4782
+        "in": 11259,
+        "out": 3788
       }
     }
   },
   "times": {
-    "vision": 9.2,
-    "segment": 9.9,
-    "grounding": 63.3,
+    "vision": 11.6,
+    "segment": 10.1,
+    "grounding": 54.6,
     "factcheck": 0.0,
-    "relevance": 18.1,
-    "prosecutor": 6.2,
-    "defender": 13.9,
-    "judge": 16.9
+    "relevance": 24.3,
+    "prosecutor": 5.1,
+    "defender": 15.5,
+    "judge": 14.9
   },
   "notes": [
     "zoom merged 3 crop(s).",
     "reverse search disabled (REVERSE_SEARCH=off).",
-    "evidence capped 14/44 items.",
-    "relevance filter dropped 2/30 items.",
-    "judge agreement: 3/3 (True, True, True).",
-    "existing fact-check cited: yes."
+    "evidence capped 9/35 items.",
+    "relevance filter dropped 0/26 items.",
+    "judge agreement: 3/3 (True, True, True)."
   ],
-  "elapsed_s": 143.9,
-  "recorded_at": "2026-11-02T07:04:13.465914+00:00",
-  "git_commit": "******4375b363e83c6c7198a2114747e8fe4602"
+  "elapsed_s": 145.1,
+  "recorded_at": "2026-11-02T10:00:22.545763+00:00",
+  "git_commit": "6db79632d9b39b054fda****7815f8fb0a451844"
 }

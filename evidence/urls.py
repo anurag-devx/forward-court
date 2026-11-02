@@ -3,7 +3,12 @@ from __future__ import annotations
 
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from config import SPOOFED_OUTLETS, TIER1_OUTLETS, TIER3_UGC
+from config import (
+    SPOOFED_OUTLETS,
+    TIER1_OUTLETS,
+    TIER3_UGC,
+    TRUSTED_FACTCHECK_DOMAINS,
+)
 
 _TRACKING_PREFIXES = ("utm_", "pk_", "piwik_", "matomo_")
 _TRACKING_PARAMS = frozenset(
@@ -158,6 +163,14 @@ def impersonates_outlet(domain: str | None) -> bool:
         name = labels[0] if labels[0] not in ("english", "www") else labels[1]
         names.add(name)
     return any(label in names for label in host.split("."))
+
+
+def is_factcheck_url(url: str) -> bool:
+    """True when the URL belongs to a trusted fact-check outlet."""
+    host, path = split_host_path(url)
+    if host is None:
+        return False
+    return matches_entries(host, path, TRUSTED_FACTCHECK_DOMAINS)
 
 
 def tier_of(url: str) -> int:
