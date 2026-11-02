@@ -1,0 +1,486 @@
+{
+  "id": "link_fake",
+  "kind": "link",
+  "label": "Old article framed as breaking (PIB, Jul 2026)",
+  "expected": "Misleading",
+  "input": {
+    "text": "Breaking: call for entries open for the 57th film festival in Goa https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372"
+  },
+  "card": "⚠️ *Forward Court Verdict: MISLEADING*\nConfidence: high\n\nOfficial Press Information Bureau releases confirm both claims: the 57th IFFI is scheduled in Panaji, Goa from 20 to 28 November 2026, and NFDC invited entries for the festival, including Indian Panorama. Note: the sources predate what the forward describes (recycled old content). Old article shared as new.\n\n🔗 Source: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372",
+  "claims": [
+    {
+      "text": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "kind": "headline_claim"
+    },
+    {
+      "text": "Call for entries is open for the 57th film festival in Goa.",
+      "kind": "text_claim"
+    }
+  ],
+  "link_safety": {
+    "urls": [
+      "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372"
+    ],
+    "expanded": {},
+    "flagged_hosts": [],
+    "signals": {},
+    "scam_signals": []
+  },
+  "article": {
+    "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372",
+    "headline": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+    "outlet": "pib.gov.in",
+    "date": "2026-07-25"
+  },
+  "evidence": [
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2302236&reg=48&lang=1",
+      "outlet": "pib.gov.in",
+      "tier": 1,
+      "date": "2026-08-21",
+      "snippet": "The first Meeting of Steering Committee for the 57th International Film Festival of India (IFFI) was held on 21st August 2026 at Kartavya Bhawan-2, New Delhi, under the chairmanship of Dr. L. Murugan,",
+      "fact_check": true,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2317574&reg=48&lang=2",
+      "outlet": "pib.gov.in",
+      "tier": 1,
+      "date": "2026-10-01",
+      "snippet": "Mumbai, 1 October 2026 Cinema takes center stage in Panaji, Goa, as the 57th edition of the International Film Festival of India (IFFI) returns from 20 to 28 November 2026. Bringing together filmmaker",
+      "fact_check": true,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://accreditation.pib.gov.in/eventregistration/Documents/IFFI_2026_Media_Accreditation_Policy.pdf",
+      "outlet": "accreditation.pib.gov.in",
+      "tier": 1,
+      "date": null,
+      "snippet": "Media Accreditation Policy for the 57th International Film Festival of India (IFFI) 2026",
+      "fact_check": true,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://www.theglobalnewswire.com/nfdc-invites-entries-for-57th-international-film-festival-of-india/",
+      "outlet": "theglobalnewswire.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "NFDC invites entries for 57th International Film Festival of India",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://asianfilmfestivals.com/2026/07/29/international-film-festival-of-india-goa-call-for-entry-2026/",
+      "outlet": "asianfilmfestivals.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "57th International Film Festival of India GOA – Call for Entry 2026",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://instalker.org/IFFIGoa",
+      "outlet": "instalker.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "International Film Festiva @IFFIGoa - Twitter Profile | Instalker",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://www.twstalker.com/hashtag/%23iffi",
+      "outlet": "twstalker.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Top Tweets for #iffi on Twitter. | TwStalker",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://filmfreeway.com/InternationalFilmFestivalofIndiaIFFI-Goa",
+      "outlet": "filmfreeway.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "International Film Festival of India (IFFI-Goa)",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://filmimagic.com/bollywood/lights-camera-submit-nfdc-opens-entries-for-57th-international-film-festival-of-india",
+      "outlet": "filmimagic.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Lights, Camera, Submit! NFDC Opens Entries for 57th International Film Festival of India",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2329363&reg=48&lang=2",
+      "outlet": "pib.gov.in",
+      "tier": 1,
+      "date": "2026-11-04",
+      "snippet": "The Ministry of Information and Broadcasting has extended the last date for media accreditation for the 57th International Film Festival of India (IFFI) 2026 till 4th November 2026. Media professional",
+      "fact_check": true,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2257218&reg=3&lang=2",
+      "outlet": "pib.gov.in",
+      "tier": 1,
+      "date": null,
+      "snippet": "The Ministry of Information & Broadcasting has appointed noted filmmaker Shri Ashutosh Gowariker as the Festival Director for the 57th edition of the International Film Festival of India (IFFI), to be",
+      "fact_check": true,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://www.linkedin.com/posts/nfdcindia_iffi2026-57iffi-internationalfilmfestivalofindia-activity-***************0448-qG6a",
+      "outlet": "linkedin.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "#iffi2026 #57iffi #internationalfilmfestivalofindia #delegate #filmfestival | National Film Development Corporation (NFDC)",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://www.filmink.com.au/public-notice/applications-open-for-iffi-waves-film-bazaar-in-goa-producer-delegation/",
+      "outlet": "filmink.com.au",
+      "tier": 2,
+      "date": null,
+      "snippet": "Applications open for IFFI/WAVES Film Bazaar in Goa – Producer Delegation",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://www.linkedin.com/posts/nfdcindia_iffi2026-57iffi-internationalfilmfestivalofindia-activity-***************8256-b3lP",
+      "outlet": "linkedin.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "#iffi2026 #57iffi #internationalfilmfestivalofindia #mediaaccreditation #filmfestival | National Film Development Corporation (NFDC)",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://www.iffigoa.org/media/news-and-update",
+      "outlet": "iffigoa.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "News And Update",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://esg.co.in/wp-content/uploads/2026/09/Goan-Directors-Premiere-Section-Regulations-1-1.pdf",
+      "outlet": "esg.co.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "“GOAN DIRECTORS CUT” SPECIAL GOAN PREMIERE SECTION KONKANI/MARATHI FEATURE & NON - FEATURE FILMS DURING 57 th IFFI 2026",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://filmfestivals.com/blog/siraj_syed/iffi_goa_2025_09_does_iffi_need_the_media_or_does_the_media_need_iffi_that_is_the_question",
+      "outlet": "filmfestivals.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "IFFI Goa 2025, 09: Does IFFI need the media, or does the media need IFFI, that is the question | Filmfestivals.com",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://chhattisgarhvishesh.com/archives/142944",
+      "outlet": "chhattisgarhvishesh.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Celebrating Stories, Cinema and Global Voices: IFFI 2026 Invites Media Persons to Goa; Media Accreditation Open Now!",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://www.cinemaexpress.com/hindi/news/2026/May/01/ashutosh-gowariker-appointed-festival-director-for-57th-international-film-festival-of-india-in-goa-2",
+      "outlet": "cinemaexpress.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Ashutosh Gowariker appointed Festival Director for 57th International Film Festival of India in Goa",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "http://esg.co.in/wp-content/uploads/2026/09/Goan-Producers-Non-Premiere-Section-Regulations.pdf",
+      "outlet": "esg.co.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "SPECIAL GOAN PRODUCERS NON- PREMIERE SECTION FILMS DURING THE 57th IFFI 2026. REGULATIONS",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://thefreedompress.in/madhur-bhandarkar-becomes-chairman-of-jury-for-feature-film-section-of-indian-panorama-for-57th-iffi/",
+      "outlet": "thefreedompress.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "Madhur Bhandarkar becomes Chairman of Jury for Feature Film Section of Indian Panorama for 57th IFFI",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://hiindia.com/madhur-bhandarkar-becomes-chairman-of-jury-for-feature-film-section-of-indian-panorama-for-57th-iffi/",
+      "outlet": "hiindia.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Madhur Bhandarkar becomes Chairman of Jury for Feature Film Section of Indian Panorama for 57th IFFI",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372",
+      "outlet": "pib.gov.in",
+      "tier": 1,
+      "date": "2026-07-25",
+      "snippet": ":Mumbai, July 25, 2026 The National Film Development Corporation (NFDC), under the Ministry of Information & Broadcasting, Government of India, in association with the Government of Goa and the Entert",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": true,
+      "claim_review": null
+    }
+  ],
+  "relevance_drops": [
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://in.linkedin.com/company/nfdcindia"
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://crackittoday.com/current-affairs/national-film-development-corporation-of-india/"
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://www.linkedin.com/posts/aashish-dubey-2b920135_if-you-can-take-a-released-film-that-can-activity-***************5378-hVqd"
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://www.thedraftworld.com/2026/10/konkani-films-storm-festival-circuit-across-globe.html"
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "http://esg.co.in/category/uncategorized/"
+    },
+    {
+      "claim": "57th IFFI to be held in Goa from November 20-28; Call for entries opens",
+      "source_url": "https://vajiramandravi.com/current-affairs/wp-admin/admin-ajax.php?action=vjrm_pdf_download&post_id=115390"
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://festhome.com/f/7470"
+    },
+    {
+      "claim": "Call for entries is open for the 57th film festival in Goa.",
+      "source_url": "https://mavericknews30.com/?p=36073"
+    }
+  ],
+  "claimreview_hits": [],
+  "debate": {
+    "prosecution": [],
+    "defense": [
+      {
+        "text": "The 57th edition of the International Film Festival of India (IFFI) returns in Panaji, Goa from 20 to 28 November 2026.",
+        "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2317574&reg=48&lang=2"
+      },
+      {
+        "text": "NFDC has invited entries for the 57th International Film Festival of India (IFFI), to be held in Goa from November 20 to 28, 2026, with entries invited for Indian Panorama.",
+        "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372"
+      },
+      {
+        "text": "The festival is scheduled to be held in Panaji, Goa, from 20th to 28th November 2026.",
+        "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2329363&reg=48&lang=2"
+      },
+      {
+        "text": "NFDC invites entries for 57th International Film Festival of India.",
+        "source_url": "https://www.theglobalnewswire.com/nfdc-invites-entries-for-57th-international-film-festival-of-india/"
+      },
+      {
+        "text": "Lights, Camera, Submit! NFDC Opens Entries for 57th International Film Festival of India.",
+        "source_url": "https://filmimagic.com/bollywood/lights-camera-submit-nfdc-opens-entries-for-57th-international-film-festival-of-india"
+      },
+      {
+        "text": "57th International Film Festival of India GOA – Call for Entry 2026.",
+        "source_url": "https://asianfilmfestivals.com/2026/07/29/international-film-festival-of-india-goa-call-for-entry-2026/"
+      }
+    ]
+  },
+  "votes": [
+    {
+      "verdict": "True",
+      "reason": "Official Press Information Bureau releases confirm both claims: the 57th IFFI is scheduled in Panaji, Goa from 20 to 28 November 2026, and NFDC invited entries for the festival, including Indian Panorama.",
+      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372",
+      "confidence": "high"
+    },
+    {
+      "verdict": "True",
+      "reason": "Official PIB releases confirm both event claims: the 57th IFFI is scheduled in Panaji, Goa from 20 to 28 November 2026, and NFDC invited entries for the 57th edition including Indian Panorama.",
+      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372",
+      "confidence": "high"
+    },
+    {
+      "verdict": "True",
+      "reason": "Official PIB releases confirm both claims: the 57th IFFI is scheduled in Panaji, Goa from 20-28 November 2026 and NFDC invited entries for Indian Panorama for that edition.",
+      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372",
+      "confidence": "high"
+    }
+  ],
+  "verdict": {
+    "verdict": "Misleading",
+    "reason": "Official Press Information Bureau releases confirm both claims: the 57th IFFI is scheduled in Panaji, Goa from 20 to 28 November 2026, and NFDC invited entries for the festival, including Indian Panorama. Note: the sources predate what the forward describes (recycled old content). Old article shared as new.",
+    "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372",
+    "language": "en",
+    "confidence": "high",
+    "fact_checked_by": null,
+    "scam_type": null,
+    "article_date": null
+  },
+  "models": {
+    "agent": "muse-spark-1.3-contributor",
+    "segmentation": "sam-3.1",
+    "transcribe": "muse-voice-transcribe-1.0"
+  },
+  "tokens": {
+    "total": 70514,
+    "stages": {
+      "intake": {
+        "in": 465,
+        "out": 437
+      },
+      "scamtext": {
+        "in": 323,
+        "out": 345
+      },
+      "grounding:claim1:support": {
+        "in": 5170,
+        "out": 1757
+      },
+      "grounding:claim1:refute": {
+        "in": 3855,
+        "out": 2145
+      },
+      "grounding:claim2:support": {
+        "in": 5243,
+        "out": 2549
+      },
+      "grounding:claim2:refute": {
+        "in": 5780,
+        "out": 2476
+      },
+      "factcheck:claim1": {
+        "in": 3754,
+        "out": 3117
+      },
+      "factcheck:claim2": {
+        "in": 4414,
+        "out": 3284
+      },
+      "relevance": {
+        "in": 2973,
+        "out": 2244
+      },
+      "prosecutor": {
+        "in": 2597,
+        "out": 432
+      },
+      "defender": {
+        "in": 2597,
+        "out": 1497
+      },
+      "judge": {
+        "in": 9912,
+        "out": 3148
+      }
+    }
+  },
+  "times": {
+    "intake": 5.4,
+    "article": 0.4,
+    "grounding": 48.7,
+    "factcheck": 3.8,
+    "relevance": 19.8,
+    "prosecutor": 5.4,
+    "defender": 11.2,
+    "judge": 11.5
+  },
+  "notes": [
+    "GSB disabled (GSB=off).",
+    "shared article from tier-1 outlet pib.gov.in.",
+    "evidence capped 15/45 items.",
+    "relevance filter dropped 8/30 items.",
+    "judge agreement: 3/3 (True, True, True).",
+    "existing fact-check cited: yes."
+  ],
+  "elapsed_s": 115.1,
+  "recorded_at": "2026-11-02T06:28:02.264017+00:00",
+  "git_commit": "5c7acb50dbb2c4525dcfe7f****0771c63e40a24"
+}

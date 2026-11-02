@@ -31,8 +31,14 @@ class ArticleInfo:
 def fetch_article(
     url: str, http_client: httpx.Client | None = None
 ) -> ArticleInfo | None:
-    """Fetch a safety-cleared URL as an article; None when unusable."""
+    """Fetch a safety-cleared URL as an article; None when unusable.
+
+    One retry on failure: a single transient network flake must not turn
+    a shared article into 'no checkable claims'.
+    """
     html = fetch_html(url, client=http_client)
+    if not html:
+        html = fetch_html(url, client=http_client)
     if not html:
         return None
     from urllib.parse import urlsplit

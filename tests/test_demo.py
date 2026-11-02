@@ -1,10 +1,12 @@
+import json
 from pathlib import Path
 
 from PIL import Image
 
 import main
 from config import UsageTracker
-from demo import SAMPLES, make_screenshot
+from demo import make_screenshot
+from demo.replay import PAIRS, load_samples
 from evidence.grounder import GroundingError
 from links.check import check_links
 from links.scamtext import ScamReading
@@ -13,14 +15,43 @@ from tests.fakes import FakeClient, dead_http_client
 DEMO_DIR = Path(__file__).resolve().parent.parent / "demo"
 
 
-def test_samples_list():
-    assert SAMPLES == ("text", "screenshot", "link", "scam")
+def test_samples_json_seven_samples_real_vs_fake():
+    samples = load_samples()
+    assert [sample["id"] for sample in samples] == [
+        "text_real", "text_fake", "shot_real", "shot_fake",
+        "link_real", "link_fake", "malicious",
+    ]
+    by_id = {sample["id"]: sample for sample in samples}
+    assert by_id["text_real"]["expected"] == "True"
+    assert by_id["text_fake"]["expected"] == "False"
+    assert by_id["shot_real"]["expected"] == "True"
+    assert by_id["shot_fake"]["expected"] == "False"
+    assert by_id["link_real"]["expected"] == "True"
+    assert by_id["link_fake"]["expected"] == "Misleading"
+    assert by_id["malicious"]["expected"] == "DANGEROUS"
+    for sample in samples:
+        assert sample["label"].strip()
+        if sample["kind"] == "screenshot":
+            params = sample["screenshot"]
+            assert params["headline"].strip()
+            assert params["standfirst"].strip()
+            assert params["url_path"].strip()
+        else:
+            assert sample["text"].strip()
+    pair_ids = [sid for _, *sids in PAIRS for sid in sids if sid]
+    assert sorted(pair_ids) == sorted(by_id)
 
 
-def test_demo_text_files_present_and_nonempty():
-    for name in ("text.txt", "link.txt", "scam.txt"):
-        text = (DEMO_DIR / name).read_text().strip()
-        assert text, name
+def test_screenshots_share_fictional_masthead():
+    from demo.make_screenshot import DOMAIN, MASTHEAD
+
+    assert MASTHEAD == "The Daily Clarion"
+    assert DOMAIN == "dailyclarion.example"
+    real_outlets = ("bbc", "cnn", "reuters", "ndtv", "aaj tak", "abp")
+    for sample in load_samples():
+        if sample["kind"] == "screenshot":
+            text = json.dumps(sample["screenshot"]).lower()
+            assert not any(outlet in text for outlet in real_outlets)
 
 
 def test_screenshot_generates_png(tmp_path):
@@ -41,7 +72,8 @@ def test_screenshot_uses_fictional_masthead():
 def test_demo_scam_sample_is_dangerous_offline(monkeypatch):
     monkeypatch.setenv("GSB", "off")
     monkeypatch.delenv("GSB_API_KEY", raising=False)
-    text = (DEMO_DIR / "scam.txt").read_text().strip()
+    by_id = {sample["id"]: sample for sample in load_samples()}
+    text = by_id["malicious"]["text"].strip()
     assert "sbi-kyc-update.xyz" in text
     fake = FakeClient(
         parsed_by_model={
@@ -75,13 +107,14 @@ def test_demo_runs_all_samples_in_order(monkeypatch, capsys):
     )
     assert main.main(["--demo"]) == 0
     kinds = [kind for kind, _ in calls]
-    assert kinds == ["text", "image", "text", "text"]
-    assert Path(calls[1][1]).suffix == ".png"  # generated screenshot
+    assert kinds == ["text", "text", "image", "image", "text", "text", "text"]
+    shots = [path for kind, path in calls if kind == "image"]
+    assert [Path(path).suffix for path in shots] == [".png", ".png"]
     out = capsys.readouterr().out
-    for name in SAMPLES:
-        assert f": {name} ===" in out
-        assert f"--- {name} took " in out
-    assert "4/4 samples ok" in out
+    for sample in load_samples():
+        assert f": {sample['id']} ===" in out
+        assert f"--- {sample['id']} took " in out
+    assert "7/7 samples ok" in out
 
 
 def test_demo_continues_after_failure(monkeypatch, capsys):
@@ -99,8 +132,8 @@ def test_demo_continues_after_failure(monkeypatch, capsys):
         lambda path, *_, **__: ("CARD", _ok_tracker()),
     )
     assert main.main(["--demo"]) == 1
-    assert len(calls) == 3  # text, link, scam all attempted
-    assert "3/4 samples ok" in capsys.readouterr().out
+    assert len(calls) == 5  # all text samples attempted despite failure
+    assert "6/7 samples ok" in capsys.readouterr().out
 
 
 def test_demo_rejects_extra_args():

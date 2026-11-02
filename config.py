@@ -213,10 +213,16 @@ class UsageTracker:
         default_factory=threading.Lock, repr=False, compare=False
     )
     times: dict = field(default_factory=dict)
+    trace: dict = field(default_factory=dict, repr=False, compare=False)
 
     def note(self, message: str) -> None:
         with self.lock:
             self.notes.append(message)
+
+    def record(self, key: str, payload) -> None:
+        """Store a structured trace payload for --record (thread-safe)."""
+        with self.lock:
+            self.trace[key] = payload
 
     def mark(self, stage: str) -> None:
         """Record the currently executing stage (for timeout reports)."""

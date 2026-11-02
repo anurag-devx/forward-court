@@ -27,7 +27,7 @@ in the user's language.
 - main.py    CLI entry: `python main.py "<forward text>"` or
              `python main.py --image path.jpg [--caption "text"]` or
              `python main.py --video path.mp4 [--caption "text"]` or
-             `python main.py --demo` (4 bundled samples)
+             `python main.py --demo` (7 samples; --record/--replay)
 - config.py  model names, API client, token-usage tracking, feature flags
              (REVERSE_SEARCH / GSB, off by default)
 - demo/      bundled judge-demo samples (text files + screenshot generator)

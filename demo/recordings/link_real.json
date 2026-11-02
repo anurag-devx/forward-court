@@ -1,0 +1,350 @@
+{
+  "id": "link_real",
+  "kind": "link",
+  "label": "Recent tier-1 press release (PIB Digi Yatra, 1 Nov 2026)",
+  "expected": "True",
+  "input": {
+    "text": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200"
+  },
+  "card": "✅ *Forward Court Verdict: TRUE*\nConfidence: high\n\nIndia's official Press Information Bureau confirms Digi Yatra has commenced trials for international passengers at seven airports, for eligible Indian nationals with e-passports on select Air India and IndiGo flights during November-December 2026, corroborated by multiple reports of the 7-airport launch.\n\n🔗 Source: https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2331200&reg=48&lang=2",
+  "claims": [
+    {
+      "text": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "kind": "headline_claim"
+    }
+  ],
+  "link_safety": {
+    "urls": [
+      "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200"
+    ],
+    "expanded": {},
+    "flagged_hosts": [],
+    "signals": {},
+    "scam_signals": []
+  },
+  "article": {
+    "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200",
+    "headline": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+    "outlet": "pib.gov.in",
+    "date": null
+  },
+  "evidence": [
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2331200&reg=48&lang=2",
+      "outlet": "pib.gov.in",
+      "tier": 1,
+      "date": null,
+      "snippet": "Digi Yatra has commenced trials for international passengers at seven airports across India, marking a further step in the adoption of digital technology in the country’s aviation sector. The trials, ",
+      "fact_check": true,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://newsplainly.com/tech/digi-yatra-international/",
+      "outlet": "newsplainly.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Digi Yatra international trials: 7 airports from 1 November",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://www.businessvibesofindia.com/digi-yatra-trial-run-launched-at-7-airports-in-india/",
+      "outlet": "businessvibesofindia.com",
+      "tier": 2,
+      "date": "2026-11-01",
+      "snippet": "New Delhi, Nov 1 (NVI) At seven airports in India, trial run of Digi Yatra, the contactless and paperless initiative that relies on facial recognition technology, has been launched for international p",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://www.tradingview.com/news/moodys:a68e238e18c24:0-digi-yatra-trials-for-international-passengers-begin-check-eligible-airlines-and-passenger-requirements/",
+      "outlet": "tradingview.com",
+      "tier": 2,
+      "date": "2026-11-01",
+      "snippet": "Digi Yatra trials for international passengers begin: Check eligible airlines and passenger requirements New Delhi, Nov. 1 -- Digi Yatra trials for international passengers have begun at seven airport",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://globalbihari.com/digi-yatra-begins-international-trials-at-seven-airports/",
+      "outlet": "globalbihari.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Digi Yatra Begins International Trials at Seven Airports",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://indiaoutbound.info/aviation/indigo-and-digi-yatra-begin-international-passenger-trials-at-seven-indian-airports/",
+      "outlet": "indiaoutbound.info",
+      "tier": 2,
+      "date": null,
+      "snippet": "IndiGo and Digi Yatra begin international passenger trials at seven Indian airports",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://presspire.com/digi-yatra-international-trials-seven-airports/",
+      "outlet": "presspire.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Digi Yatra International Trials Begin At 7 Indian Airports",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://www.nationpress.com/national/digi-yatra-international-trials-at-7-airports",
+      "outlet": "nationpress.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Digi Yatra international trials launch at 7 airports from November 2026",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://www.policyedge.in/p/digi-yatra-starts-international-passenger-trials-at-seven-airports",
+      "outlet": "policyedge.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "Digi Yatra Starts International Passenger Trials at Seven Airports",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://www.technologyforyou.org/digi-yatra-begins-international-passenger-trials-at-seven-airports/",
+      "outlet": "technologyforyou.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "Technology For You",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://airmedia24.com/news/can-you-use-digi-yatra-on-international-flights-what-india-s-7-airport-chip-to-gate-trial",
+      "outlet": "airmedia24.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Can You Use Digi Yatra On International Flights? What India's 7-Airport \"Chip-to-Gate Trial\" Actually Covers",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://transclew.com/tech/digi-yatra-international-flights-e-passport-trial/",
+      "outlet": "transclew.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Digi Yatra starts international flight trials, for e-passports only",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://taazakhabar247.com/2026/11/02/digi-yatra-international-trials-seven-airports-november-2026/",
+      "outlet": "taazakhabar247.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Digi Yatra International Trials Begin: Who Is Eligible and What Travellers Still Need",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://www.mirrornow.in/bengaluru-news/bengaluru-kempegowda-airport-launches-digi-yatra-international-trials-article-*****7749",
+      "outlet": "mirrornow.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "Bengaluru Airport Expands Digi Yatra to International Departures",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://curlytales.com/india/travel/bengaluru-airport-to-offer-digi-yatra-for-select-international-departures-from-november/",
+      "outlet": "curlytales.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Bengaluru Airport To Offer Digi Yatra For Select International Departures From November 1",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Digi Yatra Begins International Passenger Trials at Seven Airports",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200",
+      "outlet": "pib.gov.in",
+      "tier": 1,
+      "date": null,
+      "snippet": "Digi Yatra has commenced trials for international passengers at seven airports across India, marking a further step in the adoption of digital technology in the country’s aviation sector. The trials, ",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": true,
+      "claim_review": null
+    }
+  ],
+  "relevance_drops": [],
+  "claimreview_hits": [],
+  "debate": {
+    "prosecution": [],
+    "defense": [
+      {
+        "text": "PIB confirms Digi Yatra has commenced trials for international passengers at seven airports across India, marking a further step in adoption of digital technology in the aviation sector.",
+        "source_url": "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2331200&reg=48&lang=2"
+      },
+      {
+        "text": "The trials, scheduled to run from November to December 2026, will allow eligible Indian nationals holding e-passports to use Digi Yatra at designated touchpoints on select international flights operated by Air India and IndiGo.",
+        "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200"
+      },
+      {
+        "text": "At seven airports in India, trial run of Digi Yatra, the contactless and paperless initiative that relies on facial recognition technology, has been launched for international passengers with wider rollout planned for 2027 after trials conclude by end of December.",
+        "source_url": "https://www.businessvibesofindia.com/digi-yatra-trial-run-launched-at-7-airports-in-india/"
+      },
+      {
+        "text": "Digi Yatra trials for international passengers have begun at seven airports across India, allowing eligible Indian citizens with e-passports to use digital identity verification at designated touchpoints through November and December 2026.",
+        "source_url": "https://www.tradingview.com/news/moodys:a68e238e18c24:0-digi-yatra-trials-for-international-passengers-begin-check-eligible-airlines-and-passenger-requirements/"
+      },
+      {
+        "text": "Reporting titled Digi Yatra Begins International Trials at Seven Airports corroborates the claim that international passenger trials have started at seven airports.",
+        "source_url": "https://globalbihari.com/digi-yatra-begins-international-trials-at-seven-airports/"
+      }
+    ]
+  },
+  "votes": [
+    {
+      "verdict": "True",
+      "reason": "India's official Press Information Bureau confirms Digi Yatra has commenced trials for international passengers at seven airports, for eligible Indian nationals with e-passports on select Air India and IndiGo flights during November-December 2026, corroborated by multiple reports of the 7-airport launch.",
+      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200",
+      "confidence": "high"
+    },
+    {
+      "verdict": "True",
+      "reason": "PIB confirms Digi Yatra has commenced trials for international passengers at seven airports across India from November to December 2026 for eligible Indian nationals with e-passports on select Air India and IndiGo flights, directly matching the event claim. No media claims to assess.",
+      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200",
+      "confidence": "high"
+    },
+    {
+      "verdict": "True",
+      "reason": "No media items were provided to verify. The event claim is confirmed: PIB states Digi Yatra has commenced trials for international passengers at seven airports across India, running November to December 2026 for eligible Indian nationals holding e-passports on select Air India and IndiGo flights, corroborated by reports dated Nov 1, 2026.",
+      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200",
+      "confidence": "high"
+    }
+  ],
+  "verdict": {
+    "verdict": "True",
+    "reason": "India's official Press Information Bureau confirms Digi Yatra has commenced trials for international passengers at seven airports, for eligible Indian nationals with e-passports on select Air India and IndiGo flights during November-December 2026, corroborated by multiple reports of the 7-airport launch.",
+    "key_source": "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2331200&reg=48&lang=2",
+    "language": "en",
+    "confidence": "high",
+    "fact_checked_by": null,
+    "scam_type": null,
+    "article_date": null
+  },
+  "models": {
+    "agent": "muse-spark-1.3-contributor",
+    "segmentation": "sam-3.1",
+    "transcribe": "muse-voice-transcribe-1.0"
+  },
+  "tokens": {
+    "total": 42862,
+    "stages": {
+      "intake": {
+        "in": 450,
+        "out": 492
+      },
+      "scamtext": {
+        "in": 308,
+        "out": 403
+      },
+      "grounding:claim1:refute": {
+        "in": 5039,
+        "out": 2214
+      },
+      "factcheck:claim1": {
+        "in": 3585,
+        "out": 2547
+      },
+      "grounding:claim1:support": {
+        "in": 5538,
+        "out": 2540
+      },
+      "relevance": {
+        "in": 1435,
+        "out": 1710
+      },
+      "prosecutor": {
+        "in": 1716,
+        "out": 374
+      },
+      "defender": {
+        "in": 1716,
+        "out": 2027
+      },
+      "judge": {
+        "in": 7290,
+        "out": 3478
+      }
+    }
+  },
+  "times": {
+    "intake": 5.7,
+    "article": 0.2,
+    "grounding": 46.0,
+    "factcheck": 0.0,
+    "relevance": 15.5,
+    "prosecutor": 5.2,
+    "defender": 15.9,
+    "judge": 13.2
+  },
+  "notes": [
+    "GSB disabled (GSB=off).",
+    "shared article from tier-1 outlet pib.gov.in.",
+    "evidence capped 3/18 items.",
+    "relevance filter dropped 0/15 items.",
+    "judge agreement: 3/3 (True, True, True).",
+    "key_source moved off shared article.",
+    "existing fact-check cited: yes."
+  ],
+  "elapsed_s": 111.5,
+  "recorded_at": "2026-11-02T06:26:07.100220+00:00",
+  "git_commit": "5c7acb50dbb2c4525dcfe7f****0771c63e40a24"
+}

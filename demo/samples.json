@@ -1,0 +1,59 @@
+[
+  {
+    "id": "text_real",
+    "kind": "text",
+    "label": "True announcement (PIB, 1 Nov 2026)",
+    "expected": "True",
+    "text": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi."
+  },
+  {
+    "id": "text_fake",
+    "kind": "text",
+    "label": "False health claim",
+    "expected": "False",
+    "text": "Drinking hot lemon water cures cancer, doctors confirm"
+  },
+  {
+    "id": "shot_real",
+    "kind": "screenshot",
+    "label": "True headline screenshot (fictional masthead)",
+    "expected": "True",
+    "screenshot": {
+      "headline": "India wins 2024 T20 World Cup, beats South Africa in final",
+      "standfirst": "India lifted the trophy in Barbados on 29 June 2024, beating South Africa by seven runs, reports our sports desk.",
+      "url_path": "sports/t20-world-cup-final"
+    }
+  },
+  {
+    "id": "shot_fake",
+    "kind": "screenshot",
+    "label": "False headline screenshot (fictional masthead)",
+    "expected": "False",
+    "screenshot": {
+      "headline": "Hot lemon water cures cancer, doctors confirm",
+      "standfirst": "Health experts say a glass of hot lemon water every morning destroys cancer cells, reports our wellness desk.",
+      "url_path": "wellness/lemon-water-cancer"
+    }
+  },
+  {
+    "id": "link_real",
+    "kind": "link",
+    "label": "Recent tier-1 press release (PIB Digi Yatra, 1 Nov 2026)",
+    "expected": "True",
+    "text": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331200"
+  },
+  {
+    "id": "link_fake",
+    "kind": "link",
+    "label": "Old article framed as breaking (PIB, Jul 2026)",
+    "expected": "Misleading",
+    "text": "Breaking: call for entries open for the 57th film festival in Goa https://www.pib.gov.in/PressReleasePage.aspx?PRID=2289372"
+  },
+  {
+    "id": "malicious",
+    "kind": "malicious",
+    "label": "KYC/OTP scam with fictional lookalike link",
+    "expected": "DANGEROUS",
+    "text": "Your SBI account will be blocked today. Update KYC at http://sbi-kyc-update.xyz and share the OTP."
+  }
+]

@@ -70,6 +70,11 @@ def filter_evidence(
         kept.append(item.model_copy(update={"relevance": score}))
     kept_claims = {item.claim for item in kept}
     dropped_claims = [claim for claim in claims if claim not in kept_claims]
+    dropped = [
+        {"claim": item.claim, "source_url": item.source_url}
+        for index, item in enumerate(evidence)
+        if by_index.get(index, 1) == 0
+    ]
     if tracker is not None:
         tracker.note(
             f"relevance filter dropped {len(evidence) - len(kept)}/"
@@ -77,4 +82,5 @@ def filter_evidence(
         )
         for claim in dropped_claims:
             tracker.note(f"no evidence kept for claim: {claim}")
+        tracker.record("relevance_drops", dropped)
     return kept, dropped_claims

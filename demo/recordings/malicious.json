@@ -1,0 +1,70 @@
+{
+  "id": "malicious",
+  "kind": "malicious",
+  "label": "KYC/OTP scam with fictional lookalike link",
+  "expected": "DANGEROUS",
+  "input": {
+    "text": "Your SBI account will be blocked today. Update KYC at http://sbi-kyc-update.xyz and share the OTP."
+  },
+  "card": "⚠️ *DANGEROUS LINK — do not open*\n\nFake KYC update\n\nThe message itself matches a known scam pattern.\n\nNever share OTP/PIN. Report: cybercrime.gov.in / 1930",
+  "claims": [],
+  "link_safety": {
+    "urls": [
+      "http://sbi-kyc-update.xyz"
+    ],
+    "expanded": {},
+    "flagged_hosts": [],
+    "signals": {
+      "plain_http": "http://sbi-kyc-update.xyz"
+    },
+    "scam_signals": [
+      "urgency",
+      "kyc_block",
+      "otp_pin"
+    ]
+  },
+  "article": null,
+  "evidence": [],
+  "relevance_drops": [],
+  "claimreview_hits": [],
+  "debate": null,
+  "votes": [],
+  "verdict": {
+    "verdict": "DANGEROUS",
+    "reason": "The message itself matches a known scam pattern.",
+    "key_source": "",
+    "language": "en",
+    "confidence": "high",
+    "fact_checked_by": null,
+    "scam_type": "Fake KYC update",
+    "article_date": null
+  },
+  "models": {
+    "agent": "muse-spark-1.3-contributor",
+    "segmentation": "sam-3.1",
+    "transcribe": "muse-voice-transcribe-1.0"
+  },
+  "tokens": {
+    "total": 1942,
+    "stages": {
+      "intake": {
+        "in": 456,
+        "out": 673
+      },
+      "scamtext": {
+        "in": 314,
+        "out": 499
+      }
+    }
+  },
+  "times": {
+    "intake": 7.3
+  },
+  "notes": [
+    "GSB disabled (GSB=off).",
+    "DANGEROUS: The message itself matches a known scam pattern."
+  ],
+  "elapsed_s": 22.1,
+  "recorded_at": "2026-11-02T06:28:24.431933+00:00",
+  "git_commit": "5c7acb50dbb2c4525dcfe7f****0771c63e40a24"
+}

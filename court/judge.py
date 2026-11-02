@@ -233,7 +233,7 @@ def outlet_host(url: str) -> str:
 
 def find_claim_review_verdict(
     claims, evidence, language: str, *, media: bool = False,
-    exact_urls: set[str] | None = None,
+    exact_urls: set[str] | None = None, tracker=None,
 ) -> Verdict | None:
     """Deterministic verdict from tier-1 ClaimReview ratings, else None.
 
@@ -253,6 +253,18 @@ def find_claim_review_verdict(
         if any(_review_matches_claim(item, claim) for claim in claims):
             hits.append(item)
     verdicts = {item.claim_review.verdict for item in hits}
+    if tracker is not None:
+        tracker.record(
+            "claimreview_hits",
+            [
+                {
+                    "source_url": item.source_url,
+                    "verdict": item.claim_review.verdict,
+                    "rating": item.claim_review.rating_raw,
+                }
+                for item in hits
+            ],
+        )
     if len(verdicts) != 1:
         return None
     winner = hits[0]
@@ -377,6 +389,18 @@ def judge_verdict(
         votes = ", ".join(ballot.verdict for ballot in ballots)
         top = Counter(ballot.verdict for ballot in ballots).most_common(1)[0][1]
         tracker.note(f"judge agreement: {top}/{VOTES} ({votes}).")
+        tracker.record(
+            "votes",
+            [
+                {
+                    "verdict": ballot.verdict,
+                    "reason": ballot.reason,
+                    "key_source": ballot.key_source,
+                    "confidence": ballot.confidence,
+                }
+                for ballot in ballots
+            ],
+        )
 
     key_source = _resolve_key_source(
         verdict.key_source, evidence, kept_prosecution + kept_defense

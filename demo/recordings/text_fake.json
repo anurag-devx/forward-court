@@ -1,0 +1,282 @@
+{
+  "id": "text_fake",
+  "kind": "text",
+  "label": "False health claim",
+  "expected": "False",
+  "input": {
+    "text": "Drinking hot lemon water cures cancer, doctors confirm"
+  },
+  "card": "❌ *Forward Court Verdict: FALSE*\nConfidence: high\nAlready fact-checked by vishvasnews.com\n\nAlready fact-checked by vishvasnews.com: rated False.\n\n🔗 Source: https://www.vishvasnews.com/english/health/fact-check-false-claims-of-curing-cancer-getting-viral/",
+  "claims": [
+    {
+      "text": "Drinking hot lemon water cures cancer",
+      "kind": "text_claim"
+    }
+  ],
+  "link_safety": {
+    "urls": [],
+    "expanded": {},
+    "flagged_hosts": [],
+    "signals": {},
+    "scam_signals": []
+  },
+  "article": null,
+  "evidence": [
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.vishvasnews.com/english/health/fact-check-false-claims-of-curing-cancer-getting-viral/",
+      "outlet": "vishvasnews.com",
+      "tier": 1,
+      "date": "2019-07-09",
+      "snippet": "Fact Check: False claims of curing cancer getting viral - By: Urvashi Kapoor - Published: Jul 9, 2019 at 06:13 PM - Updated: Dec 10, 2019 at 06:42 PM A post is getting viral on social media that reads",
+      "fact_check": true,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": {
+        "verdict": "False",
+        "rating": "False"
+      }
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.vishvasnews.com/english/health/fact-check-false-claims-of-curing-cancer-getting-viral/",
+      "outlet": "vishvasnews.com",
+      "tier": 1,
+      "date": "2019-07-09",
+      "snippet": "Fact Check: False claims of curing cancer getting viral - By: Urvashi Kapoor - Published: Jul 9, 2019 at 06:13 PM - Updated: Dec 10, 2019 at 06:42 PM A post is getting viral on social media that reads",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": {
+        "verdict": "False",
+        "rating": "False"
+      }
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.vishvasnews.com/english/health/fact-check-claim-that-eating-turmeric-lemon-basil-and-neem-cures-stage-4-cancer-is-false/",
+      "outlet": "vishvasnews.com",
+      "tier": 1,
+      "date": null,
+      "snippet": "Fact Check: Claim That Eating Turmeric, Lemon, Basil, And Neem Cures Stage-4 Cancer Is False",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.thip.media/health-news-fact-check/fact-check-is-it-possible-to-cure-cancer-with-lemon-and-coconut-oil/98922/",
+      "outlet": "thip.media",
+      "tier": 2,
+      "date": null,
+      "snippet": "Is it possible to cure cancer with lemon and coconut oil? - THIP",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://dubawa.org/recent-facebook-claims-about-cancer-and-its-treatment-not-accurate/?amp=1",
+      "outlet": "dubawa.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "Recent Facebook claims about cancer and its treatment not accurate - Dubawa",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "http://fullfact.org/online/sugar-lemon-coconut-not-cancer-cures/",
+      "outlet": "fullfact.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "Lemon juice, coconut oil and stopping all sugar intake won’t cure cancer",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.youtube.com/shorts/sW9xfnrQdTE",
+      "outlet": "youtube.com",
+      "tier": 3,
+      "date": null,
+      "snippet": "Cancer: 3 Viral Treatment Claims You Should NOT Trust ⚠️ | Fact Check #waroncancer #cancelcancer",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://dubawa.org/healthcheck-the-not-so-magical-lemon-water/?amp=1",
+      "outlet": "dubawa.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "#HEALTHCHECK: The Not-So-Magical Lemon Water - Dubawa",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://medicaldialogues.in/fact-check/fact-check-can-water-with-lemon-and-alkaline-salts-act-as-cancer-killing-alkaline-water-149358",
+      "outlet": "medicaldialogues.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "Fact Check: Can water with lemon and alkaline salts act as cancer killing alkaline water?",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "http://trangnhat.io.vn/lemon-water-myths-what-science-really-says-about-its-health-benefits/",
+      "outlet": "trangnhat.io.vn",
+      "tier": 2,
+      "date": null,
+      "snippet": "Lemon Water Myths: What Science Really Says About Its Health Benefits",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.questionai.ph/questions-tKZaPMPggT0q/studies-show-drinking-water-withlemon-every-morning",
+      "outlet": "questionai.ph",
+      "tier": 2,
+      "date": null,
+      "snippet": "Studies Show That Drinking Water with Lemon Every Morning Cures Cancer. FACT OR FAKE NEWS? [1383] Question Point(s): 1 FACT FAKE NEWS",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.radiofree.org/2020/03/18/no-vitamin-c-and-lemon-infused-hot-water-do-not-protect-against-coronavirus-or-cancer/",
+      "outlet": "radiofree.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "No, Vitamin C and lemon-infused hot water do not protect against coronavirus or cancer",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.thip.media/health-news-fact-check/fact-check-can-hot-lemon-water-treat-cancer/36693/",
+      "outlet": "thip.media",
+      "tier": 2,
+      "date": null,
+      "snippet": "Fact check: Can hot lemon water treat cancer? - THIP Media",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://leadstories.com/cgi-bin/mt/mt-search.fcgi?search=cure%20cancer&IncludeBlogs=1&blog_id=1&limit=10&page=11",
+      "outlet": "leadstories.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Articles about \"cure cancer\" | Lead Stories",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    }
+  ],
+  "relevance_drops": [
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.classace.io/answers/activity-3-instructions-find-a-claim-on-social-media-and-write-a-short-piece-explaining-how-you-would-go-about-verifying-it-include-a-link-or-website-of-the-post-reference-any-sources-you-would-con"
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://leadstories.com/cgi-bin/mt/mt-search.fcgi?search=cures&IncludeBlogs=1&blog_id=1&limit=10&page=9"
+    },
+    {
+      "claim": "Drinking hot lemon water cures cancer",
+      "source_url": "https://www.youtube.com/shorts/glrLkNoIHDo"
+    }
+  ],
+  "claimreview_hits": [
+    {
+      "source_url": "https://www.vishvasnews.com/english/health/fact-check-false-claims-of-curing-cancer-getting-viral/",
+      "verdict": "False",
+      "rating": "False"
+    }
+  ],
+  "debate": null,
+  "votes": [],
+  "verdict": {
+    "verdict": "False",
+    "reason": "Already fact-checked by vishvasnews.com: rated False.",
+    "key_source": "https://www.vishvasnews.com/english/health/fact-check-false-claims-of-curing-cancer-getting-viral/",
+    "language": "en",
+    "confidence": "high",
+    "fact_checked_by": "vishvasnews.com",
+    "scam_type": null,
+    "article_date": null
+  },
+  "models": {
+    "agent": "muse-spark-1.3-contributor",
+    "segmentation": "sam-3.1",
+    "transcribe": "muse-voice-transcribe-1.0"
+  },
+  "tokens": {
+    "total": 28571,
+    "stages": {
+      "intake": {
+        "in": 442,
+        "out": 633
+      },
+      "scamtext": {
+        "in": 300,
+        "out": 402
+      },
+      "factcheck:claim1": {
+        "in": 3915,
+        "out": 3013
+      },
+      "grounding:claim1:refute": {
+        "in": 4825,
+        "out": 2906
+      },
+      "grounding:claim1:support": {
+        "in": 5591,
+        "out": 3111
+      },
+      "relevance": {
+        "in": 1643,
+        "out": 1790
+      }
+    }
+  },
+  "times": {
+    "intake": 7.2,
+    "grounding": 41.0,
+    "factcheck": 0.0,
+    "relevance": 17.4
+  },
+  "notes": [
+    "GSB disabled (GSB=off).",
+    "evidence capped 11/28 items.",
+    "relevance filter dropped 3/17 items.",
+    "ClaimReview verdict from vishvasnews.com: False."
+  ],
+  "elapsed_s": 70.2,
+  "recorded_at": "2026-11-02T06:19:36.290551+00:00",
+  "git_commit": "5c7acb50dbb2c4525dcfe7f****0771c63e40a24"
+}

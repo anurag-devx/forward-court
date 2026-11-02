@@ -442,6 +442,27 @@ def test_fetch_article_none_on_failure():
     )
 
 
+def test_fetch_article_retries_once():
+    attempts: list = []
+
+    def handler(request):
+        attempts.append(request)
+        if len(attempts) == 1:
+            raise httpx.ConnectError("flake")
+        return httpx.Response(
+            200, headers={"content-type": "text/html"},
+            text=ARTICLE_HTML.format("Body text here. " * 30),
+        )
+
+    article = fetch_article(
+        "https://example.com/story",
+        httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    assert article is not None
+    assert article.headline == "Big Event Happens"
+    assert len(attempts) == 2
+
+
 def test_is_bare_link():
     assert is_bare_link("https://a.com/x", ["https://a.com/x"])
     assert not is_bare_link("Look: https://a.com/x", ["https://a.com/x"])

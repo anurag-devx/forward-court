@@ -27,6 +27,7 @@ from court.judge import (
     judge_verdict,
     mismatch_verdict,
     no_evidence_verdict,
+    outlet_host,
 )
 from court.models import ImageContext, Verdict
 from court.prosecutor import argue_false
@@ -45,7 +46,12 @@ from evidence.reverse_image import (
     matches_to_evidence,
     search_images,
 )
-from evidence.urls import impersonates_outlet, normalize_url, same_source
+from evidence.urls import (
+    impersonates_outlet,
+    normalize_url,
+    same_source,
+    tier_of,
+)
 from links.article import (
     article_tier_note,
     fetch_article,
@@ -97,6 +103,65 @@ def _impersonated_domain(visible_domain: str | None, tracker) -> str | None:
         tracker.note(f"impersonated domain: {visible_domain}.")
         return visible_domain
     return None
+
+
+def _evidence_snapshot(evidence) -> list[dict]:
+    """JSON-safe evidence summary for --record traces."""
+    items = []
+    for item in evidence:
+        review = item.claim_review
+        items.append(
+            {
+                "claim": item.claim,
+                "source_url": item.source_url,
+                "outlet": outlet_host(item.source_url),
+                "tier": tier_of(item.source_url),
+                "date": item.date,
+                "snippet": item.snippet[:200],
+                "fact_check": item.fact_check,
+                "exact_match": item.exact_match,
+                "shared_article": item.shared_article,
+                "claim_review": (
+                    {
+                        "verdict": review.verdict,
+                        "rating": review.rating_raw,
+                    }
+                    if review is not None
+                    else None
+                ),
+            }
+        )
+    return items
+
+
+def _argument_snapshot(argument) -> list[dict]:
+    return [
+        {"text": point.text, "source_url": point.source_url}
+        for point in argument.points
+    ]
+
+
+def _verdict_snapshot(verdict) -> dict:
+    return {
+        "verdict": verdict.verdict,
+        "reason": verdict.reason,
+        "key_source": verdict.key_source,
+        "language": verdict.language,
+        "confidence": verdict.confidence,
+        "fact_checked_by": getattr(verdict, "fact_checked_by", None),
+        "scam_type": getattr(verdict, "scam_type", None),
+        "article_date": getattr(verdict, "article_date", None),
+    }
+
+
+def _link_snapshot(link_info: dict) -> dict:
+    return {
+        "urls": list(link_info.get("urls", [])),
+        "expanded": dict(link_info.get("expanded", {})),
+        "flagged_hosts": sorted(link_info.get("flagged_hosts", set())),
+        "signals": dict(link_info.get("signals", {})),
+        "scam_signals": list(link_info.get("scam_signals", [])),
+    }
 
 
 def _reverse_provider(provider, http_client):
@@ -205,7 +270,9 @@ def run_forward(
             text, intake.language, client=client, http_client=http_client,
             tracker=tracker,
         )
+        tracker.record("link_safety", _link_snapshot(link_info))
         if link_verdict is not None:
+            tracker.record("verdict", _verdict_snapshot(link_verdict))
             return format_card(link_verdict), tracker
         blocked = frozenset(link_info["flagged_hosts"])
         article = None
@@ -225,6 +292,34 @@ def run_forward(
                 claim for claim in claims if claim != article.headline
             ]
         claims = claims[:MAX_CLAIMS]
+        headline = article.headline if article is not None else None
+        tracker.record(
+            "claims",
+            [
+                {
+                    "text": claim,
+                    "kind": (
+                        "headline_claim"
+                        if headline and claim == headline
+                        else "text_claim"
+                    ),
+                }
+                for claim in claims
+            ],
+        )
+        tracker.record(
+            "article",
+            (
+                {
+                    "url": article.url,
+                    "headline": article.headline,
+                    "outlet": article.outlet,
+                    "date": article.date,
+                }
+                if article is not None
+                else None
+            ),
+        )
         if not claims:
             return "No checkable claims found in this forward.", tracker
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
@@ -257,13 +352,16 @@ def run_forward(
                 )
             if article is not None:
                 evidence.append(article_evidence(article, claims[0]))
+            tracker.record("evidence", _evidence_snapshot(evidence))
             if not evidence:
                 tracker.note("no relevant evidence: verdict Unverified.")
-                return format_card(no_evidence_verdict(intake.language)), tracker
+                empty = no_evidence_verdict(intake.language)
+                tracker.record("verdict", _verdict_snapshot(empty))
+                return format_card(empty), tracker
             review_verdict = None
             if claimreview:
                 review_verdict = find_claim_review_verdict(
-                    claims, evidence, intake.language
+                    claims, evidence, intake.language, tracker=tracker
                 )
             else:
                 tracker.note("ClaimReview short-circuit disabled.")
@@ -272,6 +370,7 @@ def run_forward(
                     f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
                     f"{review_verdict.verdict}."
                 )
+                tracker.record("verdict", _verdict_snapshot(review_verdict))
                 return format_card(review_verdict), tracker
             prosecution_job = pool.submit(
                 argue_false, claims, evidence, client=client,
@@ -286,6 +385,13 @@ def run_forward(
             tracker.add_time("prosecutor", time.monotonic() - debate_start)
             defense = defense_job.result()
             tracker.add_time("defender", time.monotonic() - debate_start)
+            tracker.record(
+                "debate",
+                {
+                    "prosecution": _argument_snapshot(prosecution),
+                    "defense": _argument_snapshot(defense),
+                },
+            )
             with stage_timer(tracker, "judge"):
                 verdict = judge_verdict(
                     claims,
@@ -302,6 +408,7 @@ def run_forward(
                     article_bare=article_bare,
                     executor=pool,
                 )
+            tracker.record("verdict", _verdict_snapshot(verdict))
             return format_card(verdict), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
@@ -339,7 +446,9 @@ def run_image_forward(
                 caption, language, client=client, http_client=http_client,
                 tracker=tracker,
             )
+            tracker.record("link_safety", _link_snapshot(link_info))
             if link_verdict is not None:
+                tracker.record("verdict", _verdict_snapshot(link_verdict))
                 return format_card(link_verdict), tracker
             link_blocked = frozenset(link_info["flagged_hosts"])
         claims = (vision.claims_from_image + caption_claims)[:MAX_CLAIMS]
@@ -348,6 +457,13 @@ def run_image_forward(
             + ["content_claim"] * len(caption_claims)
         )[:MAX_CLAIMS]
         has_content_claims = "content_claim" in kept_kinds
+        tracker.record(
+            "claims",
+            [
+                {"text": claim, "kind": kind}
+                for claim, kind in zip(claims, kept_kinds)
+            ],
+        )
         if not claims:
             return "No checkable claims found in this forward.", tracker
         if vision.shows_claimed_event == "no":
@@ -355,12 +471,9 @@ def run_image_forward(
             tracker.note(f"media_mismatch: {reason}")
             agreement = vision.consistency_agreement
             tracker.note(f"media mismatch verdict (agreement {agreement}/3).")
-            return (
-                format_card(
-                    mismatch_verdict(reason, language, agreement)
-                ),
-                tracker,
-            )
+            mismatch = mismatch_verdict(reason, language, agreement)
+            tracker.record("verdict", _verdict_snapshot(mismatch))
+            return format_card(mismatch), tracker
         active_provider = _reverse_provider(provider, http_client)
         ranked: list[RankedRegion] = []
         if zoom_enabled() or active_provider is not None:
@@ -455,14 +568,17 @@ def run_image_forward(
                 evidence, bare_claims = filter_evidence(
                     claims, evidence, client=client, tracker=tracker
                 )
+            tracker.record("evidence", _evidence_snapshot(evidence))
             if not evidence:
                 tracker.note("no relevant evidence: verdict Unverified.")
-                return format_card(no_evidence_verdict(language)), tracker
+                empty = no_evidence_verdict(language)
+                tracker.record("verdict", _verdict_snapshot(empty))
+                return format_card(empty), tracker
             review_verdict = None
             if claimreview:
                 review_verdict = find_claim_review_verdict(
                     claims, evidence, language, media=True,
-                    exact_urls=exact_urls,
+                    exact_urls=exact_urls, tracker=tracker,
                 )
             else:
                 tracker.note("ClaimReview short-circuit disabled.")
@@ -471,6 +587,7 @@ def run_image_forward(
                     f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
                     f"{review_verdict.verdict}."
                 )
+                tracker.record("verdict", _verdict_snapshot(review_verdict))
                 return format_card(review_verdict), tracker
             prosecution_job = pool.submit(
                 argue_false, claims, evidence, client=client,
@@ -485,6 +602,13 @@ def run_image_forward(
             tracker.add_time("prosecutor", time.monotonic() - debate_start)
             defense = defense_job.result()
             tracker.add_time("defender", time.monotonic() - debate_start)
+            tracker.record(
+                "debate",
+                {
+                    "prosecution": _argument_snapshot(prosecution),
+                    "defense": _argument_snapshot(defense),
+                },
+            )
             with stage_timer(tracker, "judge"):
                 verdict = judge_verdict(
                     claims,
@@ -506,6 +630,7 @@ def run_image_forward(
                     media_claims=media_for_judge,
                     exact_urls=exact_urls,
                 )
+            tracker.record("verdict", _verdict_snapshot(verdict))
             return format_card(verdict), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
@@ -578,7 +703,9 @@ def run_video_forward(
                 caption, language, client=client, http_client=http_client,
                 tracker=tracker,
             )
+            tracker.record("link_safety", _link_snapshot(link_info))
             if link_verdict is not None:
+                tracker.record("verdict", _verdict_snapshot(link_verdict))
                 return format_card(link_verdict), tracker
             link_blocked = frozenset(link_info["flagged_hosts"])
         claims = (
@@ -589,6 +716,13 @@ def run_video_forward(
             + ["content_claim"] * (len(transcript_claims) + len(caption_claims))
         )[:MAX_CLAIMS]
         has_content_claims = "content_claim" in kept_kinds
+        tracker.record(
+            "claims",
+            [
+                {"text": claim, "kind": kind}
+                for claim, kind in zip(claims, kept_kinds)
+            ],
+        )
         if not claims:
             return "No checkable claims found in this forward.", tracker
         if video.shows_claimed_event == "no":
@@ -596,12 +730,9 @@ def run_video_forward(
             tracker.note(f"media_mismatch: {reason}")
             agreement = video.consistency_agreement
             tracker.note(f"media mismatch verdict (agreement {agreement}/3).")
-            return (
-                format_card(
-                    mismatch_verdict(reason, language, agreement)
-                ),
-                tracker,
-            )
+            mismatch = mismatch_verdict(reason, language, agreement)
+            tracker.record("verdict", _verdict_snapshot(mismatch))
+            return format_card(mismatch), tracker
         active_provider = _reverse_provider(provider, http_client)
         frames: list[bytes] = []
         if zoom_enabled() or active_provider is not None:
@@ -720,14 +851,17 @@ def run_video_forward(
                 evidence, bare_claims = filter_evidence(
                     claims, evidence, client=client, tracker=tracker
                 )
+            tracker.record("evidence", _evidence_snapshot(evidence))
             if not evidence:
                 tracker.note("no relevant evidence: verdict Unverified.")
-                return format_card(no_evidence_verdict(language)), tracker
+                empty = no_evidence_verdict(language)
+                tracker.record("verdict", _verdict_snapshot(empty))
+                return format_card(empty), tracker
             review_verdict = None
             if claimreview:
                 review_verdict = find_claim_review_verdict(
                     claims, evidence, language, media=True,
-                    exact_urls=exact_urls,
+                    exact_urls=exact_urls, tracker=tracker,
                 )
             else:
                 tracker.note("ClaimReview short-circuit disabled.")
@@ -736,6 +870,7 @@ def run_video_forward(
                     f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
                     f"{review_verdict.verdict}."
                 )
+                tracker.record("verdict", _verdict_snapshot(review_verdict))
                 return format_card(review_verdict), tracker
             prosecution_job = pool.submit(
                 argue_false, claims, evidence, client=client,
@@ -750,6 +885,13 @@ def run_video_forward(
             tracker.add_time("prosecutor", time.monotonic() - debate_start)
             defense = defense_job.result()
             tracker.add_time("defender", time.monotonic() - debate_start)
+            tracker.record(
+                "debate",
+                {
+                    "prosecution": _argument_snapshot(prosecution),
+                    "defense": _argument_snapshot(defense),
+                },
+            )
             with stage_timer(tracker, "judge"):
                 verdict = judge_verdict(
                     claims,
@@ -771,18 +913,42 @@ def run_video_forward(
                     media_claims=media_for_judge,
                     exact_urls=exact_urls,
                 )
+            tracker.record("verdict", _verdict_snapshot(verdict))
             return format_card(verdict), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
 
-def run_demo() -> int:
-    """Run the 4 bundled demo samples in sequence. Returns exit code."""
+def _run_demo_sample(sample: dict, tmp: str) -> tuple[str, object, dict]:
+    """Run one demo sample live. Returns (card, tracker, input_desc)."""
+    from demo import make_screenshot
+
+    kind = sample["kind"]
+    if kind == "screenshot":
+        params = sample["screenshot"]
+        shot = make_screenshot(
+            str(Path(tmp) / f"{sample['id']}.png"),
+            headline=params["headline"],
+            standfirst=params["standfirst"],
+            url_path=params["url_path"],
+        )
+        print(f"input: generated screenshot {shot}")
+        card, tracker = run_image_forward(shot)
+        return card, tracker, {"screenshot": dict(params)}
+    text = sample["text"]
+    print(f"input: {text}")
+    card, tracker = run_forward(text)
+    return card, tracker, {"text": text}
+
+
+def run_demo(*, record: bool = False) -> int:
+    """Run the bundled demo samples in sequence. Returns exit code."""
     import os
     import tempfile
 
-    from demo import SAMPLES, make_screenshot
+    from demo.replay import load_samples
+    from demo.trace import build_recording, save_recording, validate_recording
 
-    demo_dir = Path(__file__).resolve().parent / "demo"
+    samples = load_samples()
     failures = 0
     total_start = time.monotonic()
     # The demo never depends on non-Meta services, whatever .env says.
@@ -795,35 +961,36 @@ def run_demo() -> int:
         with tempfile.TemporaryDirectory(
             prefix="forwardcourt-demo-"
         ) as tmp:
-            for number, name in enumerate(SAMPLES, start=1):
-                print(f"=== Demo {number}/{len(SAMPLES)}: {name} ===")
+            for number, sample in enumerate(samples, start=1):
+                name = sample["id"]
+                print(f"=== Demo {number}/{len(samples)}: {name} ===")
+                print(f"label: {sample['label']}")
                 start = time.monotonic()
                 try:
-                    if name == "text":
-                        text = (demo_dir / "text.txt").read_text().strip()
-                        print(f"input: {text}")
-                        card, _ = run_forward(text)
-                    elif name == "screenshot":
-                        shot = make_screenshot(
-                            str(Path(tmp) / "demo_shot.png")
-                        )
-                        print(f"input: generated screenshot {shot}")
-                        card, _ = run_image_forward(shot)
-                    elif name == "link":
-                        text = (demo_dir / "link.txt").read_text().strip()
-                        print(f"input: {text}")
-                        card, _ = run_forward(text)
-                    elif name == "scam":
-                        text = (demo_dir / "scam.txt").read_text().strip()
-                        print(f"input: {text}")
-                        card, _ = run_forward(text)
-                    else:  # pragma: no cover - SAMPLES is fixed
-                        raise ValueError(f"unknown demo sample: {name}")
+                    card, tracker, input_desc = _run_demo_sample(
+                        sample, tmp
+                    )
                 except (GroundingError, RuntimeError, ValueError) as exc:
                     print(f"sample {name} failed: {exc}")
                     failures += 1
                 else:
                     print(card)
+                    if record:
+                        recording = build_recording(
+                            sample_id=name, kind=sample["kind"],
+                            label=sample["label"],
+                            expected=sample["expected"],
+                            input_desc=input_desc, card=card,
+                            tracker=tracker,
+                            elapsed_s=time.monotonic() - start,
+                        )
+                        errors = validate_recording(recording)
+                        if errors:
+                            print(f"sample {name} trace invalid: {errors}")
+                            failures += 1
+                        else:
+                            path = save_recording(recording)
+                            print(f"recorded: {path}")
                 print(
                     f"--- {name} took "
                     f"{time.monotonic() - start:.0f}s ---\n"
@@ -835,7 +1002,7 @@ def run_demo() -> int:
             else:
                 os.environ[key] = value
     print(f"demo total: {time.monotonic() - total_start:.0f}s, "
-          f"{len(SAMPLES) - failures}/{len(SAMPLES)} samples ok.")
+          f"{len(samples) - failures}/{len(samples)} samples ok.")
     return 1 if failures else 0
 
 
@@ -845,7 +1012,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("text", nargs="?", help="Forward text (else read stdin).")
     parser.add_argument("--demo", action="store_true",
-                        help="Run the 4 bundled demo samples in sequence.")
+                        help="Run the bundled demo samples in sequence.")
+    parser.add_argument("--record", action="store_true",
+                        help="With --demo: save full traces to demo/recordings/.")
+    parser.add_argument("--replay", action="store_true",
+                        help="With --demo: replay recordings offline "
+                        "(no key, no network, no models).")
     parser.add_argument("--image", default=None, help="Image forward file path.")
     parser.add_argument("--video", default=None, help="Video forward file path.")
     parser.add_argument(
@@ -859,12 +1031,25 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--card-out", default=None, metavar="PATH",
                         help="Also write the final card text to PATH.")
     args = parser.parse_args(argv)
+    if args.record and not args.demo:
+        print("Error: --record needs --demo.", file=sys.stderr)
+        return 2
+    if args.replay and not args.demo:
+        print("Error: --replay needs --demo.", file=sys.stderr)
+        return 2
+    if args.record and args.replay:
+        print("Error: --record and --replay are exclusive.", file=sys.stderr)
+        return 2
     if args.demo:
         if args.text or args.image or args.video or args.caption:
             print("Error: --demo takes no other arguments.", file=sys.stderr)
             return 2
+        if args.replay:
+            from demo.replay import run_replay
+
+            return run_replay()
         try:
-            return run_demo()
+            return run_demo(record=args.record)
         except RuntimeError as exc:  # e.g. MODEL_API_KEY missing
             print(f"Error: {exc}", file=sys.stderr)
             return 2
