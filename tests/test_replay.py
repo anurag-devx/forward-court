@@ -328,4 +328,7 @@ def test_committed_recordings_hold_no_secrets():
         text = path.read_text()
         for secret in secrets:
             assert secret not in text
-        assert not re.search(r"\d{8,}", text)
+        # Phone-like runs are masked outside URLs only; article IDs in
+        # links are legitimate and must survive the scrubber.
+        outside_urls = re.sub(r"https?://\S+", " ", text)
+        assert not re.search(r"\d{8,}", outside_urls)

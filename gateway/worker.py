@@ -95,13 +95,29 @@ def run_pipeline(args: list[str], card_path: Path) -> str | None:
     return card_path.read_text()
 
 
+_URL_RE = re.compile(r"https?://\S+")
+_PHONE_RE = re.compile(r"\d{8,}")
+
+
+def _mask_run(match: re.Match) -> str:
+    run = match.group(0)
+    return "*" * (len(run) - 4) + run[-4:]
+
+
 def mask_phones(text: str) -> str:
-    """Mask phone-like digit runs, keeping the last 4 digits."""
-    return re.sub(
-        r"\d{8,}",
-        lambda match: "*" * (len(match.group(0)) - 4) + match.group(0)[-4:],
-        text,
-    )
+    """Mask phone-like digit runs outside URLs, keeping the last 4 digits.
+
+    URLs pass through byte-identical: article IDs and tracking numbers in
+    links are not phone numbers.
+    """
+    parts = []
+    last = 0
+    for found in _URL_RE.finditer(text):
+        parts.append(_PHONE_RE.sub(_mask_run, text[last:found.start()]))
+        parts.append(found.group(0))
+        last = found.end()
+    parts.append(_PHONE_RE.sub(_mask_run, text[last:]))
+    return "".join(parts)
 
 
 def _send(sender: Sender, to: str, body: str) -> None:

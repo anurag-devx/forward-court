@@ -141,7 +141,10 @@ def test_judge_flags_recycled_old_news():
         client=fake,
     )
     assert verdict.verdict == "Misleading"
-    assert "recycled" in verdict.reason
+    assert verdict.reason.startswith(
+        "Real a.com content from 2015-04-25, shared now as new."
+    )
+    assert verdict.reason.endswith("cited debunk")
 
 
 def test_judge_skips_override_when_not_presented_as_recent():

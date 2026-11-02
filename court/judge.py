@@ -33,13 +33,9 @@ RECYCLED_DAYS = 30
 VOTES = 3
 CLAIM_MATCH_TOKENS = 3
 
-RECYCLED_NOTES = {
-    "en": "Note: the sources predate what the forward describes (recycled old content).",
-    "hi": "नोट: स्रोत उस घटना से पुराने हैं जिसका वर्णन फ़ॉरवर्ड में है (पुरानी खबर दोबारा)।",
-}
-ARTICLE_RECYCLED_NOTES = {
-    "en": "Old article shared as new.",
-    "hi": "पुराना लेख नया बताकर साझा किया गया।",
+RECYCLED_LEAD = {
+    "en": "Real {outlet} content from {date}, shared now as new.",
+    "hi": "{outlet} की {date} की असली सामग्री अब नई बताकर साझा की गई।",
 }
 
 NO_EVIDENCE_REASONS = {
@@ -413,6 +409,7 @@ def judge_verdict(
             update={"verdict": "Unverified", "confidence": "low"}
         )
 
+    recycled: tuple[str, str, str] | None = None  # outlet, date, key
     if presented_as_recent:
         dated = sorted(
             (parsed, item.source_url)
@@ -426,13 +423,10 @@ def judge_verdict(
             today or date.today()
         )
         if dated and (claim_date - dated[0][0]).days > RECYCLED_DAYS:
-            note = RECYCLED_NOTES.get(language, RECYCLED_NOTES["en"])
-            verdict = verdict.model_copy(
-                update={
-                    "verdict": "Misleading",
-                    "reason": f"{verdict.reason} {note}",
-                    "key_source": dated[0][1],
-                }
+            recycled = (
+                outlet_host(dated[0][1]),
+                dated[0][0].isoformat(),
+                dated[0][1],
             )
     parsed_article = _parse_ymd(article_date) if article_date else None
     if parsed_article is not None and article_url:
@@ -441,20 +435,25 @@ def judge_verdict(
         )
         if (claim_date - parsed_article).days > RECYCLED_DAYS:
             if presented_as_recent and not article_bare:
-                note = ARTICLE_RECYCLED_NOTES.get(
-                    language, ARTICLE_RECYCLED_NOTES["en"]
-                )
-                verdict = verdict.model_copy(
-                    update={
-                        "verdict": "Misleading",
-                        "reason": f"{verdict.reason} {note}",
-                        "key_source": article_url,
-                    }
+                recycled = (
+                    outlet_host(article_url), article_date, article_url
                 )
             elif article_bare:
                 verdict = verdict.model_copy(
                     update={"article_date": article_date}
                 )
+    if recycled is not None:
+        outlet, recycled_date, key = recycled
+        lead = RECYCLED_LEAD.get(language, RECYCLED_LEAD["en"]).format(
+            outlet=outlet, date=recycled_date
+        )
+        verdict = verdict.model_copy(
+            update={
+                "verdict": "Misleading",
+                "reason": f"{lead} {verdict.reason}",
+                "key_source": key,
+            }
+        )
     if verdict.verdict == "True":
         shared = {
             normalize_url(item.source_url)

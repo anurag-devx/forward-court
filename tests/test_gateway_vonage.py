@@ -301,6 +301,16 @@ def test_mask_phones_keeps_last_four():
     assert mask_phones("") == ""
 
 
+def test_mask_phones_leaves_urls_untouched():
+    from gateway.worker import mask_phones
+
+    url = "https://www.skysports.com/cricket/news/1212312345678/final"
+    assert mask_phones(url) == url
+    assert mask_phones(f"call 919999999999, see {url}") == (
+        f"call ********9999, see {url}"
+    )
+
+
 def test_provider_switch_selects_vonage(monkeypatch):
     monkeypatch.setattr(app_module, "PROVIDER", "vonage")
     monkeypatch.setattr(app_module, "VONAGE_API_KEY", "k")
