@@ -1,5 +1,7 @@
 # WhatsApp Forward Court
 
+**Demo video (2:43):** https://www.youtube.com/watch?v=er92qcF2HDM
+
 A multi-agent fact-checker for viral WhatsApp forwards.
 
 Forward a suspicious message, photo or video. A panel of agents puts it on trial: one argues it is true, one argues it is false, and both may cite only real, retrieved sources. A judge returns a short verdict card — **True / False / Misleading / Unverified** — in the user's language, ready to share back into the family group. Scam links and messages get **Dangerous**, or **Suspicious** when the signs are weaker.
