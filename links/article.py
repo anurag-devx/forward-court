@@ -1,7 +1,9 @@
 """Safe news-link handling: fetch article, headline claim, evidence tag."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -41,8 +43,6 @@ def fetch_article(
         html = fetch_html(url, client=http_client)
     if not html:
         return None
-    from urllib.parse import urlsplit
-
     try:
         host = (urlsplit(url).hostname or "").lower()
     except ValueError:
@@ -63,6 +63,48 @@ def fetch_article(
         excerpt=excerpt,
         review=extract_claim_review(html),
     )
+
+
+SLUG_EXTENSIONS = (".ece", ".html", ".htm", ".php", ".aspx")
+SLUG_SKIP_SEGMENTS = {"amp"}
+SLUG_MIN_WORDS = 3
+SLUG_MIN_ALPHA = 15
+
+
+def claim_from_url_slug(url: str) -> str | None:
+    """Best-effort claim from a news-URL slug; None when meaningless.
+
+    Fallback when the article itself can't be fetched: drops /amp/,
+    page extensions and article IDs, then de-slugifies the longest
+    mostly-text path segment. Needs 3+ words to count as a claim.
+    """
+    try:
+        path = urlsplit(url).path
+    except ValueError:
+        return None
+    best = ""
+    best_alpha = 0
+    for segment in path.split("/"):
+        segment = segment.strip()
+        lowered = segment.lower()
+        if not lowered or lowered in SLUG_SKIP_SEGMENTS:
+            continue
+        for ext in SLUG_EXTENSIONS:
+            if lowered.endswith(ext):
+                segment = segment[: -len(ext)]
+                break
+        words = [word for word in re.split(r"[-_]+", segment) if word]
+        alpha = sum(char.isalpha() for char in segment)
+        if (
+            len(words) >= SLUG_MIN_WORDS
+            and alpha >= SLUG_MIN_ALPHA
+            and alpha > best_alpha
+        ):
+            best = " ".join(words)
+            best_alpha = alpha
+    if not best:
+        return None
+    return best[0].upper() + best[1:]
 
 
 def is_bare_link(text: str, urls: list[str]) -> bool:

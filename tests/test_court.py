@@ -5,11 +5,14 @@ import pytest
 from config import UsageTracker
 from court.defender import argue_true
 from court.judge import (
+    INSTRUCTIONS,
+    INSTRUCTIONS_NO_MEDIA,
     find_claim_review_verdict,
     judge_verdict,
     mismatch_verdict,
     no_evidence_verdict,
     outlet_host,
+    strip_media_sentences,
 )
 from court.models import (
     Argument,
@@ -95,6 +98,94 @@ def test_judge_drops_uncited_points():
     assert "real cite" in brief
     assert "invented" not in brief
     assert verdict.verdict == "False"
+
+
+def test_text_judge_prompt_forbids_media_mentions():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict(verdict="False")})
+    judge_verdict(
+        ["c"], _evidence(), _defense(), Argument(points=[]), "en", False,
+        client=fake,
+    )
+    call = fake.responses.calls[0][1]
+    assert "never mention media" in call["instructions"]
+    assert "media claims first" not in call["instructions"]
+    assert "Media claims:" not in call["input"]
+    assert "Event claims:" in call["input"]
+
+
+def test_media_judge_prompt_keeps_media_first_section():
+    fake = FakeClient(parsed_by_model={Verdict: _verdict(verdict="False")})
+    judge_verdict(
+        ["c"], _evidence(), _defense(), Argument(points=[]), "en", False,
+        client=fake,
+        image=ImageContext(origin_only=True, reverse_evidence=False),
+        media_claims=["c"],
+    )
+    call = fake.responses.calls[0][1]
+    assert call["instructions"] == INSTRUCTIONS
+    assert "media claims first" in call["instructions"]
+    assert "Media claims:" in call["input"]
+    assert "never mention media" not in INSTRUCTIONS
+    assert "never mention media" in INSTRUCTIONS_NO_MEDIA
+
+
+def test_strip_media_sentences_drops_only_media_residue():
+    assert strip_media_sentences(
+        "No media was shared to verify. The event claim is confirmed by X."
+    ) == "The event claim is confirmed by X."
+    assert strip_media_sentences(
+        "The image claims are false. There is no separate event claim. "
+        "Outlets confirm the dates."
+    ) == "Outlets confirm the dates."
+    assert strip_media_sentences(
+        "No media to verify. Nothing else to say."
+    ) == "Nothing else to say."
+    assert strip_media_sentences("The event claim is confirmed.") == (
+        "The event claim is confirmed."
+    )
+
+
+def test_strip_media_sentences_never_empties():
+    assert strip_media_sentences("No media was shared.") == (
+        "No media was shared."
+    )
+    assert strip_media_sentences("") == ""
+
+
+def test_text_verdict_reason_strips_media_sentences():
+    fake = FakeClient(
+        parsed_by_model={
+            Verdict: _verdict(
+                verdict="True",
+                reason=(
+                    "No media was shared. The event claim is confirmed by X."
+                ),
+            )
+        }
+    )
+    verdict = judge_verdict(
+        ["c"], _evidence(), _defense(), Argument(points=[]), "en", False,
+        client=fake,
+    )
+    assert verdict.verdict == "True"
+    assert verdict.reason == "The event claim is confirmed by X."
+
+
+def test_media_verdict_reason_keeps_media_sentences():
+    reason = "No media was shared. The event claim is confirmed by X."
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(verdict="True", reason=reason)}
+    )
+    verdict = judge_verdict(
+        ["c"], _evidence(), _defense(), Argument(points=[]), "en", False,
+        client=fake,
+        image=ImageContext(
+            origin_only=False, reverse_evidence=True,
+            has_content_claims=True,
+        ),
+        media_claims=["c"],
+    )
+    assert verdict.reason == reason
 
 
 def test_judge_forces_unverified_when_all_dropped():

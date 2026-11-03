@@ -9,6 +9,7 @@ from court.models import Argument, ArgPoint, Verdict
 from evidence.models import EvidenceItem
 from links.article import (
     article_tier_note,
+    claim_from_url_slug,
     fetch_article,
     is_bare_link,
     to_evidence,
@@ -580,19 +581,20 @@ def test_recycled_rule_needs_recency_cues_when_not_bare():
     assert verdict.article_date is None
 
 
-def test_shared_article_cannot_be_own_key_source():
+def test_shared_article_moves_to_on_claim_independent():
+    claim = "India wins the 2024 T20 World Cup final in Barbados"
     fake = FakeClient(
         parsed_by_model={
             Verdict: _verdict(key_source="https://news.example/shared")
         }
     )
     shared = EvidenceItem(
-        claim="c", source_url="https://news.example/shared",
+        claim=claim, source_url="https://news.example/shared",
         date="2026-10-01", snippet="s", shared_article=True,
     )
     other = EvidenceItem(
-        claim="c", source_url="https://a.com/x", date="2026-10-01",
-        snippet="s",
+        claim=claim, source_url="https://a.com/x", date="2026-10-01",
+        snippet="India wins 2024 T20 World Cup final in Barbados thriller",
     )
     argue = Argument(
         points=[
@@ -601,10 +603,59 @@ def test_shared_article_cannot_be_own_key_source():
         ]
     )
     verdict = judge_verdict(
-        ["c"], [shared, other], argue, argue, "en", False, client=fake
+        [claim], [shared, other], argue, argue, "en", False, client=fake
     )
     assert verdict.verdict == "True"
     assert verdict.key_source == "https://a.com/x"
+
+
+def test_shared_article_kept_when_independents_off_claim():
+    from config import UsageTracker
+
+    claim = (
+        "The Centre has proposed 10 new import gateways "
+        "for drugs and medical devices."
+    )
+    hindu_url = (
+        "https://www.thehindu.com/news/national/centre-proposes-10-new-"
+        "import-gateways-for-drugs-medical-devices/article71659502.ece/amp/"
+    )
+    pib_url = "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2282329"
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(key_source=hindu_url)}
+    )
+    shared = EvidenceItem(
+        claim=claim, source_url=hindu_url,
+        date="2026-11-03",
+        snippet=(
+            "Centre proposes 10 new import gateways for drugs, "
+            "medical devices"
+        ),
+        shared_article=True,
+    )
+    off_claim = EvidenceItem(
+        claim=claim, source_url=pib_url,
+        date="2026-10-01",
+        snippet=(
+            "In a significant step towards strengthening the pharmaceutical "
+            "supply chain, the Ministry has enabled the import of drugs "
+            "through the recently inaugurated Navi Mumbai Airport."
+        ),
+    )
+    argue = Argument(
+        points=[
+            ArgPoint(text="p", source_url=hindu_url),
+            ArgPoint(text="q", source_url=pib_url),
+        ]
+    )
+    tracker = UsageTracker()
+    verdict = judge_verdict(
+        [claim], [shared, off_claim], argue, argue, "en", False,
+        client=fake, tracker=tracker,
+    )
+    assert verdict.verdict == "True"
+    assert verdict.key_source == hindu_url
+    assert any("keeping shared article" in note for note in tracker.notes)
 
 
 def test_shared_article_alone_downgrades_true():
@@ -830,3 +881,23 @@ def test_safebrowsing_key_never_logged(monkeypatch):
     assert "secret-key-123" not in "\n".join(tracker.notes)
     assert "secret-key-123" not in verdict.reason
     assert "secret-key-123" not in format_card(verdict)
+
+
+HINDU_AMP_URL = (
+    "https://www.thehindu.com/news/national/"
+    "centre-proposes-10-new-import-gateways-for-drugs-medical-devices/"
+    "article71659502.ece/amp/"
+)
+
+
+def test_slug_claim_from_amp_url():
+    assert claim_from_url_slug(HINDU_AMP_URL) == (
+        "Centre proposes 10 new import gateways for drugs medical devices"
+    )
+
+
+def test_slug_claim_ignores_ids_and_short_slugs():
+    assert claim_from_url_slug("https://example.com/article71659502.ece") is None
+    assert claim_from_url_slug("https://example.com/some-article") is None
+    assert claim_from_url_slug("https://bit.ly/3xKzQ") is None
+    assert claim_from_url_slug("not a url") is None

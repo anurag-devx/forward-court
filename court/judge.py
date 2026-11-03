@@ -20,12 +20,17 @@ Deterministic rules enforced here (never left to the model alone):
 """
 from __future__ import annotations
 
+import re
 from collections import Counter
 from datetime import date
 
 from config import agent_model, reasoning_kwargs
 from evidence.grounder import EVIDENCE_WORKERS, DaemonPool
-from evidence.match import key_mismatched, review_matches_claim
+from evidence.match import (
+    key_mismatched,
+    review_matches_claim,
+    snippet_states_claim,
+)
 from evidence.urls import normalize_url, split_host_path, tier_of
 
 from .models import Argument, ImageContext, Verdict, evidence_brief
@@ -53,7 +58,7 @@ MISMATCH_REASONS = {
     "hi": "मीडिया दावा की गई घटना नहीं दिखाता: {reason}",
 }
 
-INSTRUCTIONS = (
+_INSTRUCTIONS_BASE = (
     "You are the judge in a fact-check court. Both sides argued using only the "
     "evidence list; every point below already cites a URL from it. "
     "Return True or False only on strong cited evidence. Return Misleading "
@@ -70,9 +75,43 @@ INSTRUCTIONS = (
     "rating weighs heavily: follow it and cite it as key_source when "
     "decisive, unless other cited evidence contradicts it. "
     "Prefer tier-1 sources; never use a tier-3 source as key_source. "
-    "Rate the forward on the media claims first; report the event-claim "
+)
+INSTRUCTIONS = (
+    _INSTRUCTIONS_BASE
+    + "Rate the forward on the media claims first; report the event-claim "
     "assessment in the reason."
 )
+INSTRUCTIONS_NO_MEDIA = (
+    _INSTRUCTIONS_BASE
+    + "Rate the event claims directly; never mention media, images, video, "
+    "screenshots, photos, or footage: this forward has none."
+)
+
+_MEDIA_WORD_RE = re.compile(
+    r"\b(media|images?|videos?|screenshots?|photos?|footage|memes?|मीडिया)\b",
+    re.IGNORECASE,
+)
+_NO_EVENT_CLAIM_RE = re.compile(
+    r"\bno\s+(separate\s+)?event\s+claims?\b", re.IGNORECASE
+)
+
+
+def strip_media_sentences(reason: str) -> str:
+    """Drop media-mentioning sentences (text/link forwards have no media).
+
+    Removes sentences about media ("No media was shared...") and negated
+    event-claim residue ("No separate event claim..."); affirmative event
+    assessments ("The event claim is confirmed...") are kept. Never
+    returns empty: when every sentence matches, the original stands.
+    """
+    parts = re.split(r"(?<=[.!?…])\s+", (reason or "").strip())
+    kept = [
+        part
+        for part in parts
+        if not _MEDIA_WORD_RE.search(part)
+        and not _NO_EVENT_CLAIM_RE.search(part)
+    ]
+    return " ".join(kept).strip() or (reason or "").strip()
 
 
 def _parse_ymd(value: str | None) -> date | None:
@@ -207,11 +246,11 @@ def _override_eligible(item, media: bool, exact_urls, media_claims) -> bool:
     )
 
 
-def _cast_vote(client, tracker, brief_input: str) -> Verdict:
+def _cast_vote(client, tracker, brief_input: str, instructions: str) -> Verdict:
     """Cast one judge vote. Ballots reassemble in submission order."""
     response = client.responses.parse(
         model=agent_model(),
-        instructions=INSTRUCTIONS,
+        instructions=instructions,
         input=brief_input,
         text_format=Verdict,
         **reasoning_kwargs("judge"),
@@ -363,12 +402,15 @@ def judge_verdict(
             f"Claims with no kept evidence (treat as Unverified): "
             f"{no_evidence_claims}\n"
         )
+    has_media = image is not None or bool(media_claims)
+    instructions = INSTRUCTIONS if has_media else INSTRUCTIONS_NO_MEDIA
     media_set = set(media_claims or [])
     media_section = [claim for claim in claims if claim in media_set]
     event_section = [claim for claim in claims if claim not in media_set]
+    media_block = f"Media claims:\n{media_section}\n\n" if has_media else ""
     brief_input = (
         f"Forward language: {language}\n{image_line}{no_evidence_line}"
-        f"Media claims:\n{media_section}\n\n"
+        f"{media_block}"
         f"Event claims:\n{event_section}\n\n"
         f"Evidence:\n{evidence_brief(evidence)}\n\n"
         f"Prosecution points kept: "
@@ -382,7 +424,9 @@ def judge_verdict(
         ballots: list[Verdict] = [
             future.result()
             for future in [
-                pool.submit(_cast_vote, client, tracker, brief_input)
+                pool.submit(
+                    _cast_vote, client, tracker, brief_input, instructions
+                )
                 for _ in range(VOTES)
             ]
         ]
@@ -479,13 +523,21 @@ def judge_verdict(
             if getattr(item, "shared_article", False)
         }
         if shared and normalize_url(verdict.key_source) in shared:
-            independent = next(
-                (
-                    item.source_url
-                    for item in evidence
-                    if not getattr(item, "shared_article", False)
-                ),
-                None,
+            candidates = [
+                item
+                for item in evidence
+                if not getattr(item, "shared_article", False)
+            ]
+            independent = _best_key(
+                [
+                    item
+                    for item in candidates
+                    if any(
+                        snippet_states_claim(item.snippet, claim)
+                        for claim in claims
+                    )
+                ],
+                kept_prosecution + kept_defense,
             )
             if independent is not None:
                 verdict = verdict.model_copy(
@@ -493,6 +545,12 @@ def judge_verdict(
                 )
                 if tracker is not None:
                     tracker.note("key_source moved off shared article.")
+            elif candidates:
+                if tracker is not None:
+                    tracker.note(
+                        "no on-claim independent source; "
+                        "keeping shared article."
+                    )
             else:
                 verdict = verdict.model_copy(
                     update={"verdict": "Unverified", "confidence": "medium"}
@@ -526,4 +584,8 @@ def judge_verdict(
             if getattr(item, "fact_check", False)
         )
         tracker.note(f"existing fact-check cited: {'yes' if used else 'no'}.")
+    if not has_media and verdict.reason:
+        cleaned = strip_media_sentences(verdict.reason)
+        if cleaned != verdict.reason:
+            verdict = verdict.model_copy(update={"reason": cleaned})
     return verdict

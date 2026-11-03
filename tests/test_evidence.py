@@ -176,6 +176,44 @@ def test_raises_on_api_failure():
         gather_evidence(["claim one"], client=client)
 
 
+def test_single_query_api_failure_continues_with_sibling_items():
+    real = _client(
+        [[search_call([("https://r.com/1", "T", "April 2, 2026 kept")])]]
+    )
+
+    class Flaky:
+        def create(self, **kwargs):
+            if "SUPPORTING" in str(kwargs.get("input", "")):
+                raise ConnectionError("content filter")
+            return real.responses.create(**kwargs)
+
+    tracker = UsageTracker()
+    items = gather_evidence(
+        ["claim one"], client=SimpleNamespace(responses=Flaky()),
+        http_client=dead_http_client(), executor=SyncExecutor(),
+        tracker=tracker,
+    )
+    assert [i.source_url for i in items] == ["https://r.com/1"]
+    assert any("continuing with 1 item" in note for note in tracker.notes)
+
+
+def test_single_unsearched_query_continues_with_sibling_items():
+    empty = [SimpleNamespace(type="message", status="completed")]
+    client = _client(
+        [
+            empty,
+            [search_call([("https://r.com/1", "T", "April 2, 2026 kept")])],
+        ]
+    )
+    tracker = UsageTracker()
+    items = gather_evidence(
+        ["claim one"], client=client, http_client=dead_http_client(),
+        executor=SyncExecutor(), tracker=tracker,
+    )
+    assert [i.source_url for i in items] == ["https://r.com/1"]
+    assert any("continuing with 1 item" in note for note in tracker.notes)
+
+
 def test_tracks_usage():
     client = _client(
         [[search_call([("https://a.com", "T", "s")])], [search_call([])]]

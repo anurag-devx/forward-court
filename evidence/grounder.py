@@ -156,9 +156,10 @@ def gather_evidence(
     Searches and the top TOP_FETCH_PER_CLAIM page fetches per claim run on
     the executor (a private pool when none is given); results reassemble
     in submission order so output is deterministic. Fetch failures keep
-    the search snippet and never abort the run. Raises GroundingError
-    when a query performs no grounded search, when the API call fails,
-    or when a claim ends up with zero grounded items.
+    the search snippet and never abort the run. A single failed query
+    (API error, content filter, no search performed) is tolerated when
+    its sibling returned grounded items; raises GroundingError only when
+    a claim ends up with zero grounded items.
     """
     if tracker is not None:
         tracker.mark("grounding")
@@ -184,31 +185,48 @@ def _gather(claims, pool, *, client, tracker, http_client, blocked_hosts) -> lis
         jobs.append(
             (number, claim, "refute", REFUTE_QUERY.format(claim=claim))
         )
-    outcomes = [
-        future.result()
-        for future in [
-            pool.submit(
-                _search_query, client, tracker,
-                f"grounding:claim{number}:{side}", claim, query,
-            )
-            for number, claim, side, query in jobs
-        ]
+    submitted = [
+        pool.submit(
+            _search_query, client, tracker,
+            f"grounding:claim{number}:{side}", claim, query,
+        )
+        for number, claim, side, query in jobs
     ]
+    outcomes: list = []
+    for job in submitted:
+        try:
+            outcomes.append(job.result())
+        except Exception as exc:
+            outcomes.append(exc)
     items: list[EvidenceItem] = []
     seen: set[str] = set()
     for index in range(0, len(jobs), 2):
         claim = jobs[index][1]
         per_query: list[list] = []
-        for results, searched in outcomes[index:index + 2]:
-            if not searched:
+        errors: list[Exception] = []
+        unsearched = 0
+        for outcome in outcomes[index:index + 2]:
+            if isinstance(outcome, Exception):
+                errors.append(outcome)
+            elif outcome[1]:
+                per_query.append(outcome[0])
+            else:
+                unsearched += 1
+        ordered = _ordered_unique(per_query, seen)
+        if not ordered:
+            if errors:
+                raise errors[0]
+            if unsearched == 2:
                 raise GroundingError(
                     f"Model performed no grounded search for claim {claim!r}; stopping."
                 )
-            per_query.append(results)
-        ordered = _ordered_unique(per_query, seen)
-        if not ordered:
             raise GroundingError(
                 f"No grounded evidence found for claim {claim!r}; stopping."
+            )
+        if (errors or unsearched) and tracker is not None:
+            tracker.note(
+                f"grounding query failed for claim {claim!r}; "
+                f"continuing with {len(ordered)} item(s)."
             )
         candidates = ordered[:TOP_FETCH_PER_CLAIM]
         selected = [

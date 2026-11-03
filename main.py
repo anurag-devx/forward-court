@@ -57,6 +57,7 @@ from evidence.urls import (
 )
 from links.article import (
     article_tier_note,
+    claim_from_url_slug,
     fetch_article,
     is_bare_link,
     to_evidence as article_evidence,
@@ -408,6 +409,17 @@ def run_forward(
             claims = [article.headline] + [
                 claim for claim in claims if claim != article.headline
             ]
+        if (
+            article is None
+            and not claims
+            and link_info["safe_urls"]
+            and link_info["urls"]
+            and is_bare_link(text, link_info["urls"])
+        ):
+            slug_claim = claim_from_url_slug(link_info["safe_urls"][0])
+            if slug_claim is not None:
+                tracker.note("article fetch failed; using URL slug claim.")
+                claims = [slug_claim]
         claims = claims[:max_claims()]
         headline = article.headline if article is not None else None
         tracker.record(

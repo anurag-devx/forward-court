@@ -440,6 +440,27 @@ def test_bare_link_reply_lists_signals():
     assert "safe" not in card.lower()
 
 
+def test_bare_amp_url_falls_back_to_slug_claim(monkeypatch):
+    from tests.test_links import HINDU_AMP_URL
+
+    monkeypatch.setattr(main, "fetch_article", lambda *a, **k: None)
+    card, tracker = main.run_forward(
+        HINDU_AMP_URL,
+        client=_no_claims_client(), http_client=dead_http_client(),
+    )
+    assert "Forward Court Verdict:" in card  # continued, not the link reply
+    assert tracker.trace["claims"] == [
+        {
+            "text": (
+                "Centre proposes 10 new import gateways "
+                "for drugs medical devices"
+            ),
+            "kind": "text_claim",
+        }
+    ]
+    assert any("URL slug claim" in note for note in tracker.notes)
+
+
 def test_grounding_error_propagates():
     client = FakeClient(
         parsed_by_model={
