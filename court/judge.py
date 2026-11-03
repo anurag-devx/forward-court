@@ -20,24 +20,18 @@ Deterministic rules enforced here (never left to the model alone):
 """
 from __future__ import annotations
 
-import re
 from collections import Counter
 from datetime import date
 
 from config import agent_model, reasoning_kwargs
 from evidence.grounder import EVIDENCE_WORKERS, DaemonPool
-from evidence.urls import (
-    is_factcheck_url,
-    normalize_url,
-    split_host_path,
-    tier_of,
-)
+from evidence.match import key_mismatched, review_matches_claim
+from evidence.urls import normalize_url, split_host_path, tier_of
 
 from .models import Argument, ImageContext, Verdict, evidence_brief
 
 RECYCLED_DAYS = 30
 VOTES = 3
-CLAIM_MATCH_TOKENS = 3
 
 RECYCLED_LEAD = {
     "en": "Real {outlet} content from {date}, shared now as new.",
@@ -144,34 +138,6 @@ def _resolve_key_source(key_source: str, evidence, kept_points) -> str:
     return pool[0]
 
 
-def _snippet_states_claim(snippet: str | None, claim: str) -> bool:
-    """True when the snippet's lead sentence is about the claim."""
-    first = re.split(r"[.!?…]\s*", snippet or "", maxsplit=1)[0]
-    shared = _significant_tokens(first) & _significant_tokens(claim)
-    return len(shared) >= CLAIM_MATCH_TOKENS
-
-
-def _key_mismatched(item, claims: list[str]) -> bool:
-    """True when a fact-check item is about a different claim.
-
-    Direct reports are always key-eligible; only fact-checks are vetted,
-    against their ClaimReview text or (without one) their snippet's lead.
-    Outlet URL counts too: grounding hits from fact-check sites arrive
-    without the lookup flag.
-    """
-    if not (
-        getattr(item, "fact_check", False)
-        or item.claim_review is not None
-        or is_factcheck_url(item.source_url)
-    ):
-        return False
-    return not any(
-        _review_matches_claim(item, claim)
-        or _snippet_states_claim(item.snippet, claim)
-        for claim in claims
-    )
-
-
 def _best_key(items, kept_points) -> str | None:
     """Most-cited, then first; None when empty."""
     if not items:
@@ -197,7 +163,7 @@ def _select_true_key(claims, evidence, resolved_key, kept_points) -> str:
     """
     pool = [e for e in evidence if tier_of(e.source_url) != 3]
     pool = pool or list(evidence)
-    eligible = [e for e in pool if not _key_mismatched(e, claims)]
+    eligible = [e for e in pool if not key_mismatched(e, claims)]
     current = normalize_url(resolved_key)
     current_ok = any(
         normalize_url(e.source_url) == current for e in eligible
@@ -237,7 +203,7 @@ def _override_eligible(item, media: bool, exact_urls, media_claims) -> bool:
     if normalize_url(item.source_url) in (exact_urls or set()):
         return True
     return any(
-        _review_matches_claim(item, claim) for claim in (media_claims or [])
+        review_matches_claim(item, claim) for claim in (media_claims or [])
     )
 
 
@@ -261,44 +227,6 @@ def _keep_cited(argument: Argument, evidence_urls: set[str]) -> list:
         for point in argument.points
         if point.text.strip() and normalize_url(point.source_url) in evidence_urls
     ]
-
-
-def _significant_tokens(text: str) -> set[str]:
-    cleaned = "".join(
-        char.lower() if char.isalnum() or char.isspace() else " "
-        for char in text or ""
-    )
-    return {token for token in cleaned.split() if len(token) > 3}
-
-
-def _review_matches_claim(item, claim: str) -> bool:
-    """True when the item's ClaimReview applies to the claim.
-
-    Matches on normalized claim text (containment or shared significant
-    tokens), or -- for cross-language cases -- when the item came from the
-    lookup query for this exact claim with relevance score 2.
-    """
-    review = item.claim_review
-    if review is None:
-        return False
-    if (
-        getattr(item, "fact_check", False)
-        and item.claim == claim
-        and getattr(item, "relevance", None) == 2
-    ):
-        return True
-    reviewed = (review.claim_text or "").strip()
-    if not reviewed:
-        return False
-    left = " ".join(reviewed.lower().split())
-    right = " ".join((claim or "").lower().split())
-    if (
-        min(len(left), len(right)) >= 8
-        and (left in right or right in left)
-    ):
-        return True
-    shared = _significant_tokens(reviewed) & _significant_tokens(claim)
-    return len(shared) >= CLAIM_MATCH_TOKENS
 
 
 def outlet_host(url: str) -> str:
@@ -326,7 +254,7 @@ def find_claim_review_verdict(
             continue
         if item.claim_review.verdict == "Unverified":
             continue
-        if any(_review_matches_claim(item, claim) for claim in claims):
+        if any(review_matches_claim(item, claim) for claim in claims):
             hits.append(item)
     verdicts = {item.claim_review.verdict for item in hits}
     if tracker is not None:
@@ -359,6 +287,7 @@ def find_claim_review_verdict(
         language=language,
         confidence="high",
         fact_checked_by=outlet,
+        fact_check_rating=winner.claim_review.rating_raw,
     )
 
 

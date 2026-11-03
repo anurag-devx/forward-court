@@ -32,6 +32,10 @@ class Verdict(BaseModel):
         default=None,
         description="Outlet host when a ClaimReview rating decided the verdict.",
     )
+    fact_check_rating: str | None = Field(
+        default=None,
+        description="Raw ClaimReview rating text shown beside fact_checked_by.",
+    )
     scam_type: str | None = Field(
         default=None,
         description="Plain-words scam kind for DANGEROUS verdicts, localized.",

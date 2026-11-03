@@ -291,6 +291,35 @@ def test_no_claims_short_circuits():
     assert len(client.responses.calls) == 2  # scamtext + intake only
 
 
+def _no_claims_client():
+    return _pipeline_client(
+        parsed={
+            IntakeResult: IntakeResult(
+                language="en", claims=[], presented_as_recent=False
+            )
+        }
+    )
+
+
+def test_bare_link_without_claims_gets_link_reply():
+    card, _ = main.run_forward(
+        "https://example.com/some-article",
+        client=_no_claims_client(), http_client=dead_http_client(),
+    )
+    assert card == main.BARE_LINK_NO_CLAIMS
+    assert "safe" not in card.lower()
+
+
+def test_bare_link_reply_lists_signals():
+    card, _ = main.run_forward(
+        "http://example.com/x",
+        client=_no_claims_client(), http_client=dead_http_client(),
+    )
+    assert card.startswith(main.BARE_LINK_NO_CLAIMS)
+    assert "plain_http" in card
+    assert "safe" not in card.lower()
+
+
 def test_grounding_error_propagates():
     client = FakeClient(
         parsed_by_model={

@@ -149,6 +149,7 @@ def _verdict_snapshot(verdict) -> dict:
         "language": verdict.language,
         "confidence": verdict.confidence,
         "fact_checked_by": getattr(verdict, "fact_checked_by", None),
+        "fact_check_rating": getattr(verdict, "fact_check_rating", None),
         "scam_type": getattr(verdict, "scam_type", None),
         "article_date": getattr(verdict, "article_date", None),
     }
@@ -215,6 +216,24 @@ def _apply_zoom(
     merged, conflicted = merge(base, reading)
     tracker.note(f"zoom merged {len(crops)} crop(s).")
     return merged, conflicted
+
+
+BARE_LINK_NO_CLAIMS = (
+    "Link checked — no scam signals found. We couldn't verify its "
+    "content; don't share personal details or OTPs on unfamiliar sites."
+)
+
+
+def _bare_link_reply(link_info: dict) -> str:
+    """Reply for a bare link with no checkable claims. Never says 'safe'."""
+    found = (
+        sorted(link_info.get("signals", {}))
+        + sorted(link_info.get("scam_signals", []))
+        + sorted(link_info.get("flagged_hosts", set()))
+    )
+    if not found:
+        return BARE_LINK_NO_CLAIMS
+    return f"{BARE_LINK_NO_CLAIMS} Signals: {', '.join(found)}."
 
 
 def _run_with_deadline(tracker, fn, deadline_s: float):
@@ -321,6 +340,8 @@ def run_forward(
             ),
         )
         if not claims:
+            if link_info["urls"] and is_bare_link(text, link_info["urls"]):
+                return _bare_link_reply(link_info), tracker
             return "No checkable claims found in this forward.", tracker
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
             grounding = pool.submit(
@@ -371,7 +392,7 @@ def run_forward(
                     f"{review_verdict.verdict}."
                 )
                 tracker.record("verdict", _verdict_snapshot(review_verdict))
-                return format_card(review_verdict), tracker
+                return format_card(review_verdict, evidence, claims), tracker
             prosecution_job = pool.submit(
                 argue_false, claims, evidence, client=client,
                 tracker=tracker,
@@ -409,7 +430,7 @@ def run_forward(
                     executor=pool,
                 )
             tracker.record("verdict", _verdict_snapshot(verdict))
-            return format_card(verdict), tracker
+            return format_card(verdict, evidence, claims), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
 
@@ -588,7 +609,7 @@ def run_image_forward(
                     f"{review_verdict.verdict}."
                 )
                 tracker.record("verdict", _verdict_snapshot(review_verdict))
-                return format_card(review_verdict), tracker
+                return format_card(review_verdict, evidence, claims), tracker
             prosecution_job = pool.submit(
                 argue_false, claims, evidence, client=client,
                 tracker=tracker,
@@ -631,7 +652,7 @@ def run_image_forward(
                     exact_urls=exact_urls,
                 )
             tracker.record("verdict", _verdict_snapshot(verdict))
-            return format_card(verdict), tracker
+            return format_card(verdict, evidence, claims), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
 
@@ -871,7 +892,7 @@ def run_video_forward(
                     f"{review_verdict.verdict}."
                 )
                 tracker.record("verdict", _verdict_snapshot(review_verdict))
-                return format_card(review_verdict), tracker
+                return format_card(review_verdict, evidence, claims), tracker
             prosecution_job = pool.submit(
                 argue_false, claims, evidence, client=client,
                 tracker=tracker,
@@ -914,7 +935,7 @@ def run_video_forward(
                     exact_urls=exact_urls,
                 )
             tracker.record("verdict", _verdict_snapshot(verdict))
-            return format_card(verdict), tracker
+            return format_card(verdict, evidence, claims), tracker
     return _run_with_deadline(tracker, _go, deadline_s)
 
 

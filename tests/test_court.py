@@ -493,6 +493,35 @@ def test_all_tier3_keeps_most_cited():
     assert verdict.key_source == "https://x.com/b"
 
 
+@pytest.mark.parametrize("ballot", ["True", "False"])
+def test_denylisted_host_cannot_be_key_source(ballot):
+    fake = FakeClient(
+        parsed_by_model={Verdict: _verdict(
+            verdict=ballot, key_source="https://instalker.org/x",
+            claim_timeframe=None,
+        )}
+    )
+    evidence = [
+        EvidenceItem(
+            claim="c", source_url="https://instalker.org/x", date=None,
+            snippet="mirror",
+        ),
+        EvidenceItem(
+            claim="c", source_url="https://a.com/x", date=None,
+            snippet="report",
+        ),
+    ]
+    defense = Argument(
+        points=[ArgPoint(text="p", source_url="https://a.com/x")]
+    )
+    verdict = judge_verdict(
+        ["c"], evidence, Argument(points=[]), defense, "en", False,
+        client=fake,
+    )
+    assert verdict.verdict == ballot
+    assert verdict.key_source == "https://a.com/x"
+
+
 def test_true_key_vetoes_mismatched_factcheck():
     fake = FakeClient(
         parsed_by_model={Verdict: _verdict(

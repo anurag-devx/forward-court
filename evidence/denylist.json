@@ -1,0 +1,19 @@
+{
+  "description": "Mirror/scraper hosts treated as tier 3: never key_source, never corroboration. Archive hosts may still appear as provenance links, never as confirming sources. Matching: an entry with a dot matches that host and its subdomains; a bare name matches a full DNS label on any TLD (covers multi-TLD families like blogspot.* without enumerating them). Use distinctive names only. Overlap with TIER3_UGC in config.py is harmless. Extend this list freely; tiering applies automatically.",
+  "hosts": [
+    "instalker.org",
+    "picuki",
+    "imginn",
+    "dumpor",
+    "storiesig",
+    "insta-stories",
+    "newsbreak",
+    "medium.com",
+    "scribd.com",
+    "slideshare.net",
+    "wordpress.com",
+    "blogspot",
+    "archive.ph",
+    "web.archive.org"
+  ]
+}

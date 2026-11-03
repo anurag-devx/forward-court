@@ -4,6 +4,7 @@ from __future__ import annotations
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from config import (
+    DENYLISTED_HOSTS,
     SPOOFED_OUTLETS,
     TIER1_OUTLETS,
     TIER3_UGC,
@@ -173,12 +174,28 @@ def is_factcheck_url(url: str) -> bool:
     return matches_entries(host, path, TRUSTED_FACTCHECK_DOMAINS)
 
 
+def _matches_denylist(host: str) -> bool:
+    """True when the host is a listed mirror/scraper.
+
+    Dotted entries match the host and its subdomains; bare names match a
+    full DNS label on any TLD.
+    """
+    labels = host.split(".")
+    for entry in DENYLISTED_HOSTS:
+        if "." in entry:
+            if host == entry or host.endswith("." + entry):
+                return True
+        elif entry in labels:
+            return True
+    return False
+
+
 def tier_of(url: str) -> int:
     """Source tier: 1 for top outlets, 3 for UGC, 2 by default."""
     host, path = split_host_path(url)
     if host is None:
         return 2
-    if matches_entries(host, path, TIER3_UGC):
+    if matches_entries(host, path, TIER3_UGC) or _matches_denylist(host):
         return 3
     if matches_entries(host, path, TIER1_OUTLETS):
         return 1

@@ -332,3 +332,11 @@ def test_committed_recordings_hold_no_secrets():
         # links are legitimate and must survive the scrubber.
         outside_urls = re.sub(r"https?://\S+", " ", text)
         assert not re.search(r"\d{8,}", outside_urls)
+
+
+def test_committed_cards_stay_short():
+    from demo.trace import RECORDINGS_DIR
+
+    for path in sorted(RECORDINGS_DIR.glob("*.json")):
+        recording = json.loads(path.read_text())
+        assert len(recording["card"]) < 1600, path.stem

@@ -10,7 +10,7 @@
       "url_path": "wellness/lemon-water-cancer"
     }
   },
-  "card": "❌ *Forward Court Verdict: FALSE*\nConfidence: high\nAlready fact-checked by Vishvas News\n\nMultiple fact-checks found the claim false. Vishvas News investigated the viral claim that lemons kill cancer cells and found it fake, and Full Fact found there is no scientific evidence that lemons or hot lemon water can cure cancer or make cancer disappear. No doctors or evidence confirm a morning glass destroys cancer cells.\n\n🔗 Source: https://www.vishvasnews.com/english/health/fact-check-lemons-are-10000-times-stronger-than-chemotherapy-is-a-fake-claim/",
+  "card": "❌ *Forward Court Verdict: FALSE*\nConfidence: high\nAlready fact-checked by Africa Check [No, hot lemon water doesn’t kill cancer cells]\n\nMultiple fact-checks refute the image claims. Africa Check concluded hot lemon water doesn't kill cancer cells, and Full Fact found there is no scientific evidence that drinking lemon mixed with hot water causes cancer to disappear or cures cancer. No doctors confirm this cure. There is no separate event claim to assess.\n\n🔗 Source: https://africacheck.org/fact-checks/meta-programme-fact-checks/no-hot-lemon-water-doesnt-kill-cancer-cells",
   "claims": [
     {
       "text": "Hot lemon water cures cancer, doctors confirm",
@@ -26,36 +26,6 @@
   "evidence": [
     {
       "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://www.vishvasnews.com/english/health/fact-check-claim-that-eating-turmeric-lemon-basil-and-neem-cures-stage-4-cancer-is-false/",
-      "outlet": "vishvasnews.com",
-      "tier": 1,
-      "date": "2025-05-23",
-      "snippet": "Fact Check: Claim That Eating Turmeric, Lemon, Basil, And Neem Cures Stage-4 Cancer Is False Vishvas News, in its investigation, found no evidence to support the claim that a mixture of raw turmeric, ",
-      "fact_check": true,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": {
-        "verdict": "False",
-        "rating": "False"
-      }
-    },
-    {
-      "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://www.vishvasnews.com/english/health/fact-check-false-claims-of-curing-cancer-getting-viral/",
-      "outlet": "vishvasnews.com",
-      "tier": 1,
-      "date": "2019-07-09",
-      "snippet": "Fact Check: False claims of curing cancer getting viral - By: Urvashi Kapoor - Published: Jul 9, 2019 at 06:13 PM - Updated: Dec 10, 2019 at 06:42 PM A post is getting viral on social media that reads",
-      "fact_check": true,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": {
-        "verdict": "False",
-        "rating": "False"
-      }
-    },
-    {
-      "claim": "Hot lemon water cures cancer, doctors confirm",
       "source_url": "https://newschecker.in/fact-check/doctors-debunk-viral-video-of-navjot-singh-sidhu-claiming-that-natural-diet-cured-his-wife-of-stage-4-cancer",
       "outlet": "newschecker.in",
       "tier": 1,
@@ -68,23 +38,23 @@
     },
     {
       "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://www.vishvasnews.com/english/health/fact-check-claim-that-eating-turmeric-lemon-basil-and-neem-cures-stage-4-cancer-is-false/",
-      "outlet": "vishvasnews.com",
+      "source_url": "https://newschecker.in/fact-check/weekly-wrap-misinformation-around-chinmoy-das-navjot-singh-sidhus-cancer-cure-claims-and-more",
+      "outlet": "newschecker.in",
       "tier": 1,
       "date": null,
-      "snippet": "Fact Check: Claim That Eating Turmeric, Lemon, Basil, And Neem Cures Stage-4 Cancer Is False",
-      "fact_check": false,
+      "snippet": "Newschecker.in is an independent fact-checking initiative of NC Media Networks Pvt. Ltd. We welcome our readers to send us claims to fact check. If you believe a story or statement deserves a fact che",
+      "fact_check": true,
       "exact_match": false,
       "shared_article": false,
       "claim_review": null
     },
     {
       "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "http://fullfact.org/online/sugar-lemon-coconut-not-cancer-cures/",
-      "outlet": "fullfact.org",
-      "tier": 2,
-      "date": "2019-04-12",
-      "snippet": "Lemon juice, coconut oil and stopping all sugar intake won’t cure cancer What was claimed Three tablespoons of organic coconut oil morning and night will cause cancer to disappear. Our verdict We’ve s",
+      "source_url": "https://srilanka.factcrescendo.com/english/tag/cancer-prevention/feed/",
+      "outlet": "srilanka.factcrescendo.com",
+      "tier": 1,
+      "date": null,
+      "snippet": "Cancer Prevention Archives - Fact Crescendo Sri Lanka English | The leading fact-checking website",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -104,11 +74,35 @@
     },
     {
       "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://dubawa.org/healthcheck-the-not-so-magical-lemon-water/?amp=1",
-      "outlet": "dubawa.org",
+      "source_url": "https://fullfact.org/online/sugar-lemon-coconut-not-cancer-cures/",
+      "outlet": "fullfact.org",
+      "tier": 2,
+      "date": "2019-04-12",
+      "snippet": "Lemon juice, coconut oil and stopping all sugar intake won’t cure cancer What was claimed Three tablespoons of organic coconut oil morning and night will cause cancer to disappear. Our verdict We’ve s",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Hot lemon water cures cancer, doctors confirm",
+      "source_url": "https://watchdoq.com/blog/single/7-surprising-truths-about-hot-lemon-water",
+      "outlet": "watchdoq.com",
       "tier": 2,
       "date": null,
-      "snippet": "#HEALTHCHECK: The Not-So-Magical Lemon Water - Dubawa",
+      "snippet": "7 Surprising Truths About Hot Lemon Water",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Hot lemon water cures cancer, doctors confirm",
+      "source_url": "https://www.logicallyfacts.com/en/fact-check/false-research-has-shown-that-cancer-can-be-cured-with-lemon-juice-and-coconut-oil",
+      "outlet": "logicallyfacts.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "False: Research has shown that cancer can be cured with lemon juice and coconut oil.",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -128,18 +122,6 @@
     },
     {
       "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://dubawa.org/recent-facebook-claims-about-cancer-and-its-treatment-not-accurate/?amp=1",
-      "outlet": "dubawa.org",
-      "tier": 2,
-      "date": null,
-      "snippet": "Recent Facebook claims about cancer and its treatment not accurate - Dubawa",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "Hot lemon water cures cancer, doctors confirm",
       "source_url": "http://everhope.care/blogs/alkaline-water-and-cancer",
       "outlet": "everhope.care",
       "tier": 2,
@@ -152,11 +134,47 @@
     },
     {
       "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://www.youtube.com/shorts/sW9xfnrQdTE",
+      "source_url": "https://theoncologydietitian.com/blog/do-lemons-cure-cancer/",
+      "outlet": "theoncologydietitian.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Do Lemons Cure Cancer?",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Hot lemon water cures cancer, doctors confirm",
+      "source_url": "https://observatorial.com/news/health/1136440/does-drinking-warm-lemon-water-kill-cancer-cells/",
+      "outlet": "observatorial.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Does drinking warm lemon water kill cancer cells?",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Hot lemon water cures cancer, doctors confirm",
+      "source_url": "http://am1.news/usconservative/topic/theepochtimes/6-slug-lemon-water-anti-cancer-weight-loss-recipe-best-ways-to-drink-it",
+      "outlet": "am1.news",
+      "tier": 2,
+      "date": null,
+      "snippet": "Lemon Water: Anti-Cancer Weight Loss Recipe? Best Ways to Drink It",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Hot lemon water cures cancer, doctors confirm",
+      "source_url": "https://www.youtube.com/shorts/glrLkNoIHDo",
       "outlet": "youtube.com",
       "tier": 3,
       "date": null,
-      "snippet": "Cancer: 3 Viral Treatment Claims You Should NOT Trust ⚠️ | Fact Check #waroncancer #cancelcancer",
+      "snippet": "You’re Making Lemon Water WRONG 😳",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -164,47 +182,11 @@
     },
     {
       "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://www.healthtap.com/q/lemon-cures-cancer-hoax/",
-      "outlet": "healthtap.com",
+      "source_url": "https://medicaldialogues.in/app-lite/fact-check/fact-check-can-water-with-lemon-and-alkaline-salts-act-as-cancer-killing-alkaline-water-149358?hasShare=1",
+      "outlet": "medicaldialogues.in",
       "tier": 2,
       "date": null,
-      "snippet": "lemon cures cancer hoax | HealthTap",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "http://firstcheck.in/fact-check-can-cancer-be-cured-with-lemon-water/",
-      "outlet": "firstcheck.in",
-      "tier": 2,
-      "date": null,
-      "snippet": "FACT CHECK: Can cancer be cured with lemon water? - First Check",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "http://trangnhat.io.vn/lemon-water-myths-what-science-really-says-about-its-health-benefits/",
-      "outlet": "trangnhat.io.vn",
-      "tier": 2,
-      "date": null,
-      "snippet": "Lemon Water Myths: What Science Really Says About Its Health Benefits",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://medium.com/@ekjones06/fake-news-1e7eb17aed41",
-      "outlet": "medium.com",
-      "tier": 3,
-      "date": null,
-      "snippet": "Fake News: Debunking the Lemon Water Detox Myth",
+      "snippet": "Fact Check: Can water with lemon and alkaline salts act as cancer killing alkaline water?",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -212,53 +194,35 @@
     },
     {
       "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://www.vishvasnews.com/english/health/fact-check-lemons-are-10000-times-stronger-than-chemotherapy-is-a-fake-claim/",
+      "source_url": "https://www.vishvasnews.com/?p=20179",
       "outlet": "vishvasnews.com",
       "tier": 1,
-      "date": "2019-07-15",
-      "snippet": "Fact Check: ‘Lemons are 10000 times stronger than chemotherapy’ is a fake claim - By: Urvashi Kapoor - Published: Jul 15, 2019 at 06:06 PM - Updated: Jul 15, 2019 at 06:30 PM A post is getting viral o",
-      "fact_check": true,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": {
-        "verdict": "False",
-        "rating": "False"
-      }
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://www.vishvasnews.com/english/viral/quick-fact-check-fake-post-claiming-lemons-are-10000-times-stronger-than-chemotherapy-resurfaces/",
-      "outlet": "vishvasnews.com",
-      "tier": 1,
-      "date": "2020-04-28",
-      "snippet": "Quick Fact Check: Fake Post Claiming Lemons Are 10000 Times Stronger Than Chemotherapy Resurfaces The post claiming lemons are 10000 times stronger than chemotherapy is fake. Although, lemons may pote",
-      "fact_check": true,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": {
-        "verdict": "False",
-        "rating": "False"
-      }
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://newschecker.in/fact-check/weekly-wrap-misinformation-around-chinmoy-das-navjot-singh-sidhus-cancer-cure-claims-and-more",
-      "outlet": "newschecker.in",
-      "tier": 1,
       "date": null,
-      "snippet": "Newschecker.in is an independent fact-checking initiative of NC Media Networks Pvt. Ltd. We welcome our readers to send us claims to fact check. If you believe a story or statement deserves a fact che",
-      "fact_check": true,
+      "snippet": "Fact Check: 'Lemons are 10000 times stronger than chemotherapy' is a fake claim - Vishvas News",
+      "fact_check": false,
       "exact_match": false,
       "shared_article": false,
       "claim_review": null
     },
     {
       "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://dubawa.org/recent-facebook-claims-about-cancer-and-its-treatment-not-accurate/",
+      "source_url": "https://www.thesoult.net/2026/01/lemon-water-and-health-claims-uses-and.html",
+      "outlet": "thesoult.net",
+      "tier": 2,
+      "date": null,
+      "snippet": "Lemon Water and Health: Claims, Uses, and a Modern Medical Perspective",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "A glass of hot lemon water every morning destroys cancer cells",
+      "source_url": "https://dubawa.org/healthcheck-the-not-so-magical-lemon-water/",
       "outlet": "dubawa.org",
       "tier": 2,
       "date": null,
-      "snippet": "Claim: Cancer is not a deadly disease and can be cured using hot lemon water, coconut oil and by reducing sugar intake. All claims by this Facebook post are false because our findings show otherwise. ",
+      "snippet": "“PIECES OF LEMON IN A GLASS OF HOT WATER CAN SAVE YOU FOR THE REST OF YOUR LIFE” is a phrase you may have heard a number of times. You may have come across the assertion or variations of it on various",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -266,11 +230,11 @@
     },
     {
       "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://verafiles.org/articles/vera-files-fact-check-fb-post-makes-multiple-false-claims-fo",
-      "outlet": "verafiles.org",
+      "source_url": "https://www.radiofree.org/2020/03/18/no-vitamin-c-and-lemon-infused-hot-water-do-not-protect-against-coronavirus-or-cancer/",
+      "outlet": "radiofree.org",
       "tier": 2,
       "date": null,
-      "snippet": "VERA FILES FACT CHECK: FB post makes multiple FALSE claims on food that ‘kill’ cancer",
+      "snippet": "A viral message claiming to be from a certain Laila Ahmadi from China, Faculty of Medical Sciences, Zanjan University advises the use of Vitamin C “as much as possible” for the novel coronavirus. It a",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -290,11 +254,11 @@
     },
     {
       "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://africacheck.org/fact-checks/meta-programme-fact-checks/dont-believe-dangerous-zombie-claims-restricting-sugar-hot",
-      "outlet": "africacheck.org",
+      "source_url": "https://www.thip.media/health-news-fact-check/fact-check-can-cancer-disappear-by-quitting-sugar-and-consuming-lemon-and-coconut-oil/32017/",
+      "outlet": "thip.media",
       "tier": 2,
       "date": null,
-      "snippet": "Don’t believe dangerous zombie claims that restricting sugar, hot lemon water or coconut oil can make cancer ‘disappear’",
+      "snippet": "Fact Check: Can Cancer disappear by quitting sugar and consuming lemon and coconut oil?",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -302,83 +266,83 @@
     },
     {
       "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "http://leadstories.com/hoax-alert/2020/09/fact-check-a-diet-of-no-sugar-mixing-lemon-and-hot-water-and-drinking-coconut-oil-does-not-kill-cancer.html",
-      "outlet": "leadstories.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "Fact Check: A Diet Of No Sugar, Drinking Lemon And Hot Water, And Consuming Coconut Oil Does NOT Kill Cancer | Lead Stories",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://news.kulwantvision.com/fact-check-dont-fall-for-this-viral-message-pushing-lemon-as-cancer-cure/",
-      "outlet": "news.kulwantvision.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "FACT CHECK: Don’t fall for this viral message pushing lemon as cancer cure",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://inshorts.com/en/news/can-water-with-lemon-and-alkaline-salt-act-as-cancer-killing-water-*********8164",
-      "outlet": "inshorts.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "Can water with lemon & alkaline salt act as cancer killing water?",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://namibiafactcheck.org.na/news-item/zombie-cancer-cure-claims-viral-in-namibian-groups/",
-      "outlet": "namibiafactcheck.org.na",
-      "tier": 2,
-      "date": null,
-      "snippet": "Zombie cancer cure claims viral in Namibian groups",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://www.healthworldbt.com/7-amazing-lemon-water-benefits/",
-      "outlet": "healthworldbt.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "7 Amazing Lemon Water Benefits (& Some Negatives)",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://www.scribd.com/document/*****1168/Be-aware",
-      "outlet": "scribd.com",
-      "tier": 3,
-      "date": null,
-      "snippet": "Cancer Prevention Tips by Dr. Gupta | PDF | Drink | Cancer",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://fullfact.org/online/sugar-lemon-coconut-not-cancer-cures/",
+      "source_url": "https://Fullfact.org/health/lemons-and-cancer/",
       "outlet": "fullfact.org",
       "tier": 2,
       "date": null,
-      "snippet": "Lemon juice, coconut oil and stopping all sugar intake won’t cure cancer",
+      "snippet": "Facebook post claiming lemons treat cancer better than chemotherapy is false",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "A glass of hot lemon water every morning destroys cancer cells",
+      "source_url": "https://www.thip.media/health-news-fact-check/fact-check-are-lemon-peels-better-than-chemotherapy-to-treat-cancer/47893/",
+      "outlet": "thip.media",
+      "tier": 2,
+      "date": null,
+      "snippet": "Are lemon peels better than chemotherapy to treat cancer? - THIP",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "A glass of hot lemon water every morning destroys cancer cells",
+      "source_url": "https://www.met.edu/knowledge_at_met/lemon_and_baking_soda_a_miraculous_combination_stronger_than_chemotherapy",
+      "outlet": "met.edu",
+      "tier": 2,
+      "date": null,
+      "snippet": "Lemon And Baking Soda-A Miraculous Combination Stronger Than Chemotherapy",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "A glass of hot lemon water every morning destroys cancer cells",
+      "source_url": "https://africapublicity.com/bitter-truths-and-sacred-healing-a-multidisciplinary-inquiry-into-the-lemon-peel-cancer-cure-claim-and-the-ethics-of-medical-misinformation-in-africa/",
+      "outlet": "africapublicity.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "Bitter Truths and Sacred Healing: A Multidisciplinary Inquiry into the Lemon Peel Cancer Cure Claim and the Ethics of Medical Misinformation In Africa",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "A glass of hot lemon water every morning destroys cancer cells",
+      "source_url": "https://www.dvo.com/newsletter/weekly/2022/6-24-709/cooknart5.html",
+      "outlet": "dvo.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "An Amazing Immunity-Builder and Cancer-Fighter in One Glass!",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "A glass of hot lemon water every morning destroys cancer cells",
+      "source_url": "https://www.center4research.org/lemons-prevent-cancer/",
+      "outlet": "center4research.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "Do Lemons Prevent Cancer?",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "A glass of hot lemon water every morning destroys cancer cells",
+      "source_url": "https://africacheck.org/fact-checks/meta-programme-fact-checks/no-lemon-peel-not-10000-times-stronger-chemo-and-cant-kill?_x_tr_hl=pt-BR&_x_tr_pto=wapp&_x_tr_sl=auto&_x_tr_tl=pt",
+      "outlet": "africacheck.org",
+      "tier": 2,
+      "date": null,
+      "snippet": "No, lemon peel is not 10,000 times stronger than chemo and can’t kill cancer cells, among other things",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -388,68 +352,39 @@
   "relevance_drops": [
     {
       "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://leadstories.com/cgi-bin/mt/mt-search.fcgi?search=cures&IncludeBlogs=1&blog_id=1&limit=10&page=9"
-    },
-    {
-      "claim": "Hot lemon water cures cancer, doctors confirm",
-      "source_url": "https://leadstories.com/cgi-bin/mt/mt-search.fcgi?search=food%20cures&IncludeBlogs=1&blog_id=1&limit=10&page=4"
+      "source_url": "https://www.classace.io/answers/activity-3-instructions-find-a-claim-on-social-media-and-write-a-short-piece-explaining-how-you-would-go-about-verifying-it-include-a-link-or-website-of-the-post-reference-any-sources-you-would-con"
     },
     {
       "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://berationable.com/rationable-blog/2020/3/21/5-more-coronavirus-misinformation-messages-debunked"
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://parrotfish-lute-dpw8.squarespace.com/rationable-blog/2020/3/21/5-more-coronavirus-misinformation-messages-debunked"
-    },
-    {
-      "claim": "A glass of hot lemon water every morning destroys cancer cells",
-      "source_url": "https://211check.org/tag/misinformation/page/19/"
+      "source_url": "https://www.inspire.com/groups/neurofibromatosis-network/discussion/lemon/"
     }
   ],
-  "claimreview_hits": [
-    {
-      "source_url": "https://www.vishvasnews.com/english/health/fact-check-claim-that-eating-turmeric-lemon-basil-and-neem-cures-stage-4-cancer-is-false/",
-      "verdict": "False",
-      "rating": "False"
-    },
-    {
-      "source_url": "https://www.vishvasnews.com/english/health/fact-check-false-claims-of-curing-cancer-getting-viral/",
-      "verdict": "False",
-      "rating": "False"
-    },
-    {
-      "source_url": "https://www.vishvasnews.com/english/health/fact-check-lemons-are-10000-times-stronger-than-chemotherapy-is-a-fake-claim/",
-      "verdict": "False",
-      "rating": "False"
-    },
-    {
-      "source_url": "https://www.vishvasnews.com/english/viral/quick-fact-check-fake-post-claiming-lemons-are-10000-times-stronger-than-chemotherapy-resurfaces/",
-      "verdict": "False",
-      "rating": "False"
-    }
-  ],
+  "claimreview_hits": [],
   "debate": {
     "prosecution": [
       {
-        "text": "Hot lemon water doesn’t kill cancer cells, directly refuting the claim that a morning glass destroys cancer cells.",
+        "text": "Full Fact reviewed the claim that drinking lemon mixed with hot water will cause cancer to disappear and found there is no scientific evidence that lemons or lemon juice can cure cancer.",
+        "source_url": "https://fullfact.org/online/sugar-lemon-coconut-not-cancer-cures/"
+      },
+      {
+        "text": "Africa Check directly concluded that hot lemon water does not kill cancer cells, refuting the claim that a morning glass destroys cancer cells.",
         "source_url": "https://africacheck.org/fact-checks/meta-programme-fact-checks/no-hot-lemon-water-doesnt-kill-cancer-cells"
       },
       {
-        "text": "There is no scientific evidence to show lemons or lemon juice can cure cancer, refuting the claim that drinking lemon mixed with hot water makes cancer disappear.",
-        "source_url": "http://fullfact.org/online/sugar-lemon-coconut-not-cancer-cures/"
+        "text": "Logically Facts rated as False the claim that research has shown cancer can be cured with lemon juice and coconut oil.",
+        "source_url": "https://www.logicallyfacts.com/en/fact-check/false-research-has-shown-that-cancer-can-be-cured-with-lemon-juice-and-coconut-oil"
       },
       {
-        "text": "The claim that cancer can be cured using hot lemon water was investigated and found to be false.",
-        "source_url": "https://dubawa.org/recent-facebook-claims-about-cancer-and-its-treatment-not-accurate/"
+        "text": "Full Fact found that social media posts claiming lemons treat cancer better than chemotherapy are false.",
+        "source_url": "https://Fullfact.org/health/lemons-and-cancer/"
       },
       {
-        "text": "Drinking lemon and hot water does NOT kill cancer, refuting the hot lemon water cure claim.",
-        "source_url": "http://leadstories.com/hoax-alert/2020/09/fact-check-a-diet-of-no-sugar-mixing-lemon-and-hot-water-and-drinking-coconut-oil-does-not-kill-cancer.html"
+        "text": "Fact-checkers found that lemon-infused hot water does not protect against cancer, contradicting claims of doctors confirming a cure.",
+        "source_url": "https://www.radiofree.org/2020/03/18/no-vitamin-c-and-lemon-infused-hot-water-do-not-protect-against-coronavirus-or-cancer/"
       },
       {
-        "text": "The viral claim that lemons kill cancer cells was investigated and found to be fake.",
-        "source_url": "https://www.vishvasnews.com/english/health/fact-check-lemons-are-10000-times-stronger-than-chemotherapy-is-a-fake-claim/"
+        "text": "Dubawa examined the viral claim that pieces of lemon in a glass of hot water can save you and treated it as an incredulous claim about hot lemon water as a cancer cure.",
+        "source_url": "https://dubawa.org/healthcheck-the-not-so-magical-lemon-water/"
       }
     ],
     "defense": []
@@ -457,30 +392,31 @@
   "votes": [
     {
       "verdict": "False",
-      "reason": "Multiple fact-checks found the claim false. Vishvas News investigated the viral claim that lemons kill cancer cells and found it fake, and Full Fact found there is no scientific evidence that lemons or hot lemon water can cure cancer or make cancer disappear. No doctors or evidence confirm a morning glass destroys cancer cells.",
-      "key_source": "https://www.vishvasnews.com/english/health/fact-check-lemons-are-10000-times-stronger-than-chemotherapy-is-a-fake-claim/",
+      "reason": "Multiple fact-checks refute the image claims. Africa Check concluded hot lemon water doesn't kill cancer cells, and Full Fact found there is no scientific evidence that drinking lemon mixed with hot water causes cancer to disappear or cures cancer. No doctors confirm this cure. There is no separate event claim to assess.",
+      "key_source": "https://africacheck.org/fact-checks/meta-programme-fact-checks/no-hot-lemon-water-doesnt-kill-cancer-cells",
       "confidence": "high"
     },
     {
       "verdict": "False",
-      "reason": "Multiple fact-checks found the claim is fake: there is no scientific evidence that hot lemon water cures cancer or destroys cancer cells, and doctors confirm lemons are not a proven cancer remedy. Do not replace medical treatment with lemon water.",
-      "key_source": "https://www.vishvasnews.com/english/health/fact-check-lemons-are-10000-times-stronger-than-chemotherapy-is-a-fake-claim/",
+      "reason": "The image claims hot lemon water cures cancer and that a morning glass destroys cancer cells with doctors confirming it. Fact-checks directly tested this claim and found there is no scientific evidence that lemons, lemon juice, or hot lemon water can cure cancer or kill cancer cells.",
+      "key_source": "https://africacheck.org/fact-checks/meta-programme-fact-checks/no-hot-lemon-water-doesnt-kill-cancer-cells",
       "confidence": "high"
     },
     {
       "verdict": "False",
-      "reason": "Multiple fact-checks found no scientific evidence that hot lemon water cures cancer or destroys cancer cells, and confirmed the viral claims that lemons kill cancer cells are fake.",
-      "key_source": "https://www.vishvasnews.com/english/health/fact-check-lemons-are-10000-times-stronger-than-chemotherapy-is-a-fake-claim/",
+      "reason": "The image claims hot lemon water cures cancer and destroys cancer cells every morning with doctors' confirmation. Multiple fact-checks directly refute this: drinking lemon mixed with hot water has no scientific evidence to cure cancer, hot lemon water does not kill cancer cells, and the claim that research shows lemon juice cures cancer is rated False.",
+      "key_source": "https://www.logicallyfacts.com/en/fact-check/false-research-has-shown-that-cancer-can-be-cured-with-lemon-juice-and-coconut-oil",
       "confidence": "high"
     }
   ],
   "verdict": {
     "verdict": "False",
-    "reason": "Multiple fact-checks found the claim false. Vishvas News investigated the viral claim that lemons kill cancer cells and found it fake, and Full Fact found there is no scientific evidence that lemons or hot lemon water can cure cancer or make cancer disappear. No doctors or evidence confirm a morning glass destroys cancer cells.",
-    "key_source": "https://www.vishvasnews.com/english/health/fact-check-lemons-are-10000-times-stronger-than-chemotherapy-is-a-fake-claim/",
+    "reason": "Multiple fact-checks refute the image claims. Africa Check concluded hot lemon water doesn't kill cancer cells, and Full Fact found there is no scientific evidence that drinking lemon mixed with hot water causes cancer to disappear or cures cancer. No doctors confirm this cure. There is no separate event claim to assess.",
+    "key_source": "https://africacheck.org/fact-checks/meta-programme-fact-checks/no-hot-lemon-water-doesnt-kill-cancer-cells",
     "language": "en",
     "confidence": "high",
-    "fact_checked_by": "Vishvas News",
+    "fact_checked_by": "Africa Check",
+    "fact_check_rating": "No, hot lemon water doesn’t kill cancer cells",
     "scam_type": null,
     "article_date": null
   },
@@ -490,11 +426,11 @@
     "transcribe": "muse-voice-transcribe-1.0"
   },
   "tokens": {
-    "total": 88254,
+    "total": 95214,
     "stages": {
       "vision": {
         "in": 1598,
-        "out": 1007
+        "out": 982
       },
       "segment": {
         "in": 0,
@@ -502,69 +438,69 @@
       },
       "zoom": {
         "in": 9667,
-        "out": 705
-      },
-      "factcheck:claim2": {
-        "in": 6030,
-        "out": 2168
-      },
-      "factcheck:claim1": {
-        "in": 6409,
-        "out": 2518
+        "out": 688
       },
       "grounding:claim1:refute": {
-        "in": 4969,
-        "out": 2589
+        "in": 5421,
+        "out": 2671
+      },
+      "factcheck:claim1": {
+        "in": 4261,
+        "out": 3076
       },
       "grounding:claim1:support": {
-        "in": 3683,
-        "out": 2436
-      },
-      "grounding:claim2:refute": {
-        "in": 3200,
-        "out": 2586
+        "in": 5857,
+        "out": 3468
       },
       "grounding:claim2:support": {
-        "in": 5739,
-        "out": 3217
+        "in": 5687,
+        "out": 4465
+      },
+      "factcheck:claim2": {
+        "in": 4139,
+        "out": 2611
+      },
+      "grounding:claim2:refute": {
+        "in": 5175,
+        "out": 3757
       },
       "relevance": {
-        "in": 3101,
-        "out": 2064
+        "in": 2617,
+        "out": 2373
       },
       "defender": {
-        "in": 3190,
-        "out": 546
+        "in": 2678,
+        "out": 856
       },
       "prosecutor": {
-        "in": 3190,
-        "out": 1611
+        "in": 2678,
+        "out": 1443
       },
       "judge": {
-        "in": 11544,
-        "out": 4487
+        "in": 10296,
+        "out": 8750
       }
     }
   },
   "times": {
-    "vision": 9.6,
-    "segment": 8.9,
-    "grounding": 60.4,
+    "vision": 7.7,
+    "segment": 11.3,
+    "grounding": 56.4,
     "factcheck": 0.0,
-    "relevance": 15.7,
-    "prosecutor": 11.9,
-    "defender": 11.9,
-    "judge": 13.4
+    "relevance": 20.6,
+    "prosecutor": 10.2,
+    "defender": 10.2,
+    "judge": 23.5
   },
   "notes": [
     "zoom merged 3 crop(s).",
     "reverse search disabled (REVERSE_SEARCH=off).",
-    "evidence capped 13/47 items.",
-    "relevance filter dropped 5/34 items.",
+    "evidence capped 13/42 items.",
+    "relevance filter dropped 2/29 items.",
     "judge agreement: 3/3 (False, False, False).",
-    "existing fact-check cited: yes."
+    "existing fact-check cited: no."
   ],
-  "elapsed_s": 127.8,
-  "recorded_at": "2026-11-02T06:24:15.587244+00:00",
-  "git_commit": "5c7acb50dbb2c4525dcfe7f****0771c63e40a24"
+  "elapsed_s": 137.6,
+  "recorded_at": "2026-11-03T08:46:38.446184+00:00",
+  "git_commit": "41b87d8d5566b96d2f3b69186de0f15b4ffd912e"
 }

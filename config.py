@@ -4,11 +4,13 @@ Model names live ONLY in this file. Every other module imports them from here.
 """
 from __future__ import annotations
 
+import json
 import os
 import threading
 import time
 from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -57,6 +59,19 @@ TIER3_UGC = (
     "blogspot.com",
     "wordpress.com",
 )
+
+
+def _load_denylist() -> tuple[str, ...]:
+    """Mirror/scraper hosts from evidence/denylist.json (tier 3)."""
+    path = Path(__file__).resolve().parent / "evidence" / "denylist.json"
+    with open(path, encoding="utf-8") as handle:
+        data = json.load(handle)
+    return tuple(
+        entry.strip().lower() for entry in data["hosts"] if entry.strip()
+    )
+
+
+DENYLISTED_HOSTS = _load_denylist()
 SPOOFED_OUTLETS = (
     "abcnews.go.com",
     "bbc.com",

@@ -6,7 +6,7 @@
   "input": {
     "text": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi."
   },
-  "card": "✅ *Forward Court Verdict: TRUE*\nConfidence: high\n\nThe claim is confirmed by the official PIB release stating Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit & Expo 2026 on 2 November at Bharat Mandapam, New Delhi, corroborated by contemporaneous reports that he inaugurated it on 2 November 2026.\n\n🔗 Source: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331222&reg=48&lang=2",
+  "card": "✅ *Forward Court Verdict: TRUE*\nConfidence: high\n\nNo media was provided to verify. The event claim is confirmed by direct reporting that Prime Minister Narendra Modi on Monday, 2 November 2026, inaugurated the Bharat Renewable Energy Summit & Expo 2026 at Bharat Mandapam in New Delhi, corroborated by multiple reports confirming the inaugurator, event name and date.\n\n🔗 Source: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2329695&reg=48&lang=2",
   "claims": [
     {
       "text": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
@@ -24,18 +24,6 @@
   "evidence": [
     {
       "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
-      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331222&reg=48&lang=2",
-      "outlet": "pib.gov.in",
-      "tier": 1,
-      "date": "2026-11-05",
-      "snippet": "Prime Minister Shri Narendra Modi will inaugurate the Bharat Renewable Energy Summit & Expo 2026 on 2 November at around 4:30 PM at Bharat Mandapam, New Delhi. He will also address the gathering on th",
-      "fact_check": true,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
       "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2329695&reg=48&lang=2",
       "outlet": "pib.gov.in",
       "tier": 1,
@@ -48,11 +36,23 @@
     },
     {
       "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
+      "source_url": "https://pib.gov.in/PressReleasePage.aspx?PRID=1675362",
+      "outlet": "pib.gov.in",
+      "tier": 1,
+      "date": "2020-11-26",
+      "snippet": "Prime Minister Shri Narendra Modi will inaugurate the virtual 3rd Global Renewable Energy Investment Meeting and Expo (RE-Invest 2020), on 26 November 2020 at 5:30 PM. The summit is organised by the M",
+      "fact_check": true,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
       "source_url": "https://www.newkerala.com/news/a/pm-modi-inaugurate-bharat-renewable-energy-summit-expo-696.htm",
       "outlet": "newkerala.com",
       "tier": 2,
-      "date": "2026-11-02",
-      "snippet": "PM Modi to inaugurate Bharat Renewable Energy Summit & Expo 2026 in Delhi today New Delhi, Nov 2 Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit & Expo 2026 at Bharat M",
+      "date": null,
+      "snippet": "PM Modi to open Bharat Renewable Energy Summit 2026 in Delhi",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -84,23 +84,11 @@
     },
     {
       "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
-      "source_url": "https://divyarashtra.com/pm-to-inaugurate-bharat-renewable-energy-summit-expo-2026-on-2nd-november-2026/",
-      "outlet": "divyarashtra.com",
-      "tier": 2,
-      "date": "2026-11-02",
-      "snippet": "PM to Inaugurate Bharat Renewable Energy Summit & Expo 2026 on 2nd November, 2026",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
-      "source_url": "https://h2invest.io/bharat-renewable-energy-summit-2026-begins-soon/",
-      "outlet": "h2invest.io",
+      "source_url": "https://utkarsh.com/current-affairs/national/summit-and-conference/pm-modi-to-launch-bharat-renewable-energy-summit-and-expo-2026",
+      "outlet": "utkarsh.com",
       "tier": 2,
       "date": null,
-      "snippet": "Bharat Renewable Energy Summit 2026 Begins Soon",
+      "snippet": "Bharat Renewable Energy Summit 2026: PM Modi to Inaugurate",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -120,11 +108,23 @@
     },
     {
       "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
-      "source_url": "https://hiindia.com/pm-modi-to-inaugurate-bharat-renewable-energy-summit-expo-2026-in-delhi-today/",
-      "outlet": "hiindia.com",
+      "source_url": "https://www.energetica-india.net/news/pm-modi-to-inaugurate-bharat-renewable-energy-summit-and-expo-2026-on-november-2",
+      "outlet": "energetica-india.net",
       "tier": 2,
       "date": null,
-      "snippet": "PM Modi to inaugurate Bharat Renewable Energy Summit & Expo 2026 in Delhi today",
+      "snippet": "PM Modi to Inaugurate Bharat Renewable Energy Summit and Expo 2026 on November 2",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
+      "source_url": "https://thefreedompress.in/pm-modi-to-inaugurate-bharat-renewable-energy-summit-expo-2026-in-delhi-today/",
+      "outlet": "thefreedompress.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "PM Modi to inaugurate Bharat Renewable Energy Summit & Expo 2026 in Delhi today – The Freedom Press",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -144,11 +144,47 @@
     },
     {
       "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
-      "source_url": "https://tezzbuzz.com/bharat-renewable-energy-summit-2026-begins-soon/",
-      "outlet": "tezzbuzz.com",
+      "source_url": "https://changestarted.com/indian-prime-minister-inaugurates-bharat-renewable-energy-summit-and-expo-2026-in-delhi/",
+      "outlet": "changestarted.com",
       "tier": 2,
       "date": null,
-      "snippet": "Bharat Renewable Energy Summit 2026 Begins Soon",
+      "snippet": "Bharat Renewable Energy Summit and Expo in New Delhi",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
+      "source_url": "https://divyarashtra.com/pm-to-inaugurate-bharat-renewable-energy-summit-expo-2026-on-2nd-november-2026/",
+      "outlet": "divyarashtra.com",
+      "tier": 2,
+      "date": "2026-11-02",
+      "snippet": "PM to Inaugurate Bharat Renewable Energy Summit & Expo 2026 on 2nd November, 2026",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
+      "source_url": "https://hiindia.com/pm-modi-to-inaugurate-bharat-renewable-energy-summit-expo-2026-in-delhi-today/",
+      "outlet": "hiindia.com",
+      "tier": 2,
+      "date": null,
+      "snippet": "PM Modi to inaugurate Bharat Renewable Energy Summit & Expo 2026 in Delhi today",
+      "fact_check": false,
+      "exact_match": false,
+      "shared_article": false,
+      "claim_review": null
+    },
+    {
+      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
+      "source_url": "https://csrnews.in/bharat-renewable-energy-summit-2026-to-bring-global-investors-and-clean-energy-leaders-to-new-delhi/",
+      "outlet": "csrnews.in",
+      "tier": 2,
+      "date": null,
+      "snippet": "Bharat Renewable Energy Summit 2026 to Bring Global Investors and Clean Energy Leaders to New Delhi",
       "fact_check": false,
       "exact_match": false,
       "shared_article": false,
@@ -165,83 +201,59 @@
       "exact_match": false,
       "shared_article": false,
       "claim_review": null
-    },
-    {
-      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
-      "source_url": "https://dailygkupdate.in/bharat-renewable-energy-summit-2026-308-gw-non-fossil-capacity-500-gw-target-and-indias-energy-transition/",
-      "outlet": "dailygkupdate.in",
-      "tier": 2,
-      "date": null,
-      "snippet": "Bharat Renewable Energy Summit 2026: Facts & Exam Guide",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
-    },
-    {
-      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
-      "source_url": "https://themachinemaker.com/show-reports/arihant-electricals-to-showcase-new-innovations-at-bharat-renewable-energy-summit-expo-2026/",
-      "outlet": "themachinemaker.com",
-      "tier": 2,
-      "date": null,
-      "snippet": "Arihant Electricals to Exhibit at Bharat Renewable Energy Summit",
-      "fact_check": false,
-      "exact_match": false,
-      "shared_article": false,
-      "claim_review": null
     }
   ],
-  "relevance_drops": [
-    {
-      "claim": "Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit and Expo 2026 on 2 November at Bharat Mandapam, New Delhi.",
-      "source_url": "https://www.tradingview.com/news/moodys:d545b5d33183f:0-the-week-ahead-in-numbers-auto-sales-pmi-numbers-us-mid-term-elections/"
-    }
-  ],
+  "relevance_drops": [],
   "claimreview_hits": [],
   "debate": {
     "prosecution": [],
     "defense": [
       {
-        "text": "PIB states Prime Minister Shri Narendra Modi will inaugurate the Bharat Renewable Energy Summit & Expo 2026 on 2 November at around 4:30 PM at Bharat Mandapam, New Delhi.",
-        "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331222&reg=48&lang=2"
-      },
-      {
-        "text": "PM Modi to inaugurate Bharat Renewable Energy Summit & Expo 2026 in Delhi on Nov 2 at Bharat Mandapam in New Delhi, with the four-day summit scheduled from November 2 to 5.",
-        "source_url": "https://www.newkerala.com/news/a/pm-modi-inaugurate-bharat-renewable-energy-summit-expo-696.htm"
-      },
-      {
-        "text": "Prime Minister Narendra Modi on Monday, 2 November 2026, inaugurated the Bharat Renewable Energy Summit & Expo 2026 at Bharat Mandapam in New Delhi.",
+        "text": "Prime Minister Narendra Modi on Monday, 2 November 2026, inaugurated the Bharat Renewable Energy Summit & Expo 2026 (Bharat RE 2026) at Bharat Mandapam in New Delhi",
         "source_url": "https://www.nationpress.com/business/modi-opens-bharat-re-2026-in-new-delhi"
+      },
+      {
+        "text": "PM Modi to Inaugurate Bharat Renewable Energy Summit and Expo 2026 on November 2 confirms the inaugurator, event name and date",
+        "source_url": "https://www.energetica-india.net/news/pm-modi-to-inaugurate-bharat-renewable-energy-summit-and-expo-2026-on-november-2"
+      },
+      {
+        "text": "PM to Inaugurate Bharat Renewable Energy Summit & Expo 2026 on 2nd November, 2026 confirms the date",
+        "source_url": "https://divyarashtra.com/pm-to-inaugurate-bharat-renewable-energy-summit-expo-2026-on-2nd-november-2026/"
+      },
+      {
+        "text": "PM Modi to inaugurate Bharat Renewable Energy Summit & Expo 2026 in Delhi today confirms Modi as inaugurator and Delhi as location",
+        "source_url": "https://asiapost.in/pm-modi-to-inaugurate-bharat-renewable-energy-summit-expo-2026-in-delhi-today/"
       }
     ]
   },
   "votes": [
     {
       "verdict": "True",
-      "reason": "The claim is confirmed by the official PIB release stating Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit & Expo 2026 on 2 November at Bharat Mandapam, New Delhi, corroborated by contemporaneous reports that he inaugurated it on 2 November 2026.",
-      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331222&reg=48&lang=2",
+      "reason": "No media was provided to verify. The event claim is confirmed by direct reporting that Prime Minister Narendra Modi on Monday, 2 November 2026, inaugurated the Bharat Renewable Energy Summit & Expo 2026 at Bharat Mandapam in New Delhi, corroborated by multiple reports confirming the inaugurator, event name and date.",
+      "key_source": "https://www.nationpress.com/business/modi-opens-bharat-re-2026-in-new-delhi",
       "confidence": "high"
     },
     {
       "verdict": "True",
-      "reason": "PIB confirms Prime Minister Shri Narendra Modi will inaugurate the Bharat Renewable Energy Summit & Expo 2026 on 2 November at Bharat Mandapam, New Delhi, and contemporaneous reports confirm the inauguration on 2 November 2026.",
-      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331222&reg=48&lang=2",
+      "reason": "No media claims to verify. The event claim is confirmed: multiple reports state Prime Minister Narendra Modi inaugurated the Bharat Renewable Energy Summit & Expo 2026 at Bharat Mandapam, New Delhi on Monday, 2 November 2026, consistent with the official PIB release about the summit with 130+ countries.",
+      "key_source": "https://www.nationpress.com/business/modi-opens-bharat-re-2026-in-new-delhi",
       "confidence": "high"
     },
     {
       "verdict": "True",
-      "reason": "PIB confirms Prime Minister Shri Narendra Modi will inaugurate the Bharat Renewable Energy Summit & Expo 2026 on 2 November at Bharat Mandapam, New Delhi, and contemporaneous reports confirm he did so on 2 November 2026. The event claim is therefore correct.",
-      "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331222&reg=48&lang=2",
+      "reason": "No media to verify. The event claim is confirmed: multiple reports state Prime Minister Narendra Modi inaugurated the Bharat Renewable Energy Summit & Expo 2026 (Bharat RE 2026) at Bharat Mandapam in New Delhi on Monday, 2 November 2026.",
+      "key_source": "https://www.nationpress.com/business/modi-opens-bharat-re-2026-in-new-delhi",
       "confidence": "high"
     }
   ],
   "verdict": {
     "verdict": "True",
-    "reason": "The claim is confirmed by the official PIB release stating Prime Minister Narendra Modi will inaugurate the Bharat Renewable Energy Summit & Expo 2026 on 2 November at Bharat Mandapam, New Delhi, corroborated by contemporaneous reports that he inaugurated it on 2 November 2026.",
-    "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2331222&reg=48&lang=2",
+    "reason": "No media was provided to verify. The event claim is confirmed by direct reporting that Prime Minister Narendra Modi on Monday, 2 November 2026, inaugurated the Bharat Renewable Energy Summit & Expo 2026 at Bharat Mandapam in New Delhi, corroborated by multiple reports confirming the inaugurator, event name and date.",
+    "key_source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2329695&reg=48&lang=2",
     "language": "en",
     "confidence": "high",
     "fact_checked_by": null,
+    "fact_check_rating": null,
     "scam_type": null,
     "article_date": null
   },
@@ -251,63 +263,64 @@
     "transcribe": "muse-voice-transcribe-1.0"
   },
   "tokens": {
-    "total": 38722,
+    "total": 39975,
     "stages": {
       "intake": {
         "in": 462,
-        "out": 730
+        "out": 647
       },
       "scamtext": {
         "in": 320,
-        "out": 331
-      },
-      "factcheck:claim1": {
-        "in": 4814,
-        "out": 1676
+        "out": 304
       },
       "grounding:claim1:refute": {
-        "in": 3767,
-        "out": 1926
+        "in": 3587,
+        "out": 1715
       },
       "grounding:claim1:support": {
-        "in": 4799,
-        "out": 1943
+        "in": 4666,
+        "out": 1282
+      },
+      "factcheck:claim1": {
+        "in": 3592,
+        "out": 2181
       },
       "relevance": {
-        "in": 1895,
-        "out": 1070
+        "in": 1824,
+        "out": 1234
       },
       "prosecutor": {
-        "in": 1721,
-        "out": 518
+        "in": 1739,
+        "out": 789
       },
       "defender": {
-        "in": 1721,
-        "out": 1212
+        "in": 1739,
+        "out": 2091
       },
       "judge": {
-        "in": 6840,
-        "out": 2977
+        "in": 7218,
+        "out": 4585
       }
     }
   },
   "times": {
-    "intake": 8.4,
-    "grounding": 26.3,
+    "intake": 5.2,
+    "grounding": 22.1,
     "factcheck": 0.0,
-    "relevance": 9.6,
-    "prosecutor": 6.9,
-    "defender": 11.3,
-    "judge": 11.5
+    "relevance": 8.3,
+    "prosecutor": 6.5,
+    "defender": 15.7,
+    "judge": 11.7
   },
   "notes": [
     "GSB disabled (GSB=off).",
-    "evidence capped 4/19 items.",
-    "relevance filter dropped 1/15 items.",
+    "evidence capped 10/25 items.",
+    "relevance filter dropped 0/15 items.",
     "judge agreement: 3/3 (True, True, True).",
+    "key_source moved to an on-claim report.",
     "existing fact-check cited: yes."
   ],
-  "elapsed_s": 71.6,
-  "recorded_at": "2026-11-02T06:18:26.049984+00:00",
-  "git_commit": "5c7acb50dbb2c4525dcfe7f****0771c63e40a24"
+  "elapsed_s": 65.7,
+  "recorded_at": "2026-11-03T08:39:01.458493+00:00",
+  "git_commit": "41b87d8d5566b96d2f3b69186de0f15b4ffd912e"
 }
