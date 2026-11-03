@@ -12,6 +12,7 @@ from links import scamtext as scamtext_module
 from links.extract import expand_shorteners, find_urls
 from links.heuristics import age_signals, head_signals, url_signals
 from links.safebrowsing import check_urls
+from safety import lexicon as lexicon_module
 
 
 def _host(url: str) -> str:
@@ -20,6 +21,31 @@ def _host(url: str) -> str:
     except ValueError:
         return ""
     return host[4:] if host.startswith("www.") else host
+
+
+def _lexicon_verdict(lex, scam_type: str, language: str) -> Verdict | None:
+    """Verdict from the lexicon level; None when clean."""
+    if lex.level == "dangerous":
+        reason = ". ".join(lex.reasons) + "." if lex.reasons else (
+            "Suspicious link patterns."
+        )
+        return Verdict(
+            verdict="DANGEROUS",
+            reason=reason,
+            key_source="",
+            language=language,
+            confidence="high",
+            scam_type=scam_type or None,
+        )
+    if lex.level == "suspicious":
+        return Verdict(
+            verdict="SUSPICIOUS",
+            reason="\n".join(f"- {reason}" for reason in lex.reasons),
+            key_source="",
+            language=language,
+            confidence="medium",
+        )
+    return None
 
 
 def check_links(
@@ -80,9 +106,17 @@ def check_links(
         text, language, client=client, tracker=tracker
     )
     info["scam_signals"] = scam.signals
+    lex = lexicon_module.score_message(text, candidates, language)
+    info["lexicon"] = {
+        "score": lex.score, "level": lex.level, "reasons": lex.reasons,
+    }
     verdict = decide_module.decide(
         signals, scam.signals, scam.scam_type, language
     )
+    if verdict is None:
+        verdict = _lexicon_verdict(lex, scam.scam_type, language)
+    if tracker is not None:
+        tracker.note(f"lexicon: {lex.level} ({lex.score}).")
     if verdict is not None and tracker is not None:
-        tracker.note(f"DANGEROUS: {verdict.reason}")
+        tracker.note(f"{verdict.verdict}: {verdict.reason}")
     return verdict, info

@@ -137,3 +137,23 @@ def test_debate_fact_checked_line_keeps_substantive_reason():
     assert "Already fact-checked by Vishvas News" in card
     assert "[False]" not in card
     assert "Doctors never said this." in card
+
+
+def test_suspicious_card():
+    card = format_card(_verdict(
+        verdict="SUSPICIOUS", reason="- Asks for your OTP",
+        key_source="", confidence="medium",
+    ))
+    assert "⚠️ *Be careful — scam signs*" in card
+    assert "- Asks for your OTP" in card
+    assert "Never share OTP/PIN" in card
+    assert "safe" not in card.lower()
+
+
+def test_suspicious_card_hindi():
+    card = format_card(_verdict(
+        verdict="SUSPICIOUS", reason="- OTP मांगता है", language="hi",
+        key_source="", confidence="medium",
+    ))
+    assert "सावधान — ठगी के संकेत" in card
+    assert "OTP/PIN कभी साझा न करें" in card

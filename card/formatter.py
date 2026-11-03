@@ -12,6 +12,7 @@ LABELS = {
         "fact_checked": "Already fact-checked by {outlet}",
         "also_confirmed_by": "Also confirmed by",
         "dangerous_title": "DANGEROUS LINK — do not open",
+        "suspicious_title": "Be careful — scam signs",
         "safety": "Never share OTP/PIN. Report: cybercrime.gov.in / 1930",
         "article_from": "Article from {date}",
     },
@@ -22,6 +23,7 @@ LABELS = {
         "fact_checked": "पहले से तथ्य-जांचित: {outlet}",
         "also_confirmed_by": "इनसे भी पुष्टि",
         "dangerous_title": "खतरनाक लिंक — न खोलें",
+        "suspicious_title": "सावधान — ठगी के संकेत",
         "safety": "OTP/PIN कभी साझा न करें। शिकायत: cybercrime.gov.in / 1930",
         "article_from": "लेख दिनांक: {date}",
     },
@@ -33,6 +35,7 @@ VERDICT_EMOJI = {
     "Misleading": "⚠️",
     "Unverified": "❔",
     "DANGEROUS": "⚠️",
+    "SUSPICIOUS": "⚠️",
 }
 
 
@@ -77,6 +80,10 @@ def format_card(verdict, evidence=None, claims=None) -> str:
         lines = [f"⚠️ *{labels['dangerous_title']}*"]
         if getattr(verdict, "scam_type", None):
             lines.extend(["", verdict.scam_type])
+        lines.extend(["", verdict.reason, "", labels["safety"]])
+        return "\n".join(lines)
+    if verdict.verdict == "SUSPICIOUS":
+        lines = [f"⚠️ *{labels['suspicious_title']}*"]
         lines.extend(["", verdict.reason, "", labels["safety"]])
         return "\n".join(lines)
     emoji = VERDICT_EMOJI.get(verdict.verdict, "❔")

@@ -33,7 +33,9 @@ REQUIRED_KEYS = (
     "git_commit",
 )
 
-VERDICTS = ("True", "False", "Misleading", "Unverified", "DANGEROUS")
+VERDICTS = (
+    "True", "False", "Misleading", "Unverified", "DANGEROUS", "SUSPICIOUS"
+)
 
 SENSITIVE_ENV_KEYS = (
     "MODEL_API_KEY",

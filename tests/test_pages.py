@@ -237,6 +237,12 @@ def test_claim_review_unmapped_name_falls_back_to_numeric():
     assert extract_claim_review(html).verdict == "False"
 
 
+def test_fetch_html_with_control_char_url_returns_none():
+    bad = "https://example.com/" + "a" * 120 + "\r" + "b"
+    assert fetch_html(bad) is None
+    assert download_bytes(bad) is None
+
+
 def test_claim_review_absent_or_broken_returns_none():
     assert extract_claim_review("<html><body>no json</body></html>") is None
     assert extract_claim_review("") is None

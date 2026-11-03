@@ -34,6 +34,21 @@ def test_extract_intake_truncates_to_max_claims():
     assert len(result.claims) == MAX_CLAIMS
 
 
+def test_extract_intake_honors_gateway_cap(monkeypatch):
+    monkeypatch.setenv("FC_MAX_CLAIMS", "2")
+    fake = FakeClient(
+        parsed_by_model={
+            IntakeResult: IntakeResult(
+                language="en",
+                claims=[f"claim {i}" for i in range(10)],
+                presented_as_recent=False,
+            )
+        }
+    )
+    result = extract_intake("many claims", client=fake)
+    assert result.claims == ["claim 0", "claim 1"]
+
+
 def test_extract_intake_tracks_usage():
     fake = FakeClient(
         parsed_by_model={

@@ -1,6 +1,7 @@
 """Webhook job: ack fast, run the pipeline in a subprocess, reply."""
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -81,12 +82,15 @@ def _suffix(content_type: str) -> str:
 def run_pipeline(args: list[str], card_path: Path) -> str | None:
     """Run main.py with --card-out; return the card text or None on failure."""
     try:
+        env = dict(os.environ)
+        env["FC_MAX_CLAIMS"] = "2"
         subprocess.run(
             [sys.executable, "main.py", *args, "--card-out", str(card_path)],
             cwd=ROOT,
             timeout=RUN_TIMEOUT_S,
             capture_output=True,
             check=False,
+            env=env,
         )
     except (subprocess.SubprocessError, OSError):
         return None

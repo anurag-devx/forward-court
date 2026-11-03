@@ -11,9 +11,12 @@ import threading
 import time
 from pathlib import Path
 
+import cache as cache_module
 from card.formatter import format_card
 from config import (
-    MAX_CLAIMS,
+    agent_model,
+    gsb_enabled,
+    max_claims,
     UsageTracker,
     get_client,
     reverse_search_enabled,
@@ -162,7 +165,49 @@ def _link_snapshot(link_info: dict) -> dict:
         "flagged_hosts": sorted(link_info.get("flagged_hosts", set())),
         "signals": dict(link_info.get("signals", {})),
         "scam_signals": list(link_info.get("scam_signals", [])),
+        "lexicon": link_info.get("lexicon"),
     }
+
+
+def _lookup_stage(pool, claims, *, client, tracker, http_client, language,
+                  blocked, factcheck, claimreview, media=False,
+                  exact_urls=None):
+    """Run the fact-check lookup first; maybe short-circuit on ClaimReview.
+
+    Returns (early_verdict_or_None, lookup_results). Lookup results are
+    returned for reuse so the combined path never calls lookup twice.
+    """
+    lookup_results: list = []
+    if factcheck:
+        lookup = pool.submit(
+            lookup_factchecks, claims, client=client,
+            tracker=tracker, http_client=http_client,
+            language=language, executor=pool,
+            blocked_hosts=blocked,
+        )
+        with stage_timer(tracker, "factcheck"):
+            lookup_results = lookup.result()
+    else:
+        tracker.note("fact-check lookup disabled.")
+    early_verdict = None
+    if claimreview and lookup_results:
+        early_verdict = find_claim_review_verdict(
+            claims, lookup_results, language, media=media,
+            exact_urls=exact_urls, tracker=tracker,
+        )
+    elif not claimreview:
+        tracker.note("ClaimReview short-circuit disabled.")
+    return early_verdict, lookup_results
+
+
+def _record_review_exit(tracker, review_verdict, evidence):
+    """Note + record a ClaimReview short-circuit verdict."""
+    tracker.note(
+        f"ClaimReview verdict from {review_verdict.fact_checked_by}: "
+        f"{review_verdict.verdict}."
+    )
+    tracker.record("evidence", _evidence_snapshot(evidence))
+    tracker.record("verdict", _verdict_snapshot(review_verdict))
 
 
 def _reverse_provider(provider, http_client):
@@ -236,6 +281,29 @@ def _bare_link_reply(link_info: dict) -> str:
     return f"{BARE_LINK_NO_CLAIMS} Signals: {', '.join(found)}."
 
 
+def _cache_flags(factcheck: bool, claimreview: bool) -> str:
+    """Pipeline options affecting output, for cache-key scoping."""
+    return (
+        f"fc={int(factcheck)}&cr={int(claimreview)}"
+        f"&rv={int(reverse_search_enabled())}&gsb={int(gsb_enabled())}"
+        f"&mc={max_claims()}&cm={agent_model()}"
+    )
+
+
+def _cache_lookup(key: str | None, tracker) -> str | None:
+    """Cached card on hit (recording the trace), else None."""
+    if key is None:
+        return None
+    start = time.monotonic()
+    hit = cache_module.lookup(key)
+    if hit is None:
+        return None
+    tracker.add_time("cache", time.monotonic() - start)
+    tracker.note("cache hit.")
+    tracker.record("verdict", hit["verdict"])
+    return hit["card"]
+
+
 def _run_with_deadline(tracker, fn, deadline_s: float):
     """Run fn on a worker thread; on expiry return a timeout card.
 
@@ -274,13 +342,21 @@ def _run_with_deadline(tracker, fn, deadline_s: float):
 
 def run_forward(
     text: str, *, client=None, http_client=None, factcheck=True,
-    claimreview=True,
+    claimreview=True, cache=True,
     deadline_s: float = RUN_DEADLINE_S,
 ) -> tuple[str, UsageTracker]:
     """Run the pipeline on forward text. Returns (card, usage)."""
     if client is None:
         client = get_client()
     tracker = UsageTracker()
+    cache_key = None
+    if cache and cache_module.enabled():
+        cache_key = cache_module.text_key(
+            text, _cache_flags(factcheck, claimreview)
+        )
+        hit = _cache_lookup(cache_key, tracker)
+        if hit is not None:
+            return hit, tracker
     def _go() -> tuple[str, UsageTracker]:
         with stage_timer(tracker, "intake"):
             intake = extract_intake(text, client=client, tracker=tracker)
@@ -310,7 +386,7 @@ def run_forward(
             claims = [article.headline] + [
                 claim for claim in claims if claim != article.headline
             ]
-        claims = claims[:MAX_CLAIMS]
+        claims = claims[:max_claims()]
         headline = article.headline if article is not None else None
         tracker.record(
             "claims",
@@ -344,26 +420,22 @@ def run_forward(
                 return _bare_link_reply(link_info), tracker
             return "No checkable claims found in this forward.", tracker
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
+            early_verdict, lookup_results = _lookup_stage(
+                pool, claims, client=client, tracker=tracker,
+                http_client=http_client, language=intake.language,
+                blocked=blocked, factcheck=factcheck,
+                claimreview=claimreview,
+            )
+            if early_verdict is not None:
+                _record_review_exit(tracker, early_verdict, lookup_results)
+                return format_card(early_verdict, lookup_results, claims), tracker
             grounding = pool.submit(
                 gather_evidence, claims, client=client,
                 tracker=tracker, http_client=http_client, executor=pool,
                 blocked_hosts=blocked,
             )
-            lookup = None
-            if factcheck:
-                lookup = pool.submit(
-                    lookup_factchecks, claims, client=client,
-                    tracker=tracker, http_client=http_client,
-                    language=intake.language, executor=pool,
-                    blocked_hosts=blocked,
-                )
             with stage_timer(tracker, "grounding"):
-                evidence = grounding.result()
-            if lookup is not None:
-                with stage_timer(tracker, "factcheck"):
-                    evidence = lookup.result() + evidence
-            else:
-                tracker.note("fact-check lookup disabled.")
+                evidence = lookup_results + grounding.result()
             evidence = select_evidence(
                 claims, evidence, tracker=tracker
             )
@@ -431,19 +503,30 @@ def run_forward(
                 )
             tracker.record("verdict", _verdict_snapshot(verdict))
             return format_card(verdict, evidence, claims), tracker
-    return _run_with_deadline(tracker, _go, deadline_s)
+    card, tracker = _run_with_deadline(tracker, _go, deadline_s)
+    if cache_key is not None:
+        cache_module.maybe_store(cache_key, card, tracker)
+    return card, tracker
 
 
 def run_image_forward(
     image_path: str, caption: str | None = None, *, client=None,
     http_client=None, provider=None, factcheck=True, claimreview=True,
-    ground_truth: list[str] | None = None,
+    ground_truth: list[str] | None = None, cache=True,
     deadline_s: float = RUN_DEADLINE_S,
 ) -> tuple[str, UsageTracker]:
     """Run the pipeline on an image forward. Returns (card, usage)."""
     if client is None:
         client = get_client()
     tracker = UsageTracker()
+    cache_key = None
+    if cache and cache_module.enabled() and ground_truth is None:
+        cache_key = cache_module.media_key_for_file(
+            image_path, caption, _cache_flags(factcheck, claimreview)
+        )
+        hit = _cache_lookup(cache_key, tracker)
+        if hit is not None:
+            return hit, tracker
     def _go() -> tuple[str, UsageTracker]:
         image_bytes, mime = read_image(image_path)
         with stage_timer(tracker, "vision"):
@@ -472,11 +555,11 @@ def run_image_forward(
                 tracker.record("verdict", _verdict_snapshot(link_verdict))
                 return format_card(link_verdict), tracker
             link_blocked = frozenset(link_info["flagged_hosts"])
-        claims = (vision.claims_from_image + caption_claims)[:MAX_CLAIMS]
+        claims = (vision.claims_from_image + caption_claims)[:max_claims()]
         kept_kinds = (
             _media_claim_kinds(vision.claims_from_image, vision.claim_kinds)
             + ["content_claim"] * len(caption_claims)
-        )[:MAX_CLAIMS]
+        )[:max_claims()]
         has_content_claims = "content_claim" in kept_kinds
         tracker.record(
             "claims",
@@ -562,26 +645,25 @@ def run_image_forward(
             except ReverseSearchError as exc:
                 tracker.note(f"reverse search unavailable: {exc}")
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
+            early_verdict, lookup_results = _lookup_stage(
+                pool, claims, client=client, tracker=tracker,
+                http_client=http_client, language=language,
+                blocked=link_blocked, factcheck=factcheck,
+                claimreview=claimreview, media=True,
+                exact_urls=exact_urls,
+            )
+            if early_verdict is not None:
+                _record_review_exit(tracker, early_verdict, lookup_results)
+                return format_card(early_verdict, lookup_results, claims), tracker
             grounding = pool.submit(
                 gather_evidence, claims, client=client,
                 tracker=tracker, http_client=http_client, executor=pool,
                 blocked_hosts=link_blocked,
             )
-            lookup = None
-            if factcheck:
-                lookup = pool.submit(
-                    lookup_factchecks, claims, client=client,
-                    tracker=tracker, http_client=http_client,
-                    language=language, executor=pool,
-                    blocked_hosts=link_blocked,
-                )
             with stage_timer(tracker, "grounding"):
-                evidence = reverse_items + grounding.result()
-            if lookup is not None:
-                with stage_timer(tracker, "factcheck"):
-                    evidence = lookup.result() + evidence
-            else:
-                tracker.note("fact-check lookup disabled.")
+                evidence = (
+                    lookup_results + reverse_items + grounding.result()
+                )
             evidence = select_evidence(
                 claims, evidence, tracker=tracker
             )
@@ -653,7 +735,10 @@ def run_image_forward(
                 )
             tracker.record("verdict", _verdict_snapshot(verdict))
             return format_card(verdict, evidence, claims), tracker
-    return _run_with_deadline(tracker, _go, deadline_s)
+    card, tracker = _run_with_deadline(tracker, _go, deadline_s)
+    if cache_key is not None:
+        cache_module.maybe_store(cache_key, card, tracker)
+    return card, tracker
 
 
 class _CountingProvider:
@@ -671,13 +756,21 @@ class _CountingProvider:
 def run_video_forward(
     video_path: str, caption: str | None = None, *, client=None,
     http_client=None, provider=None, factcheck=True, claimreview=True,
-    ground_truth: list[str] | None = None,
+    ground_truth: list[str] | None = None, cache=True,
     deadline_s: float = RUN_DEADLINE_S,
 ) -> tuple[str, UsageTracker]:
     """Run the pipeline on a video forward. Returns (card, usage)."""
     if client is None:
         client = get_client()
     tracker = UsageTracker()
+    cache_key = None
+    if cache and cache_module.enabled() and ground_truth is None:
+        cache_key = cache_module.media_key_for_file(
+            video_path, caption, _cache_flags(factcheck, claimreview)
+        )
+        hit = _cache_lookup(cache_key, tracker)
+        if hit is not None:
+            return hit, tracker
     def _go() -> tuple[str, UsageTracker]:
         video_bytes, resolved = read_video(video_path)
         with stage_timer(tracker, "video"):
@@ -731,11 +824,11 @@ def run_video_forward(
             link_blocked = frozenset(link_info["flagged_hosts"])
         claims = (
             video.claims_from_video + transcript_claims + caption_claims
-        )[:MAX_CLAIMS]
+        )[:max_claims()]
         kept_kinds = (
             _media_claim_kinds(video.claims_from_video, video.claim_kinds)
             + ["content_claim"] * (len(transcript_claims) + len(caption_claims))
-        )[:MAX_CLAIMS]
+        )[:max_claims()]
         has_content_claims = "content_claim" in kept_kinds
         tracker.record(
             "claims",
@@ -845,26 +938,25 @@ def run_video_forward(
                 tracker.note(
                     f"found ground truth: {'yes' if found else 'no'}.")
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
+            early_verdict, lookup_results = _lookup_stage(
+                pool, claims, client=client, tracker=tracker,
+                http_client=http_client, language=language,
+                blocked=link_blocked, factcheck=factcheck,
+                claimreview=claimreview, media=True,
+                exact_urls=exact_urls,
+            )
+            if early_verdict is not None:
+                _record_review_exit(tracker, early_verdict, lookup_results)
+                return format_card(early_verdict, lookup_results, claims), tracker
             grounding = pool.submit(
                 gather_evidence, claims, client=client,
                 tracker=tracker, http_client=http_client, executor=pool,
                 blocked_hosts=link_blocked,
             )
-            lookup = None
-            if factcheck:
-                lookup = pool.submit(
-                    lookup_factchecks, claims, client=client,
-                    tracker=tracker, http_client=http_client,
-                    language=language, executor=pool,
-                    blocked_hosts=link_blocked,
-                )
             with stage_timer(tracker, "grounding"):
-                evidence = reverse_items + grounding.result()
-            if lookup is not None:
-                with stage_timer(tracker, "factcheck"):
-                    evidence = lookup.result() + evidence
-            else:
-                tracker.note("fact-check lookup disabled.")
+                evidence = (
+                    lookup_results + reverse_items + grounding.result()
+                )
             evidence = select_evidence(
                 claims, evidence, tracker=tracker
             )
@@ -936,10 +1028,14 @@ def run_video_forward(
                 )
             tracker.record("verdict", _verdict_snapshot(verdict))
             return format_card(verdict, evidence, claims), tracker
-    return _run_with_deadline(tracker, _go, deadline_s)
+    card, tracker = _run_with_deadline(tracker, _go, deadline_s)
+    if cache_key is not None:
+        cache_module.maybe_store(cache_key, card, tracker)
+    return card, tracker
 
 
-def _run_demo_sample(sample: dict, tmp: str) -> tuple[str, object, dict]:
+def _run_demo_sample(sample: dict, tmp: str, *, cache: bool = True,
+                     ) -> tuple[str, object, dict]:
     """Run one demo sample live. Returns (card, tracker, input_desc)."""
     from demo import make_screenshot
 
@@ -953,11 +1049,11 @@ def _run_demo_sample(sample: dict, tmp: str) -> tuple[str, object, dict]:
             url_path=params["url_path"],
         )
         print(f"input: generated screenshot {shot}")
-        card, tracker = run_image_forward(shot)
+        card, tracker = run_image_forward(shot, cache=cache)
         return card, tracker, {"screenshot": dict(params)}
     text = sample["text"]
     print(f"input: {text}")
-    card, tracker = run_forward(text)
+    card, tracker = run_forward(text, cache=cache)
     return card, tracker, {"text": text}
 
 
@@ -989,7 +1085,7 @@ def run_demo(*, record: bool = False) -> int:
                 start = time.monotonic()
                 try:
                     card, tracker, input_desc = _run_demo_sample(
-                        sample, tmp
+                        sample, tmp, cache=not record
                     )
                 except (GroundingError, RuntimeError, ValueError) as exc:
                     print(f"sample {name} failed: {exc}")
@@ -1046,6 +1142,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--no-factcheck", action="store_true",
                         help="Skip the existing-fact-check lookup stage.")
+    parser.add_argument("--no-cache", action="store_true",
+                        help="Bypass the repeat cache (read and write).")
     parser.add_argument("--no-claimreview", action="store_true",
                         help="Bench/debug only: disable the ClaimReview "
                         "short-circuit so runs take the debate path.")
@@ -1083,14 +1181,17 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     use_factcheck = not args.no_factcheck
     use_claimreview = not args.no_claimreview
+    use_cache = not args.no_cache
     try:
         if args.image:
             card, tracker = run_image_forward(
-                args.image, args.caption, factcheck=use_factcheck, claimreview=use_claimreview
+                args.image, args.caption, factcheck=use_factcheck, claimreview=use_claimreview,
+                cache=use_cache,
             )
         elif args.video:
             card, tracker = run_video_forward(
-                args.video, args.caption, factcheck=use_factcheck, claimreview=use_claimreview
+                args.video, args.caption, factcheck=use_factcheck, claimreview=use_claimreview,
+                cache=use_cache,
             )
         else:
             text = args.text if args.text is not None else sys.stdin.read()
@@ -1098,7 +1199,8 @@ def main(argv: list[str] | None = None) -> int:
                 print("Error: provide forward text as an argument or via stdin.",
                       file=sys.stderr)
                 return 2
-            card, tracker = run_forward(text, factcheck=use_factcheck, claimreview=use_claimreview)
+            card, tracker = run_forward(text, factcheck=use_factcheck, claimreview=use_claimreview,
+                                        cache=use_cache)
     except GroundingError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1

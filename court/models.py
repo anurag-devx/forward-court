@@ -19,7 +19,9 @@ class Argument(BaseModel):
 
 
 class Verdict(BaseModel):
-    verdict: Literal["True", "False", "Misleading", "Unverified", "DANGEROUS"]
+    verdict: Literal[
+        "True", "False", "Misleading", "Unverified", "DANGEROUS", "SUSPICIOUS"
+    ]
     reason: str
     key_source: str
     language: str

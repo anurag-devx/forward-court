@@ -1,0 +1,117 @@
+# Phishing lexicon for deterministic link/text scoring (safety/lexicon.py).
+# All lists live here so they are easy to extend. Brands map slash-separated
+# aliases to official domains; a bare alias with no dot (e.g. "bob") is a
+# name, never a domain.
+brands:
+  sbi: [sbi.co.in, onlinesbi.sbi]
+  hdfc: [hdfcbank.com]
+  icici: [icicibank.com]
+  axis: [axisbank.com]
+  kotak: [kotak.com]
+  pnb: [pnbindia.in]
+  bankofbaroda/bob: [bankofbaroda.in]
+  canara: [canarabank.com]
+  unionbank: [unionbankofindia.co.in]
+  idbi: [idbibank.in]
+  indusind: [indusind.com]
+  yesbank: [yesbank.in]
+  rbl: [rblbank.com]
+  paytm: [paytm.com]
+  phonepe: [phonepe.com]
+  gpay/googlepay: [google.com]
+  bhim/upi/npci: [bhimupi.org.in, npci.org.in]
+  amazonpay/amazon: [amazon.in, amazon.com]
+  mobikwik: [mobikwik.com]
+  razorpay: [razorpay.com]
+  incometax/efiling: [incometax.gov.in]
+  uidai/aadhaar: [uidai.gov.in]
+  epfo: [epfindia.gov.in]
+  pmkisan: [pmkisan.gov.in]
+  irctc: [irctc.co.in]
+  indiapost: [indiapost.gov.in]
+  gst: [gst.gov.in]
+  digilocker: [digilocker.gov.in]
+  parivahan/echallan: [parivahan.gov.in]
+  jio: [jio.com]
+  airtel: [airtel.in]
+  vi: [myvi.in]
+  bsnl: [bsnl.co.in]
+  flipkart: [flipkart.com]
+  meesho: [meesho.com]
+  myntra: [myntra.com]
+  delhivery: [delhivery.com]
+  bluedart: [bluedart.com]
+  dtdc: [dtdc.in]
+  whatsapp: [whatsapp.com]
+  instagram: [instagram.com]
+  facebook: [facebook.com]
+  meta: [meta.com]
+
+url_action_words: [
+  login, signin, verify, verification, update, kyc, ekyc, rekyc,
+  secure, account, suspend, blocked, unlock, reactivate, refund,
+  reward, cashback, claim, prize, lottery, bonus, offer, free,
+  gift, otp, redeem, wallet, payment, bill, challan, penalty,
+  pan-link, aadhaar-link,
+]
+
+risky_tlds: [
+  xyz, top, club, online, site, live, icu, buzz, click,
+  link, shop, info, rest, cyou, sbs, cfd, monster,
+]
+
+free_hosts: [
+  web.app, firebaseapp.com, vercel.app, netlify.app, github.io,
+  blogspot.com, weebly.com, 000webhostapp.com, pages.dev, glitch.me,
+]
+
+shorteners: [
+  bit.ly, tinyurl.com, cutt.ly, rb.gy, is.gd, t.ly, shorturl.at,
+]
+
+download_exts: [apk, exe, msi, scr, bat, js, zip, rar]
+
+# Single generic words never score alone (see safety/lexicon.py).
+generic_words: [today, now, update, account, offer, free, bill, payment]
+
+# "task" (job_bait) counts only with a pay/earn word in the text.
+pay_words: [earn, paid, salary, "₹", "per day", kamaye]
+
+# Bare "lottery" in text counts only with a credentials hit or a link
+# containing one of these claim words.
+claim_link_words: [
+  claim, redeem, prize, gift, bonus, offer,
+  reward, cashback, refund, lottery,
+]
+
+text_patterns:
+  urgency: [
+    "within 24 hours", today, immediately, "last chance",
+    "final notice", "will be blocked", suspended, deactivated,
+    "expires today", turant, "aaj raat", "aaj hi",
+    "band ho jayega", "खाता बंद", "तुरंत",
+  ]
+  credentials: [
+    "share otp", "send otp", "enter pin", "upi pin", cvv,
+    "card number", password, "otp batayein", "otp share karein",
+    "OTP बताएं",
+  ]
+  money_bait: [
+    "you have won", lottery, "lucky draw", cashback, refund,
+    "reward points", "pre-approved loan", credited, inaam,
+    "lottery jeeti",
+  ]
+  threats: [
+    "electricity will be disconnected", "bijli kat", "kyc expired",
+    "kyc update", "pan not linked", "account frozen",
+    "challan pending", "legal action", "बिजली कनेक्शन कट",
+    "KYC अपडेट करें",
+  ]
+  job_bait: [
+    "work from home", "earn daily", "like videos and earn",
+    "part-time job", task, "ghar baithe kamaye", naukri,
+  ]
+  remote_access: [
+    anydesk, teamviewer, quicksupport, "screen share",
+    "download this app", "install this app",
+  ]

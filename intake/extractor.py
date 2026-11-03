@@ -1,7 +1,7 @@
 """Extract checkable claims and detect language via structured output."""
 from __future__ import annotations
 
-from config import MAX_CLAIMS, agent_model, reasoning_kwargs
+from config import agent_model, max_claims, reasoning_kwargs
 
 from .models import IntakeResult
 
@@ -36,7 +36,7 @@ def extract_intake(text: str, *, client, tracker=None) -> IntakeResult:
     if tracker is not None:
         tracker.add(response.usage, stage="intake")
     result = response.output_parsed
-    kept = list(result.claims)[:MAX_CLAIMS]
+    kept = list(result.claims)[:max_claims()]
     return IntakeResult(
         language=result.language,
         claims=kept,

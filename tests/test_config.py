@@ -10,6 +10,7 @@ from config import (
     get_client,
     gsb_api_key,
     gsb_enabled,
+    max_claims,
     reverse_search_enabled,
     stage_timer,
     zoom_enabled,
@@ -158,3 +159,19 @@ def test_gsb_api_key_gated_by_flag(monkeypatch):
     assert gsb_api_key() == ""
     monkeypatch.setenv("GSB", "on")
     assert gsb_api_key() == "k"
+
+
+def test_max_claims_default_and_override(monkeypatch):
+    monkeypatch.delenv("FC_MAX_CLAIMS", raising=False)
+    assert max_claims() == 3
+    monkeypatch.setenv("FC_MAX_CLAIMS", "2")
+    assert max_claims() == 2
+
+
+def test_max_claims_clamps_garbage(monkeypatch):
+    monkeypatch.setenv("FC_MAX_CLAIMS", "nope")
+    assert max_claims() == 3
+    monkeypatch.setenv("FC_MAX_CLAIMS", "0")
+    assert max_claims() == 1
+    monkeypatch.setenv("FC_MAX_CLAIMS", "99")
+    assert max_claims() == 3

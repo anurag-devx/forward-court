@@ -118,8 +118,22 @@ def test_no_factcheck_flag_plumbs_through(monkeypatch, capsys):
 
     monkeypatch.setattr(main, "run_forward", fake_run)
     assert main.main(["hello", "--no-factcheck"]) == 0
-    assert seen == {"factcheck": False, "claimreview": True}
+    assert seen == {"factcheck": False, "claimreview": True, "cache": True}
     assert "lookup disabled" not in capsys.readouterr().out
+
+
+def test_no_cache_flag_plumbs_through(monkeypatch):
+    from config import UsageTracker
+
+    seen = {}
+
+    def fake_run(text, **kwargs):
+        seen.update(kwargs)
+        return ("card", UsageTracker())
+
+    monkeypatch.setattr(main, "run_forward", fake_run)
+    assert main.main(["hello", "--no-cache"]) == 0
+    assert seen["cache"] is False
 
 
 def test_card_out_writes_card_file(monkeypatch, tmp_path):
@@ -161,8 +175,60 @@ def test_claim_review_path_skips_debate_and_votes(monkeypatch):
     assert "Already fact-checked by altnews.in" in card
     assert "🔗 Source: https://www.altnews.in/y" in card
     parses = [c for c in client.responses.calls if c[0] == "parse"]
-    assert len(parses) == 3  # scamtext + intake + relevance; no debate, no votes
+    assert len(parses) == 2  # scamtext + intake only; skips grounding too
+    creates = [c for c in client.responses.calls if c[0] == "create"]
+    assert creates, "expected the lookup's own search"
+    assert all(
+        call[1].get("input", "").startswith("fact check:")
+        for call in creates
+    ), "lookup only; no grounding searches, no debate, no votes"
     assert any("ClaimReview verdict" in note for note in tracker.notes)
+
+
+def test_contradicting_reviews_continue_to_debate(monkeypatch):
+    import evidence.factcheck as factcheck_module
+    from evidence.models import ClaimReview
+
+    reviews = {
+        "altnews": ClaimReview(
+            rating_raw="False", verdict="False",
+            claim_text="hot lemon water cures cancer",
+        ),
+        "boomlive": ClaimReview(
+            rating_raw="True", verdict="True",
+            claim_text="hot lemon water cures cancer",
+        ),
+    }
+    real_fetch = factcheck_module.fetch_page_unit
+
+    def patched(args):
+        url = args[0]
+        snippet, date, _ = real_fetch(args)
+        for host, review in reviews.items():
+            if host in url:
+                return snippet, date, review
+        return snippet, date, None
+
+    monkeypatch.setattr(factcheck_module, "fetch_page_unit", patched)
+    client = _pipeline_client(
+        lookup_outputs=[[
+            search_call([
+                ("https://www.altnews.in/y", "T", "checked false"),
+                ("https://www.boomlive.in/z", "T", "checked true"),
+            ])
+        ]]
+    )
+    card, _ = main.run_forward(
+        "some claim", client=client, http_client=dead_http_client()
+    )
+    assert "❌ *Forward Court Verdict: FALSE*" in card
+    parses = [c for c in client.responses.calls if c[0] == "parse"]
+    assert len(parses) > 2  # debate + votes ran
+    creates = [c for c in client.responses.calls if c[0] == "create"]
+    assert any(
+        not call[1].get("input", "").startswith("fact check:")
+        for call in creates
+    ), "grounding ran after the early check found no consensus"
 
 
 def test_no_claimreview_flag_forces_debate_path(monkeypatch):

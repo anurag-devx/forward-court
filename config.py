@@ -132,6 +132,16 @@ ZOOM_ENV = "ZOOM"
 FEATURE_ON = frozenset({"1", "true", "yes", "on"})
 
 MAX_CLAIMS = 3
+MAX_CLAIMS_ENV = "FC_MAX_CLAIMS"
+
+
+def max_claims() -> int:
+    """Max claims per forward; FC_MAX_CLAIMS overrides (gateway uses 2)."""
+    try:
+        value = int(os.environ.get(MAX_CLAIMS_ENV, "").strip() or MAX_CLAIMS)
+    except ValueError:
+        return MAX_CLAIMS
+    return max(1, min(value, MAX_CLAIMS))
 
 
 def agent_model() -> str:

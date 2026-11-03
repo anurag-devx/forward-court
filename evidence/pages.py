@@ -49,7 +49,7 @@ def _fetch(
                 if size > max_bytes:
                     return None
                 chunks.append(chunk)
-    except (httpx.HTTPError, ValueError):
+    except (httpx.HTTPError, httpx.InvalidURL, ValueError):
         return None
     return b"".join(chunks), response.charset_encoding or "utf-8"
 

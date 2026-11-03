@@ -198,3 +198,17 @@ def test_sender_error_raises():
 def test_meta_sender_is_stub():
     with pytest.raises(NotImplementedError):
         MetaCloudSender().send("whatsapp:+2000", "hi")
+
+
+def test_run_pipeline_caps_gateway_claims(monkeypatch, tmp_path):
+    import gateway.worker as worker_module
+
+    seen = {}
+
+    def fake_run(cmd, **kwargs):
+        seen.update(kwargs.get("env", {}))
+        return None
+
+    monkeypatch.setattr(worker_module.subprocess, "run", fake_run)
+    worker_module.run_pipeline(["hi"], tmp_path / "card.txt")
+    assert seen.get("FC_MAX_CLAIMS") == "2"
