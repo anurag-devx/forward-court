@@ -70,6 +70,21 @@ class DaemonPool(ThreadPoolExecutor):
             thread.start()
             self._threads.add(thread)
 
+    def abandon(self) -> None:
+        """Stop the pool without waiting: cancel queued work, orphan the rest.
+
+        For the ClaimReview early exit: the run returns without waiting
+        for grounding. Daemon threads finish (or die with the process)
+        in the background; their results are never collected.
+        """
+        self._abandoned = True
+        self.shutdown(wait=False, cancel_futures=True)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if getattr(self, "_abandoned", False):
+            return None
+        return super().__exit__(exc_type, exc_val, exc_tb)
+
 SUPPORT_QUERY = "Find web evidence SUPPORTING this claim: {claim}"
 REFUTE_QUERY = (
     "Find web evidence REFUTING, debunking, or fact-checking this claim: {claim}"

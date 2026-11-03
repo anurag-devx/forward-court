@@ -169,14 +169,23 @@ def _link_snapshot(link_info: dict) -> dict:
     }
 
 
-def _lookup_stage(pool, claims, *, client, tracker, http_client, language,
-                  blocked, factcheck, claimreview, media=False,
-                  exact_urls=None):
-    """Run the fact-check lookup first; maybe short-circuit on ClaimReview.
+def _race_evidence(pool, claims, *, client, tracker, http_client, language,
+                   blocked, factcheck, claimreview, media=False,
+                   exact_urls=None):
+    """Race the fact-check lookup against grounding; await the lookup.
 
-    Returns (early_verdict_or_None, lookup_results). Lookup results are
-    returned for reuse so the combined path never calls lookup twice.
+    Returns (early_verdict_or_None, lookup_results, grounding_job,
+    grounding_tracker). Grounding runs on its own tracker so an early
+    verdict can discard its tokens. On an early verdict the caller must
+    pool.abandon() (never wait for grounding); otherwise it must collect
+    grounding via _await_grounding().
     """
+    grounding_tracker = UsageTracker()
+    grounding_job = pool.submit(
+        gather_evidence, claims, client=client,
+        tracker=grounding_tracker, http_client=http_client,
+        executor=pool, blocked_hosts=blocked,
+    )
     lookup_results: list = []
     if factcheck:
         lookup = pool.submit(
@@ -185,8 +194,12 @@ def _lookup_stage(pool, claims, *, client, tracker, http_client, language,
             language=language, executor=pool,
             blocked_hosts=blocked,
         )
-        with stage_timer(tracker, "factcheck"):
-            lookup_results = lookup.result()
+        try:
+            with stage_timer(tracker, "factcheck"):
+                lookup_results = lookup.result()
+        except Exception:
+            pool.abandon()
+            raise
     else:
         tracker.note("fact-check lookup disabled.")
     early_verdict = None
@@ -197,7 +210,16 @@ def _lookup_stage(pool, claims, *, client, tracker, http_client, language,
         )
     elif not claimreview:
         tracker.note("ClaimReview short-circuit disabled.")
-    return early_verdict, lookup_results
+    return early_verdict, lookup_results, grounding_job, grounding_tracker
+
+
+def _await_grounding(job, grounding_tracker, tracker):
+    """Collect the raced grounding run; fold its usage into the tracker."""
+    tracker.mark("grounding")
+    with stage_timer(tracker, "grounding"):
+        items = job.result()
+    tracker.absorb(grounding_tracker)
+    return items
 
 
 def _record_review_exit(tracker, review_verdict, evidence):
@@ -420,22 +442,21 @@ def run_forward(
                 return _bare_link_reply(link_info), tracker
             return "No checkable claims found in this forward.", tracker
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
-            early_verdict, lookup_results = _lookup_stage(
-                pool, claims, client=client, tracker=tracker,
-                http_client=http_client, language=intake.language,
-                blocked=blocked, factcheck=factcheck,
-                claimreview=claimreview,
+            early_verdict, lookup_results, grounding_job, grounding_tracker = (
+                _race_evidence(
+                    pool, claims, client=client, tracker=tracker,
+                    http_client=http_client, language=intake.language,
+                    blocked=blocked, factcheck=factcheck,
+                    claimreview=claimreview,
+                )
             )
             if early_verdict is not None:
+                pool.abandon()
                 _record_review_exit(tracker, early_verdict, lookup_results)
                 return format_card(early_verdict, lookup_results, claims), tracker
-            grounding = pool.submit(
-                gather_evidence, claims, client=client,
-                tracker=tracker, http_client=http_client, executor=pool,
-                blocked_hosts=blocked,
+            evidence = lookup_results + _await_grounding(
+                grounding_job, grounding_tracker, tracker
             )
-            with stage_timer(tracker, "grounding"):
-                evidence = lookup_results + grounding.result()
             evidence = select_evidence(
                 claims, evidence, tracker=tracker
             )
@@ -645,25 +666,24 @@ def run_image_forward(
             except ReverseSearchError as exc:
                 tracker.note(f"reverse search unavailable: {exc}")
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
-            early_verdict, lookup_results = _lookup_stage(
-                pool, claims, client=client, tracker=tracker,
-                http_client=http_client, language=language,
-                blocked=link_blocked, factcheck=factcheck,
-                claimreview=claimreview, media=True,
-                exact_urls=exact_urls,
+            early_verdict, lookup_results, grounding_job, grounding_tracker = (
+                _race_evidence(
+                    pool, claims, client=client, tracker=tracker,
+                    http_client=http_client, language=language,
+                    blocked=link_blocked, factcheck=factcheck,
+                    claimreview=claimreview, media=True,
+                    exact_urls=exact_urls,
+                )
             )
             if early_verdict is not None:
+                pool.abandon()
                 _record_review_exit(tracker, early_verdict, lookup_results)
                 return format_card(early_verdict, lookup_results, claims), tracker
-            grounding = pool.submit(
-                gather_evidence, claims, client=client,
-                tracker=tracker, http_client=http_client, executor=pool,
-                blocked_hosts=link_blocked,
-            )
-            with stage_timer(tracker, "grounding"):
-                evidence = (
-                    lookup_results + reverse_items + grounding.result()
+            evidence = (
+                lookup_results + reverse_items + _await_grounding(
+                    grounding_job, grounding_tracker, tracker
                 )
+            )
             evidence = select_evidence(
                 claims, evidence, tracker=tracker
             )
@@ -938,25 +958,24 @@ def run_video_forward(
                 tracker.note(
                     f"found ground truth: {'yes' if found else 'no'}.")
         with DaemonPool(max_workers=EVIDENCE_WORKERS) as pool:
-            early_verdict, lookup_results = _lookup_stage(
-                pool, claims, client=client, tracker=tracker,
-                http_client=http_client, language=language,
-                blocked=link_blocked, factcheck=factcheck,
-                claimreview=claimreview, media=True,
-                exact_urls=exact_urls,
+            early_verdict, lookup_results, grounding_job, grounding_tracker = (
+                _race_evidence(
+                    pool, claims, client=client, tracker=tracker,
+                    http_client=http_client, language=language,
+                    blocked=link_blocked, factcheck=factcheck,
+                    claimreview=claimreview, media=True,
+                    exact_urls=exact_urls,
+                )
             )
             if early_verdict is not None:
+                pool.abandon()
                 _record_review_exit(tracker, early_verdict, lookup_results)
                 return format_card(early_verdict, lookup_results, claims), tracker
-            grounding = pool.submit(
-                gather_evidence, claims, client=client,
-                tracker=tracker, http_client=http_client, executor=pool,
-                blocked_hosts=link_blocked,
-            )
-            with stage_timer(tracker, "grounding"):
-                evidence = (
-                    lookup_results + reverse_items + grounding.result()
+            evidence = (
+                lookup_results + reverse_items + _await_grounding(
+                    grounding_job, grounding_tracker, tracker
                 )
+            )
             evidence = select_evidence(
                 claims, evidence, tracker=tracker
             )

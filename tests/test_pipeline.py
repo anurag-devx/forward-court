@@ -175,14 +175,64 @@ def test_claim_review_path_skips_debate_and_votes(monkeypatch):
     assert "Already fact-checked by altnews.in" in card
     assert "🔗 Source: https://www.altnews.in/y" in card
     parses = [c for c in client.responses.calls if c[0] == "parse"]
-    assert len(parses) == 2  # scamtext + intake only; skips grounding too
-    creates = [c for c in client.responses.calls if c[0] == "create"]
-    assert creates, "expected the lookup's own search"
-    assert all(
-        call[1].get("input", "").startswith("fact check:")
-        for call in creates
-    ), "lookup only; no grounding searches, no debate, no votes"
+    assert len(parses) == 2  # scamtext + intake only; no debate, no votes
     assert any("ClaimReview verdict" in note for note in tracker.notes)
+    assert "factcheck" in tracker.times  # lookup awaited; its tokens count
+    assert "grounding" not in tracker.times  # raced, abandoned, discarded
+    assert not [
+        stage for stage in tracker.stages if stage.startswith("grounding:")
+    ]
+
+
+def test_review_exit_does_not_wait_for_grounding(monkeypatch):
+    import threading
+
+    import evidence.factcheck as factcheck_module
+    from evidence.models import ClaimReview
+
+    review = ClaimReview(
+        rating_raw="False",
+        verdict="False",
+        claim_text="hot lemon water cures cancer",
+    )
+    real_fetch = factcheck_module.fetch_page_unit
+
+    def patched(args):
+        url = args[0]
+        snippet, date, _ = real_fetch(args)
+        if "altnews" in url:
+            return snippet, date, review
+        return snippet, date, None
+
+    monkeypatch.setattr(factcheck_module, "fetch_page_unit", patched)
+
+    started = threading.Event()
+    release = threading.Event()
+
+    def slow_gather(claims, **kwargs):
+        started.set()
+        assert release.wait(timeout=60), "abandoned grounding never released"
+        return []
+
+    real_lookup = factcheck_module.lookup_factchecks
+
+    def gated_lookup(claims, **kwargs):
+        assert started.wait(timeout=60), "grounding never launched"
+        return real_lookup(claims, **kwargs)
+
+    monkeypatch.setattr(main, "gather_evidence", slow_gather)
+    monkeypatch.setattr(main, "lookup_factchecks", gated_lookup)
+    waited = {}
+    try:
+        card, _ = main.run_forward(
+            "some claim", client=_pipeline_client(),
+            http_client=dead_http_client(),
+        )
+        waited["grounding"] = release.is_set()
+    finally:
+        release.set()
+    assert "❌ *Forward Court Verdict: FALSE*" in card
+    assert waited["grounding"] is False
 
 
 def test_contradicting_reviews_continue_to_debate(monkeypatch):
@@ -218,7 +268,7 @@ def test_contradicting_reviews_continue_to_debate(monkeypatch):
             ])
         ]]
     )
-    card, _ = main.run_forward(
+    card, tracker = main.run_forward(
         "some claim", client=client, http_client=dead_http_client()
     )
     assert "❌ *Forward Court Verdict: FALSE*" in card
@@ -229,6 +279,10 @@ def test_contradicting_reviews_continue_to_debate(monkeypatch):
         not call[1].get("input", "").startswith("fact check:")
         for call in creates
     ), "grounding ran after the early check found no consensus"
+    assert "grounding" in tracker.times  # raced grounding merged back
+    assert any(
+        stage.startswith("grounding:") for stage in tracker.stages
+    )
 
 
 def test_no_claimreview_flag_forces_debate_path(monkeypatch):

@@ -282,6 +282,32 @@ class UsageTracker:
                     stage_in + in_tokens, stage_out + out_tokens
                 )
 
+    def absorb(self, other: UsageTracker) -> None:
+        """Fold a raced worker's tokens/stages/notes/times into this one.
+
+        The other tracker must be quiescent (its future already joined).
+        """
+        with other.lock:
+            snapshot = (
+                other.input_tokens, other.output_tokens,
+                dict(other.stages), list(other.notes),
+                dict(other.times),
+            )
+        in_tokens, out_tokens, stages, notes, times = snapshot
+        with self.lock:
+            self.input_tokens += in_tokens
+            self.output_tokens += out_tokens
+            for stage, (stage_in, stage_out) in stages.items():
+                old_in, old_out = self.stages.get(stage, (0, 0))
+                self.stages[stage] = (
+                    old_in + stage_in, old_out + stage_out
+                )
+            self.notes.extend(notes)
+            for stage, seconds in times.items():
+                self.times[stage] = (
+                    self.times.get(stage, 0.0) + seconds
+                )
+
     @property
     def total_tokens(self) -> int:
         return self.input_tokens + self.output_tokens

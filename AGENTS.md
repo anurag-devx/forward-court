@@ -71,8 +71,10 @@ in the user's language.
   needs a media tie on media forwards and never fires on Unverified;
   mismatch is voted 3x and short-circuits Misleading right after intake
   ("unclear"/"yes" continue; no claims short-circuits first).
-- Evidence: grounding + lookup searches and top-3 page fetches run on a
-  shared max-6 daemon pool; results reassemble in submission order.
+- Evidence: lookup and grounding race on a shared max-6 daemon pool;
+  a qualifying ClaimReview returns without waiting (pool.abandon() cancels
+  queued grounding work; its tokens never count); otherwise grounding is
+  awaited and merged. Results reassemble in submission order.
 - Debate: prosecutor + defender run concurrently, then the 3 judge votes
   concurrently on the same pool; ballot order stays deterministic in logs.
   Breakdown lines carry per-stage wall time.

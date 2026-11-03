@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from config import UsageTracker
-from evidence.grounder import GroundingError, gather_evidence
+from evidence.grounder import DaemonPool, GroundingError, gather_evidence
 from tests.fakes import (
     FakeClient,
     SyncExecutor,
@@ -228,3 +228,26 @@ def test_tracker_totals_exact_under_threads():
     assert tracker.total_tokens == 8 * 200 * 150
     assert tracker.stages["grounding"] == (8 * 200 * 100, 8 * 200 * 50)
     assert len(tracker.notes) == 8 * 200
+
+
+def test_abandoned_pool_exits_without_waiting():
+    import threading
+    import time
+
+    started = threading.Event()
+    release = threading.Event()
+
+    def slow():
+        started.set()
+        release.wait(timeout=60)
+
+    pool = DaemonPool(max_workers=1)
+    start = time.monotonic()
+    try:
+        with pool:
+            pool.submit(slow)
+            assert started.wait(timeout=10)
+            pool.abandon()
+    finally:
+        release.set()
+    assert time.monotonic() - start < 55

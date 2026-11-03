@@ -175,3 +175,21 @@ def test_max_claims_clamps_garbage(monkeypatch):
     assert max_claims() == 1
     monkeypatch.setenv("FC_MAX_CLAIMS", "99")
     assert max_claims() == 3
+
+
+def test_absorb_folds_worker_usage():
+    from types import SimpleNamespace
+
+    main_tracker = UsageTracker()
+    worker = UsageTracker()
+    main_tracker.add(SimpleNamespace(input_tokens=10, output_tokens=5),
+                      stage="factcheck:claim1")
+    worker.add(SimpleNamespace(input_tokens=100, output_tokens=50),
+               stage="grounding:claim1:support")
+    worker.note("skipped 1 flagged URL(s) (unsafe).")
+    worker.add_time("grounding", 3.0)
+    main_tracker.absorb(worker)
+    assert main_tracker.total_tokens == 165
+    assert main_tracker.stages["grounding:claim1:support"] == (100, 50)
+    assert "skipped 1 flagged URL(s) (unsafe)." in main_tracker.notes
+    assert main_tracker.times["grounding"] == 3.0

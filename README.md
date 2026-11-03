@@ -165,6 +165,19 @@ Two non-model services are built but **disabled for the hackathon** per the runt
 
 WhatsApp delivery via the Vonage Messages API Sandbox (Twilio sender available; Meta Cloud API sender stubbed).
 
+## Speed & cost
+
+Measured wall-clock per forward (model latency varies run to run):
+
+| Path | Time | Notes |
+|---|---|---|
+| Scam / dangerous link | ~13s | deterministic checks + scam-pattern read short-circuit |
+| Already fact-checked | ~30–60s | trusted-outlet lookup decides; grounding, debate, votes skipped |
+| Full debate | ~1–2 min | lookup + grounding raced concurrently, then debate + 3 judge votes |
+| Repeat forward | <1s, 0 tokens | local SQLite cache (`.cache/`, gitignored) |
+
+Cost follows the same ladder: an early fact-check exit uses ~17k tokens vs ~40–85k for a full debate, and cache repeats use none. Cache TTLs: 24h default, 7 days for DANGEROUS / False-by-ClaimReview, 1h for Unverified; errors and timeouts are never cached. `CACHE=off` or `--no-cache` bypasses the cache.
+
 ## Run it
 
 Check a forward (see Quick start for setup):
