@@ -2,7 +2,7 @@
 
 A multi-agent fact-checker for viral WhatsApp forwards.
 
-Forward a suspicious message, photo or video. A panel of agents puts it on trial: one argues it is true, one argues it is false, and both may cite only real, retrieved sources. A judge returns a short verdict card — **True / False / Misleading / Unverified** — in the user's language, ready to share back into the family group. Dangerous links and scam messages get a fifth verdict: **Dangerous**.
+Forward a suspicious message, photo or video. A panel of agents puts it on trial: one argues it is true, one argues it is false, and both may cite only real, retrieved sources. A judge returns a short verdict card — **True / False / Misleading / Unverified** — in the user's language, ready to share back into the family group. Scam links and messages get **Dangerous**, or **Suspicious** when the signs are weaker.
 
 The main target is the most common kind of misinformation in India: **real photos and videos with a false story attached** (old footage shared as today's news, a five-year-old article reshared as breaking).
 
@@ -62,7 +62,7 @@ Switching replay ↔ live: `--demo --replay` reads the committed traces in `demo
 
 ```mermaid
 flowchart TD
-    A[Forward: text / image / video] --> L{Link safety<br/>GSB + heuristics + scam patterns}
+    A[Forward: text / image / video] --> L{Link safety<br/>heuristics + phishing lexicon + scam patterns}
     L -- dangerous --> DD[DANGEROUS card<br/>do not open]
     L -- safe --> B[Intake<br/>language, claims, recency cues]
     B --> M{Media?}
@@ -92,7 +92,7 @@ flowchart TD
 
 ## Verdicts
 
-**True** — strong cited evidence confirms it. **False** — strong cited evidence refutes it. **Misleading** — real media or article, wrong context (recycled as new, or media that does not show the claim). **Unverified** — not enough evidence either way. **Dangerous** — malicious link or scam message; do not open it.
+**True** — strong cited evidence confirms it. **False** — strong cited evidence refutes it. **Misleading** — real media or article, wrong context (recycled as new, or media that does not show the claim). **Unverified** — not enough evidence either way. **Dangerous** — malicious link or scam message; do not open it. **Suspicious** — some scam signs but below the Dangerous bar; the card leads with "Be careful — scam signs", lists the matched reasons, and ends with the safety line.
 
 ## Sample verdict cards
 
@@ -161,7 +161,7 @@ SAM 3.1 crops feed Muse Spark zoomed views to read small text (URL bars, dates, 
 Two non-model services are built but **disabled for the hackathon** per the runtime-model rule (SerpAPI Google Lens is not an allowed runtime model; Safe Browsing use could not be confirmed). They are not judging options — leave them off:
 
 - SerpAPI reverse image search — media provenance is therefore limited; photo-origin claims stay Unverified without it.
-- Google Safe Browsing — link reputation is therefore limited; link safety rests on deterministic heuristics plus scam-pattern reading.
+- Google Safe Browsing — link reputation is therefore limited; link safety rests on deterministic heuristics, a phishing lexicon, and scam-pattern reading.
 
 WhatsApp delivery via the Vonage Messages API Sandbox (Twilio sender available; Meta Cloud API sender stubbed).
 
@@ -171,7 +171,7 @@ Measured wall-clock per forward (model latency varies run to run):
 
 | Path | Time | Notes |
 |---|---|---|
-| Scam / dangerous link | ~13s | deterministic checks + scam-pattern read short-circuit |
+| Scam / dangerous link | ~15s | deterministic checks + scam-pattern read short-circuit |
 | Already fact-checked | ~30–60s | trusted-outlet lookup decides; grounding, debate, votes skipped |
 | Full debate | ~1–2 min | lookup + grounding raced concurrently, then debate + 3 judge votes |
 | Repeat forward | <1s, 0 tokens | local SQLite cache (`.cache/`, gitignored) |
@@ -180,18 +180,7 @@ Cost follows the same ladder: an early fact-check exit uses ~17k tokens vs ~40�
 
 ## Run it
 
-Check a forward (see Quick start for setup):
-
-```bash
-# text
-python main.py "Breaking: massive floods hit Patna today, bridge collapsed"
-
-# image, optional caption
-python main.py --image forward.jpg --caption "This is from yesterday's rally"
-
-# video (max 16 MB, WhatsApp's limit)
-python main.py --video forward.mp4 --caption "Flood in Patna today"
-```
+Check a forward — see [Test it in 3 ways](#test-it-in-3-ways) for setup and commands.
 
 Run tests (offline, no API calls):
 
@@ -199,7 +188,7 @@ Run tests (offline, no API calls):
 python -m pytest tests/ -q
 ```
 
-434 tests. Bench media is collected locally with yt-dlp
+552 tests. Bench media is collected locally with yt-dlp
 (`requirements-dev.txt`, testing only); no media files are committed.
 
 ### WhatsApp gateway (optional)
@@ -225,10 +214,10 @@ messaging window, no templates.
 ## Status
 
 - Done - Text forwards
-- Done - Image forwards (vision, SAM crops, reverse search, earliest-copy check)
+- Done - Image forwards (vision, SAM crops, earliest-copy check; reverse search built, off)
 - Done - Video forwards (video understanding, transcript, key frames, media–caption check)
 - Done - Fact-check lookup, ClaimReview verdicts, relevance filter, 3-vote judge
-- Done - Link safety (Safe Browsing + heuristics + scam patterns) and news links
+- Done - Link safety (heuristics, phishing lexicon, scam patterns; Safe Browsing built, off) and news links
 - Done - WhatsApp gateway via Twilio and Vonage sandbox
 - Done - Judge demo (`python main.py --demo`, works with only MODEL_API_KEY)
 - In Progress - Meta WhatsApp Cloud API sender (stubbed; developer access pending)
@@ -244,7 +233,7 @@ messaging window, no templates.
 
 ## What's next
 
-- **Claim-level cache.** Skip repeat work on the same viral forward: match text on normalized claims, screenshots on perceptual hash + extracted text. Cache entries expire by verdict type (False/Dangerous persist longer than Unverified), in-flight duplicate checks are merged into one run, and only hashes, claims, and verdicts are stored — never user data.
+- **Smarter cache.** Normalized-claim and perceptual-hash matching on top of the existing repeat cache: skip repeat work on the same viral forward by matching text on normalized claims and screenshots on perceptual hash + extracted text. Cache entries expire by verdict type (False/Dangerous persist longer than Unverified), in-flight duplicate checks are merged into one run, and only hashes, claims, and verdicts are stored — never user data.
 - **"Checked N times" + trending-rumours feed.** Show how often a claim has already been checked on the card, and expose the most-checked claims as a feed for fact-checkers.
 
 ## License
